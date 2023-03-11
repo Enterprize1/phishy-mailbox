@@ -1,0 +1,12 @@
+version: "3.7"
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: mailbox
+      POSTGRES_PASSWORD: mailbox
+    ports:
+      - 5432:5432
+    volumes:
+      - ./src/db/migrations:/docker-entrypoint-initdb.d

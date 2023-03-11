@@ -1,0 +1,78 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Email {
+  id                   String               @id @default(uuid()) @db.Uuid
+  senderMail           String
+  senderName           String
+  subject              String
+  body                 String
+  backofficeIdentifier String
+  StudyEmail           StudyEmail[]
+  ParticipationEmail   ParticipationEmail[]
+}
+
+model Folder {
+  id                 String               @id @default(uuid()) @db.Uuid
+  studyId            String               @db.Uuid
+  name               String
+  isPhishing         Boolean
+  order              Int
+  study              Study                @relation(fields: [studyId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "folder_study_id_study_id_fk")
+  ParticipationEmail ParticipationEmail[]
+}
+
+model Participation {
+  id        String               @id @default(uuid()) @db.Uuid
+  studyId   String               @db.Uuid
+  study     Study                @relation(fields: [studyId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "participation_study_id_study_id_fk")
+  createdAt DateTime             @db.Timestamptz(3)
+  startedAt DateTime?            @db.Timestamptz(3)
+  emails    ParticipationEmail[]
+}
+
+model ParticipationEmail {
+  id              String        @id @default(uuid()) @db.Uuid
+  participationId String        @db.Uuid
+  participation   Participation @relation(fields: [participationId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "participation_email_participation_id_participation_id_fk")
+  emailId         String        @db.Uuid
+  email           Email         @relation(fields: [emailId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "participation_email_email_id_email_id_fk")
+  folderId        String?       @db.Uuid
+  folder          Folder?       @relation(fields: [folderId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "participation_email_folder_id_folder_id_fk")
+  openedAt        DateTime?     @db.Timestamptz(3)
+  lastMoveAt      DateTime?     @db.Timestamptz(3)
+  submittedAt     DateTime?     @db.Timestamptz(3)
+}
+
+model Study {
+  id                String          @id @default(uuid()) @db.Uuid
+  name              String
+  code              String          @unique(map: "code_idx")
+  folder            Folder[]
+  participation     Participation[]
+  email             StudyEmail[]
+  introductionText  String
+  durationInMinutes Int
+}
+
+model StudyEmail {
+  id         String  @id @default(uuid()) @db.Uuid
+  studyId    String  @db.Uuid
+  study      Study   @relation(fields: [studyId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "study_email_study_id_study_id_fk")
+  emailId    String  @db.Uuid
+  email      Email   @relation(fields: [emailId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "study_email_email_id_email_id_fk")
+  isPhishing Boolean
+}
+
+model User {
+  id         String    @id @default(uuid()) @db.Uuid
+  email      String    @unique(map: "email_idx")
+  password   String
+  created_at DateTime? @db.Timestamptz(3)
+}

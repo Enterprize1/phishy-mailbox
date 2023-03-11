@@ -1,0 +1,11 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  @apply flex h-screen w-screen overflow-hidden;
+}
+
+#__next {
+  @apply flex h-full w-full;
+}
