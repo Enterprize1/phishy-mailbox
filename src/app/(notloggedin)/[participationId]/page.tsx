@@ -16,6 +16,7 @@ import {
 } from '@dnd-kit/core';
 import {CSS} from '@dnd-kit/utilities';
 import {twMerge} from 'tailwind-merge';
+import Link from 'next/link';
 
 const NineDotsIcon = () => (
   <svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'>
@@ -129,7 +130,12 @@ const CurrentEmailDisplay: FC<{currentEmail: EmailItem | undefined}> = ({current
   return <div className='flex flex-grow flex-col'>{currentEmail && <EmailDisplay email={currentEmail.email} />}</div>;
 };
 
-const RemainingTimer: FC<{startedAt: Date | null; durationInMinutes: number}> = ({startedAt, durationInMinutes}) => {
+const RemainingTimer: FC<{
+  startedAt: Date | null;
+  durationInMinutes: number;
+  canFinish: boolean;
+  finish: () => void;
+}> = ({startedAt, durationInMinutes, canFinish, finish}) => {
   const shouldFinishAt = useMemo(
     () => (startedAt ? addMinutes(startedAt, durationInMinutes) : new Date()),
     [durationInMinutes, startedAt],
@@ -144,6 +150,11 @@ const RemainingTimer: FC<{startedAt: Date | null; durationInMinutes: number}> = 
       }
 
       const secondsDiff = differenceInSeconds(shouldFinishAt, new Date());
+
+      if (secondsDiff <= 0) {
+        setRemainingText(null);
+        return;
+      }
 
       let minutes = Math.floor(secondsDiff / 60).toString();
       if (minutes.length == 1) {
@@ -168,13 +179,42 @@ const RemainingTimer: FC<{startedAt: Date | null; durationInMinutes: number}> = 
     return null;
   }
 
-  return <span className='ml-auto mr-4'>Verbleibend {remainingText}</span>;
+  return (
+    <>
+      {canFinish && (
+        <button
+          type='button'
+          className='mr-2 flex justify-center rounded-md bg-indigo-600 px-3 py-1 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500'
+          onClick={finish}
+        >
+          Abschliessen
+        </button>
+      )}
+      <span className='ml-auto mr-4'>Verbleibend {remainingText}</span>
+    </>
+  );
+};
+
+const IsFinishedOverlay = () => {
+  return (
+    <div className='absolute inset-0 flex items-center justify-center bg-gray-900 bg-opacity-75'>
+      <div className='w-1/2 rounded-lg bg-white p-4'>
+        <div className='text-2xl font-bold'>Sie haben es geschafft!</div>
+        <div className='mt-4'>
+          <Link href='/' className='text-blue-600 hover:text-blue-500'>
+            Zurück zur Startseite
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default function Run({params: {participationId}}: {params: {participationId: string}}) {
   const {data, refetch} = trpc.participation.get.useQuery(participationId);
   const startMutation = trpc.participation.start.useMutation();
   const moveEmailMutation = trpc.participation.moveEmail.useMutation();
+  const finishMutation = trpc.participation.finish.useMutation();
   const [currentFolderId, setCurrentFolderId] = useState<string>();
   const [currentEmailId, setCurrentEmailId] = useState<string>();
 
@@ -188,7 +228,6 @@ export default function Run({params: {participationId}}: {params: {participation
 
   const moveEmail = useCallback(
     async (dragEndEvent: DragEndEvent) => {
-      console.log(dragEndEvent);
       if (dragEndEvent.active.id === introductionEmailId && dragEndEvent.over) {
         await startMutation.mutateAsync(participationId);
         await refetch();
@@ -203,6 +242,11 @@ export default function Run({params: {participationId}}: {params: {participation
     },
     [moveEmailMutation, participationId, refetch, startMutation],
   );
+
+  const finish = useCallback(async () => {
+    await finishMutation.mutateAsync(participationId);
+    await refetch();
+  }, [finishMutation, participationId, refetch]);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -260,16 +304,25 @@ export default function Run({params: {participationId}}: {params: {participation
 
   const currentFolder = foldersWithEmails.find((f) => f.folder.id === currentFolderId) ?? foldersWithEmails[0];
   const currentEmail = data.startedAt ? emails.find((e) => e.id === currentEmailId) : foldersWithEmails[0].emails[0];
+  const canFinish = !!data.startedAt && emails.every((e) => e.folderId !== null);
+  const isFinished =
+    !!data.startedAt && (!!data.finishedAt || new Date() > addMinutes(data.startedAt, data.study.durationInMinutes));
 
   return (
     <DndContext onDragEnd={moveEmail} sensors={sensors}>
+      {isFinished && <IsFinishedOverlay />}
       <main className='flex h-screen w-full flex-col bg-gray-100'>
         <div className='flex h-12 items-center bg-blue-600 text-white'>
           <button type='button' className='flex h-12 w-12 items-center justify-center bg-blue-700'>
             <NineDotsIcon />
           </button>
           <span className='flex flex-grow items-center px-4 font-bold'>Mailbox</span>
-          <RemainingTimer startedAt={data.startedAt} durationInMinutes={data.study.durationInMinutes} />
+          <RemainingTimer
+            startedAt={data.startedAt}
+            durationInMinutes={data.study.durationInMinutes}
+            canFinish={canFinish}
+            finish={finish}
+          />
         </div>
         <div className='flex flex-grow'>
           <div className='w-12 flex-shrink-0 bg-gray-200'></div>

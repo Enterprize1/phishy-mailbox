@@ -29,12 +29,13 @@ model Folder {
 }
 
 model Participation {
-  id        String               @id @default(uuid()) @db.Uuid
-  studyId   String               @db.Uuid
-  study     Study                @relation(fields: [studyId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "participation_study_id_study_id_fk")
-  createdAt DateTime             @db.Timestamptz(3)
-  startedAt DateTime?            @db.Timestamptz(3)
-  emails    ParticipationEmail[]
+  id         String               @id @default(uuid()) @db.Uuid
+  studyId    String               @db.Uuid
+  study      Study                @relation(fields: [studyId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "participation_study_id_study_id_fk")
+  createdAt  DateTime             @db.Timestamptz(3)
+  startedAt  DateTime?            @db.Timestamptz(3)
+  finishedAt DateTime?            @db.Timestamptz(3)
+  emails     ParticipationEmail[]
 }
 
 model ParticipationEmail {
