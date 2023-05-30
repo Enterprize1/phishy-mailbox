@@ -11,6 +11,7 @@ import TextArea from '~/components/forms/fields/TextArea';
 import MasterDetailView from '~/components/forms/fields/MasterDetailView';
 import {CheckboxField} from '~/components/forms/fields/CheckboxField';
 import SelectField from '~/components/forms/fields/SelectField';
+import {useRouter} from 'next/navigation';
 
 const participantsTableColumns: SimpleTableColumn<Participation>[] = [
   {
@@ -36,6 +37,7 @@ export default function PageUpsert({params: {id}}: {params: {id: string}}) {
   const isCreate = id === 'create';
   const getStudy = trpc.study.get.useQuery(id, {enabled: !isCreate});
   const allParticipants = trpc.participation.getAllInStudy.useQuery(id, {enabled: !isCreate});
+  const router = useRouter();
 
   useEffect(() => {
     if (isCreate) return;
@@ -52,7 +54,7 @@ export default function PageUpsert({params: {id}}: {params: {id: string}}) {
       await updateStudy.mutateAsync({id: id, study: data as any});
     }
 
-    // router.push('/admin/studies');
+    router.push('/admin/studies');
   };
 
   return (

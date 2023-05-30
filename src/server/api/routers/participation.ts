@@ -1,5 +1,6 @@
 import {createTRPCRouter, protectedProcedure, publicProcedure} from '~/server/api/trpc';
 import {z} from 'zod';
+import {addMinutes} from 'date-fns';
 
 export const participationRouter = createTRPCRouter({
   create: publicProcedure.input(z.string()).mutation(async ({ctx, input}) => {
@@ -75,6 +76,36 @@ export const participationRouter = createTRPCRouter({
       },
     });
   }),
+  finish: publicProcedure.input(z.string().uuid()).mutation(async ({ctx, input}) => {
+    const participation = await ctx.prisma.participation.findUnique({
+      where: {
+        id: input,
+      },
+      include: {
+        emails: true,
+        study: true,
+      },
+    });
+
+    if (!participation || !participation.startedAt) {
+      throw new Error('Participation not found');
+    }
+
+    const automatedFinishAt = addMinutes(participation.startedAt, participation.study.durationInMinutes);
+
+    if (participation.emails.some((email) => !email.folderId) && new Date() < automatedFinishAt) {
+      throw new Error('Not all emails have been sorted and the participation has not yet finished');
+    }
+
+    return ctx.prisma.participation.update({
+      where: {
+        id: input,
+      },
+      data: {
+        finishedAt: new Date(),
+      },
+    });
+  }),
   moveEmail: publicProcedure
     .input(z.object({participationId: z.string().uuid(), emailId: z.string().uuid(), folderId: z.string().uuid()}))
     .mutation(async ({ctx, input}) => {
@@ -91,7 +122,7 @@ export const participationRouter = createTRPCRouter({
         },
       });
 
-      if (!participation || !participation.startedAt) {
+      if (!participation || !participation.startedAt || participation.finishedAt) {
         throw new Error('Participation not found');
       }
 
