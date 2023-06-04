@@ -1,6 +1,7 @@
 import {createTRPCRouter, protectedProcedure, publicProcedure} from '~/server/api/trpc';
 import {z} from 'zod';
 import {addMinutes} from 'date-fns';
+import {EMailMovedEvent} from '~/server/api/routers/participationEvents';
 
 export const participationRouter = createTRPCRouter({
   create: publicProcedure.input(z.string()).mutation(async ({ctx, input}) => {
@@ -36,7 +37,7 @@ export const participationRouter = createTRPCRouter({
     });
   }),
   get: publicProcedure.input(z.string().uuid()).query(async ({ctx, input}) => {
-    const participation = await ctx.prisma.participation.findUnique({
+    return ctx.prisma.participation.findUnique({
       where: {
         id: input,
       },
@@ -53,8 +54,6 @@ export const participationRouter = createTRPCRouter({
         },
       },
     });
-
-    return participation;
   }),
   start: publicProcedure.input(z.string().uuid()).mutation(async ({ctx, input}) => {
     const participation = await ctx.prisma.participation.findUnique({
@@ -122,13 +121,11 @@ export const participationRouter = createTRPCRouter({
         },
       });
 
-      if (!participation || !participation.startedAt || participation.finishedAt) {
+      if (!participation || !participation.startedAt || participation.finishedAt || !participation.emails[0]) {
         throw new Error('Participation not found');
       }
 
-      // TODO: Check that email belongs to participation
-
-      return ctx.prisma.participationEmail.update({
+      const updateResult = ctx.prisma.participationEmail.update({
         where: {
           id: input.emailId,
         },
@@ -136,6 +133,22 @@ export const participationRouter = createTRPCRouter({
           folderId: input.folderId,
         },
       });
+
+      if (participation.emails[0].folderId !== input.folderId) {
+        ctx.prisma.participationEmailEvent.create({
+          data: {
+            participationEmailId: input.emailId,
+            createdAt: new Date(),
+            data: {
+              type: 'email-moved',
+              fromFolderId: participation.emails[0].folderId,
+              toFolderId: input.folderId,
+            } as EMailMovedEvent,
+          },
+        });
+      }
+
+      return updateResult;
     }),
   getAllInStudy: protectedProcedure.input(z.string().uuid()).query(async ({ctx, input}) => {
     return ctx.prisma.participation.findMany({

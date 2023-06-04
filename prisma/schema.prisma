@@ -39,16 +39,23 @@ model Participation {
 }
 
 model ParticipationEmail {
-  id              String        @id @default(uuid()) @db.Uuid
-  participationId String        @db.Uuid
-  participation   Participation @relation(fields: [participationId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "participation_email_participation_id_participation_id_fk")
-  emailId         String        @db.Uuid
-  email           Email         @relation(fields: [emailId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "participation_email_email_id_email_id_fk")
-  folderId        String?       @db.Uuid
-  folder          Folder?       @relation(fields: [folderId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "participation_email_folder_id_folder_id_fk")
-  openedAt        DateTime?     @db.Timestamptz(3)
-  lastMoveAt      DateTime?     @db.Timestamptz(3)
-  submittedAt     DateTime?     @db.Timestamptz(3)
+  id                      String                    @id @default(uuid()) @db.Uuid
+  participationId         String                    @db.Uuid
+  participation           Participation             @relation(fields: [participationId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "participation_email_participation_id_participation_id_fk")
+  emailId                 String                    @db.Uuid
+  email                   Email                     @relation(fields: [emailId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "participation_email_email_id_email_id_fk")
+  folderId                String?                   @db.Uuid
+  folder                  Folder?                   @relation(fields: [folderId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "participation_email_folder_id_folder_id_fk")
+  openedAt                DateTime?                 @db.Timestamptz(3)
+  ParticipationEmailEvent ParticipationEmailEvent[]
+}
+
+model ParticipationEmailEvent {
+  id                   String             @id @default(uuid()) @db.Uuid
+  participationEmailId String             @db.Uuid
+  participationEmail   ParticipationEmail @relation(fields: [participationEmailId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "participation_email_event_participation_email_id_fk")
+  data                 Json
+  createdAt            DateTime           @db.Timestamptz(3)
 }
 
 model Study {
