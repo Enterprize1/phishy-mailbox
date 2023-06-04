@@ -17,6 +17,12 @@ import {
 import {CSS} from '@dnd-kit/utilities';
 import {twMerge} from 'tailwind-merge';
 import Link from 'next/link';
+import {
+  EMailLinkClickEvent,
+  EMailLinkHoverEvent,
+  EMailScrolledEvent,
+  EMailViewEvent,
+} from '~/server/api/routers/participationEvents';
 
 const NineDotsIcon = () => (
   <svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'>
@@ -126,10 +132,6 @@ const Emails: FC<{
   );
 };
 
-const CurrentEmailDisplay: FC<{currentEmail: EmailItem | undefined}> = ({currentEmail}) => {
-  return <div className='flex flex-grow flex-col'>{currentEmail && <EmailDisplay email={currentEmail.email} />}</div>;
-};
-
 const RemainingTimer: FC<{
   startedAt: Date | null;
   durationInMinutes: number;
@@ -215,6 +217,7 @@ export default function Run({params: {participationId}}: {params: {participation
   const startMutation = trpc.participation.start.useMutation();
   const moveEmailMutation = trpc.participation.moveEmail.useMutation();
   const finishMutation = trpc.participation.finish.useMutation();
+  const trackEventMutation = trpc.participationEvent.track.useMutation();
   const [currentFolderId, setCurrentFolderId] = useState<string>();
   const [currentEmailId, setCurrentEmailId] = useState<string>();
 
@@ -222,9 +225,20 @@ export default function Run({params: {participationId}}: {params: {participation
     setCurrentFolderId(folder.id);
   }, []);
 
-  const setEmail = useCallback((email: EmailItem) => {
-    setCurrentEmailId(email.id);
-  }, []);
+  const setEmail = useCallback(
+    (email: EmailItem) => {
+      setCurrentEmailId(email.id);
+
+      trackEventMutation.mutate({
+        participationId: participationId,
+        participationEmailId: email.id,
+        event: {
+          type: 'email-view',
+        } as EMailViewEvent,
+      });
+    },
+    [participationId, trackEventMutation],
+  );
 
   const moveEmail = useCallback(
     async (dragEndEvent: DragEndEvent) => {
@@ -268,9 +282,7 @@ export default function Run({params: {participationId}}: {params: {participation
           emailId: introductionEmailId,
           folderId: null,
           participationId: data.id,
-          submittedAt: null,
           openedAt: new Date(),
-          lastMoveAt: null,
           email: {
             id: introductionEmailId,
             senderMail: '',
@@ -329,7 +341,45 @@ export default function Run({params: {participationId}}: {params: {participation
           <div className='mt-4 flex flex-grow gap-4'>
             <Folders folders={foldersWithEmails} setCurrentFolder={setFolder} currentFolder={currentFolder} />
             <Emails currentFolder={currentFolder} setCurrentEmail={setEmail} currentEmail={currentEmail} />
-            <CurrentEmailDisplay currentEmail={currentEmail} />
+            <div className='flex flex-grow flex-col'>
+              {currentEmail && (
+                <EmailDisplay
+                  email={currentEmail.email}
+                  onScroll={(p) => {
+                    trackEventMutation.mutate({
+                      participationId: participationId,
+                      participationEmailId: currentEmail.id,
+                      event: {
+                        type: 'email-scrolled',
+                        scrollPosition: p,
+                      } as EMailScrolledEvent,
+                    });
+                  }}
+                  onClick={(href, text) => {
+                    trackEventMutation.mutate({
+                      participationId: participationId,
+                      participationEmailId: currentEmail.id,
+                      event: {
+                        type: 'email-link-click',
+                        url: href,
+                        linkText: text,
+                      } as EMailLinkClickEvent,
+                    });
+                  }}
+                  onHover={(href, text) => {
+                    trackEventMutation.mutate({
+                      participationId: participationId,
+                      participationEmailId: currentEmail.id,
+                      event: {
+                        type: 'email-link-hover',
+                        url: href,
+                        linkText: text,
+                      } as EMailLinkHoverEvent,
+                    });
+                  }}
+                />
+              )}
+            </div>
           </div>
         </div>
       </main>
