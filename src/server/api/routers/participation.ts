@@ -115,7 +115,7 @@ export const participationRouter = createTRPCRouter({
         include: {
           emails: {
             where: {
-              emailId: input.emailId,
+              id: input.emailId,
             },
           },
         },
@@ -125,7 +125,7 @@ export const participationRouter = createTRPCRouter({
         throw new Error('Participation not found');
       }
 
-      const updateResult = ctx.prisma.participationEmail.update({
+      const updateResult = await ctx.prisma.participationEmail.update({
         where: {
           id: input.emailId,
         },
@@ -135,7 +135,7 @@ export const participationRouter = createTRPCRouter({
       });
 
       if (participation.emails[0].folderId !== input.folderId) {
-        ctx.prisma.participationEmailEvent.create({
+        await ctx.prisma.participationEmailEvent.create({
           data: {
             participationEmailId: input.emailId,
             createdAt: new Date(),
