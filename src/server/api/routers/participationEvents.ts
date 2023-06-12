@@ -6,10 +6,10 @@ export const eMailViewEvent = z.object({
 });
 export type EMailViewEvent = z.infer<typeof eMailViewEvent>;
 
-export const eMailViewSourceEvent = z.object({
-  type: z.literal('email-view-source'),
+export const eMailViewDetailsEvent = z.object({
+  type: z.literal('email-details-view'),
 });
-export type EMailViewSourceEvent = z.infer<typeof eMailViewSourceEvent>;
+export type EMailViewDetailsEvent = z.infer<typeof eMailViewDetailsEvent>;
 
 export const eMailMovedEvent = z.object({
   type: z.literal('email-moved'),
@@ -40,7 +40,7 @@ export type EMailLinkHoverEvent = z.infer<typeof eMailLinkHoverEvent>;
 
 export const participationEvents = z.union([
   eMailViewEvent,
-  eMailViewSourceEvent,
+  eMailViewDetailsEvent,
   eMailMovedEvent,
   eMailScrolledEvent,
   eMailLinkClickEvent,

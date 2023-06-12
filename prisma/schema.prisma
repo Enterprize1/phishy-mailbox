@@ -12,6 +12,7 @@ model Email {
   senderMail           String
   senderName           String
   subject              String
+  headers              String
   body                 String
   backofficeIdentifier String
   StudyEmail           StudyEmail[]

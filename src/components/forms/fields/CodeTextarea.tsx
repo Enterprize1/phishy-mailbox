@@ -8,22 +8,23 @@ const CodeEditor = dynamic(() => import('@uiw/react-textarea-code-editor').then(
   ssr: false,
 }) as any;
 
-function CodeTextarea({on, rules}: FieldProps<string>) {
+function CodeTextarea({on, rules, language = 'html'}: FieldProps<string> & {language?: string}) {
   const {
     field: {ref, ...field},
   } = on.$useController({rules: (rules ?? undefined) as never});
   return (
-    <CodeEditor
-      {...field}
-      language='html'
-      padding={15}
-      className='overflow-auto rounded-md border border-gray-300 bg-white'
-      style={{
-        fontSize: 12,
-        fontFamily: 'ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace',
-        height: 300,
-      }}
-    />
+    <div style={{height: 200}} className='overflow-auto rounded-md border border-gray-300'>
+      <CodeEditor
+        {...field}
+        language={language}
+        padding={15}
+        style={{
+          fontSize: 12,
+          fontFamily: 'ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace',
+        }}
+        minHeight={180}
+      />
+    </div>
   );
 }
 
