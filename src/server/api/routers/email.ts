@@ -17,9 +17,13 @@ export const emailRouter = createTRPCRouter({
 
       const parsed = await parser.parseEml();
 
+      // TODO: Types seem to be wrong here
+      const headers = (parsed.headerLines as unknown as {line: string}[]).map((h) => h.line).join('\n');
+
       return {
         senderMail: parsed.from.value[0].address,
         senderName: parsed.from.value[0].name,
+        headers,
         subject: parsed.subject,
         body: parsed.html,
       };
@@ -31,6 +35,7 @@ export const emailRouter = createTRPCRouter({
           senderMail: z.string(),
           senderName: z.string(),
           subject: z.string(),
+          headers: z.string(),
           body: z.string(),
           backofficeIdentifier: z.string(),
         }),
@@ -56,6 +61,7 @@ export const emailRouter = createTRPCRouter({
           senderMail: z.string(),
           senderName: z.string(),
           subject: z.string(),
+          headers: z.string(),
           body: z.string(),
           backofficeIdentifier: z.string(),
         }),

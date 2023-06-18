@@ -1,7 +1,8 @@
 import {Email} from '@prisma/client';
 import clsx from 'clsx';
 import debounce from 'lodash.debounce';
-import {SyntheticEvent, useCallback} from 'react';
+import {FC, SyntheticEvent, useCallback} from 'react';
+import * as Dialog from '@radix-ui/react-dialog';
 
 function getParentAnchor(element: HTMLElement | null, body: HTMLElement | undefined): HTMLAnchorElement | null {
   while (element && element !== body) {
@@ -15,18 +16,51 @@ function getParentAnchor(element: HTMLElement | null, body: HTMLElement | undefi
   return null;
 }
 
+const EmailDisplayDetails: FC<{headers?: string; onViewDetails?: () => void}> = ({headers, onViewDetails}) => {
+  if (!headers) return null;
+
+  return (
+    <Dialog.Root>
+      <Dialog.Trigger asChild>
+        <button
+          className='self-center rounded-md border bg-gray-100 px-2 py-1 hover:bg-gray-200'
+          onClick={() => onViewDetails?.()}
+        >
+          Details anzeigen
+        </button>
+      </Dialog.Trigger>
+      <Dialog.Portal>
+        <Dialog.Overlay className='fixed inset-0 z-50 bg-black/40' />
+        <Dialog.Content className='max-height-[85vh] fixed left-1/2 top-1/2 z-50 flex w-[90vw] max-w-[450px] -translate-x-1/2 -translate-y-1/2 flex-col bg-white p-6'>
+          <Dialog.Title className='m-0 font-bold'>Nachrichtendetails</Dialog.Title>
+          <Dialog.Description className='flex-shrink overflow-y-scroll whitespace-pre-wrap'>
+            {headers}
+          </Dialog.Description>
+          <Dialog.Close asChild>
+            <button className='mt-4 flex justify-center self-end rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600'>
+              Schließen
+            </button>
+          </Dialog.Close>
+        </Dialog.Content>
+      </Dialog.Portal>
+    </Dialog.Root>
+  );
+};
+
 export default function EmailDisplay({
   email,
   className,
   onScroll,
   onClick,
   onHover,
+  onViewDetails,
 }: {
   email: Partial<Email>;
   className?: string;
   onScroll?: (scroll: number) => void;
   onClick?: (href: string, text: string) => void;
   onHover?: (href: string, text: string) => void;
+  onViewDetails?: () => void;
 }) {
   const didLoad = useCallback(
     (loadEvent: SyntheticEvent<HTMLIFrameElement>) => {
@@ -107,13 +141,18 @@ export default function EmailDisplay({
         {!email.subject && <i className='font-normal'>Kein Titel</i>}
       </div>
       <div className='mb-4 mt-4 flex min-w-0 flex-grow flex-col bg-white p-4 shadow'>
-        <div>
-          Von: {email.senderName}
-          {email.senderName && email.senderMail && <>&lt;{email.senderMail}&gt;</>}
-          {!email.senderName && email.senderMail && <>{email.senderMail}</>}
-          {!email.senderName && !email.senderMail && <i className='font-normal'>Kein Absender</i>}
+        <div className='flex justify-between'>
+          <div>
+            <div>
+              Von: {email.senderName}
+              {email.senderName && email.senderMail && <>&lt;{email.senderMail}&gt;</>}
+              {!email.senderName && email.senderMail && <>{email.senderMail}</>}
+              {!email.senderName && !email.senderMail && <i className='font-normal'>Kein Absender</i>}
+            </div>
+            <div>An: Sie (postbox@example.de)</div>
+          </div>
+          <EmailDisplayDetails headers={email.headers} onViewDetails={onViewDetails} />
         </div>
-        <div>An: Sie (postbox@example.de)</div>
         <iframe
           srcDoc={email.body}
           className='h-72 flex-grow'

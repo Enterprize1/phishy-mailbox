@@ -96,7 +96,9 @@ export default function Page({params: {id}}: {params: {id: string}}) {
           </fieldset>
         </div>
         <InputField label='Betreff' on={builder.fields.subject} />
-        <h3 className='text-sm font-bold'>Inhalt (HTML)</h3>
+        <h3 className='text-sm font-bold'>Header</h3>
+        <CodeTextarea label='Headers' on={builder.fields.headers} language='text' />
+        <h3 className='mt-4 text-sm font-bold'>Inhalt (HTML)</h3>
         <CodeTextarea label='Body' on={builder.fields.body} />
         <button
           type='submit'

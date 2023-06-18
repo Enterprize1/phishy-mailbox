@@ -22,6 +22,7 @@ import {
   EMailLinkHoverEvent,
   EMailScrolledEvent,
   EMailViewEvent,
+  EMailViewDetailsEvent,
 } from '~/server/api/routers/participationEvents';
 
 const NineDotsIcon = () => (
@@ -199,7 +200,7 @@ const RemainingTimer: FC<{
 
 const IsFinishedOverlay = () => {
   return (
-    <div className='absolute inset-0 flex items-center justify-center bg-gray-900 bg-opacity-75'>
+    <div className='z-60 fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-75'>
       <div className='w-1/2 rounded-lg bg-white p-4'>
         <div className='text-2xl font-bold'>Sie haben es geschafft!</div>
         <div className='mt-4'>
@@ -290,6 +291,7 @@ export default function Run({params: {participationId}}: {params: {participation
             subject: 'Intro',
             body: data.study.introductionText + '<br /><br /> Bewegen Sie zum Start die E-Mail in einen der Ordner.',
             backofficeIdentifier: '',
+            headers: '',
           },
         },
       ];
@@ -375,6 +377,15 @@ export default function Run({params: {participationId}}: {params: {participation
                         url: href,
                         linkText: text,
                       } as EMailLinkHoverEvent,
+                    });
+                  }}
+                  onViewDetails={() => {
+                    trackEventMutation.mutate({
+                      participationId: participationId,
+                      participationEmailId: currentEmail.id,
+                      event: {
+                        type: 'email-details-view',
+                      } as EMailViewDetailsEvent,
                     });
                   }}
                 />
