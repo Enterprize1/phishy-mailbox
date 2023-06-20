@@ -46,7 +46,12 @@ function MasterDetailView<T extends FieldValues>({
                 i === selectedIdx ? 'bg-indigo-300' : 'hover:bg-indigo-200',
               )}
             >
-              <button key={i} className='mr-2 flex flex-grow gap-4' type='button' onClick={() => setSelectedIdx(i)}>
+              <button
+                key={i}
+                className='mr-2 flex flex-grow gap-4 text-left'
+                type='button'
+                onClick={() => setSelectedIdx(i)}
+              >
                 {detailLabel(v)}
               </button>
               {reorder && (

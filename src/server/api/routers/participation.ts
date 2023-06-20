@@ -4,42 +4,112 @@ import {addMinutes} from 'date-fns';
 import {EMailMovedEvent} from '~/server/api/routers/participationEvents';
 
 export const participationRouter = createTRPCRouter({
-  create: publicProcedure.input(z.string()).mutation(async ({ctx, input}) => {
-    const study = await ctx.prisma.study.findUnique({
+  createMultiple: protectedProcedure
+    .input(
+      z.object({
+        studyId: z.string().uuid(),
+        count: z.number().min(1).max(100),
+      }),
+    )
+    .mutation(async ({ctx, input}) => {
+      const study = await ctx.prisma.study.findUnique({
+        where: {
+          id: input.studyId,
+        },
+      });
+
+      if (!study) {
+        throw new Error('Study not found');
+      }
+
+      for (let i = 0; i < input.count; i++) {
+        const totalCount = await ctx.prisma.study.count();
+        const codeLength = Math.max(2, Math.ceil(Math.log10((totalCount + 1) * 2)));
+        const getNewRandomCode = async (): Promise<string> => {
+          const code = Math.floor(Math.random() * 10 ** codeLength)
+            .toString()
+            .padStart(codeLength, '0');
+
+          if (
+            await ctx.prisma.participation.findUnique({
+              where: {
+                code,
+              },
+            })
+          ) {
+            return getNewRandomCode();
+          }
+
+          return code;
+        };
+
+        const code = await getNewRandomCode();
+
+        await ctx.prisma.participation.create({
+          data: {
+            code,
+            studyId: study.id,
+            createdAt: new Date(),
+          },
+        });
+      }
+    }),
+  delete: protectedProcedure.input(z.string().uuid()).mutation(async ({ctx, input}) => {
+    const participation = await ctx.prisma.participation.findUnique({
+      where: {
+        id: input,
+      },
+    });
+
+    if (!participation) {
+      throw new Error('Participation not found');
+    }
+
+    return ctx.prisma.participation.delete({
+      where: {
+        id: input,
+      },
+    });
+  }),
+  get: publicProcedure.input(z.string()).query(async ({ctx, input}) => {
+    const participation = await ctx.prisma.participation.findUnique({
       where: {
         code: input,
       },
       include: {
-        email: {
+        study: {
           include: {
-            email: true,
+            email: {
+              include: {
+                email: true,
+              },
+            },
           },
         },
       },
     });
 
-    if (!study) {
-      throw new Error('Study not found');
+    if (participation && !participation.codeUsedAt) {
+      await ctx.prisma.participation.update({
+        where: {
+          id: participation.id,
+        },
+        data: {
+          codeUsedAt: new Date(),
+          emails: {
+            createMany: {
+              data: participation.study.email.map((email) => ({
+                emailId: email.email.id,
+              })),
+            },
+          },
+        },
+      });
     }
 
-    return ctx.prisma.participation.create({
-      data: {
-        studyId: study.id,
-        createdAt: new Date(),
-        emails: {
-          createMany: {
-            data: study.email.map((email) => ({
-              emailId: email.email.id,
-            })),
-          },
-        },
-      },
-    });
-  }),
-  get: publicProcedure.input(z.string().uuid()).query(async ({ctx, input}) => {
     return ctx.prisma.participation.findUnique({
       where: {
-        id: input,
+        code: input,
       },
       include: {
         study: {
@@ -104,6 +174,42 @@ export const participationRouter = createTRPCRouter({
         finishedAt: new Date(),
       },
     });
+  }),
+  clickStartLink: publicProcedure.input(z.string().uuid()).mutation(async ({ctx, input}) => {
+    const participation = await ctx.prisma.participation.findUnique({
+      where: {
+        id: input,
+      },
+    });
+
+    if (!participation?.startLinkClickedAt) {
+      await ctx.prisma.participation.update({
+        where: {
+          id: input,
+        },
+        data: {
+          startLinkClickedAt: new Date(),
+        },
+      });
+    }
+  }),
+  clickEndLink: publicProcedure.input(z.string().uuid()).mutation(async ({ctx, input}) => {
+    const participation = await ctx.prisma.participation.findUnique({
+      where: {
+        id: input,
+      },
+    });
+
+    if (!participation?.endLinkClickedAt) {
+      await ctx.prisma.participation.update({
+        where: {
+          id: input,
+        },
+        data: {
+          endLinkClickedAt: new Date(),
+        },
+      });
+    }
   }),
   moveEmail: publicProcedure
     .input(z.object({participationId: z.string().uuid(), emailId: z.string().uuid(), folderId: z.string().uuid()}))

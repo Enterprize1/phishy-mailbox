@@ -20,38 +20,17 @@ export const studyRouter = createTRPCRouter({
       z.object({
         study: z.object({
           name: z.string(),
-          introductionText: z.string(),
+          introductionText: z.string().default(''),
           durationInMinutes: z.number(),
+          startLinkTemplate: z.string().optional().nullable(),
+          endLinkTemplate: z.string().optional().nullable(),
         }),
       }),
     )
     .mutation(async ({ctx, input}) => {
-      const totalCount = await ctx.prisma.study.count();
-      const codeLength = Math.max(2, Math.ceil(Math.log10((totalCount + 1) * 2)));
-
-      const getNewRandomCode = async (): Promise<string> => {
-        const code = Math.floor(Math.random() * 10 ** codeLength)
-          .toString()
-          .padStart(codeLength, '0');
-
-        if (
-          await ctx.prisma.study.findUnique({
-            where: {
-              code,
-            },
-          })
-        ) {
-          return getNewRandomCode();
-        }
-
-        return code;
-      };
-
       return ctx.prisma.study.create({
         data: {
           ...input.study,
-          code: await getNewRandomCode(),
-          introductionText: input.study.introductionText || '',
         },
       });
     }),
@@ -78,6 +57,8 @@ export const studyRouter = createTRPCRouter({
           name: z.string(),
           introductionText: z.string(),
           durationInMinutes: z.number(),
+          startLinkTemplate: z.string().optional().nullable(),
+          endLinkTemplate: z.string().optional().nullable(),
           folder: z.array(
             z.object({
               id: z.string().uuid().optional(),
@@ -257,6 +238,15 @@ export const studyRouter = createTRPCRouter({
           ...partipationExport,
           Type: 'started',
           At: p.startedAt,
+          ...emptyEvent,
+        });
+      }
+
+      if (p.codeUsedAt) {
+        emailsExport.unshift({
+          ...partipationExport,
+          Type: 'code-used',
+          At: p.codeUsedAt,
           ...emptyEvent,
         });
       }

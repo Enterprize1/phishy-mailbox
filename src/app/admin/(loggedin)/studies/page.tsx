@@ -34,10 +34,6 @@ const studiesColumns: SimpleTableColumn<Study & {_count: {participation: number}
     cell: (s) => s.name,
   },
   {
-    header: 'Code',
-    cell: (s) => s.code,
-  },
-  {
     header: 'Teilnehmende',
     // eslint-disable-next-line no-underscore-dangle
     cell: (s) => s._count.participation,

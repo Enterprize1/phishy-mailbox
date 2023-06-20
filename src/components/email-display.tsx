@@ -1,8 +1,10 @@
 import {Email} from '@prisma/client';
 import clsx from 'clsx';
 import debounce from 'lodash.debounce';
-import {FC, SyntheticEvent, useCallback} from 'react';
+import {FC, ReactNode, SyntheticEvent, useCallback} from 'react';
 import * as Dialog from '@radix-ui/react-dialog';
+
+export type EmailWithFunctionAsBody = Omit<Email, 'body'> & {body: (() => ReactNode) | Email['body']};
 
 function getParentAnchor(element: HTMLElement | null, body: HTMLElement | undefined): HTMLAnchorElement | null {
   while (element && element !== body) {
@@ -55,7 +57,7 @@ export default function EmailDisplay({
   onHover,
   onViewDetails,
 }: {
-  email: Partial<Email>;
+  email: Partial<EmailWithFunctionAsBody>;
   className?: string;
   onScroll?: (scroll: number) => void;
   onClick?: (href: string, text: string) => void;
@@ -153,13 +155,17 @@ export default function EmailDisplay({
           </div>
           <EmailDisplayDetails headers={email.headers} onViewDetails={onViewDetails} />
         </div>
-        <iframe
-          srcDoc={email.body}
-          className='h-72 flex-grow'
-          onLoad={didLoad}
-          sandbox='allow-same-origin'
-          {...{csp: "default-src 'none'; style-src 'unsafe-inline'; navigate-to 'none';"}}
-        />
+        {typeof email.body === 'function' ? (
+          email.body()
+        ) : (
+          <iframe
+            srcDoc={email.body}
+            className='h-72 flex-grow'
+            onLoad={didLoad}
+            sandbox='allow-same-origin'
+            {...{csp: "default-src 'none'; style-src 'unsafe-inline'; navigate-to 'none';"}}
+          />
+        )}
       </div>
     </div>
   );
