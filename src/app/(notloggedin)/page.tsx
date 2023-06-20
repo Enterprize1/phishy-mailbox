@@ -1,7 +1,7 @@
 'use client';
 import {useFormBuilder} from '@atmina/formbuilder';
 import {useRouter} from 'next/navigation';
-import {useCallback} from 'react';
+import {useCallback, useEffect, useState} from 'react';
 import InputField from '~/components/forms/fields/InputField';
 import Form from '~/components/forms/Form';
 import {trpc} from '~/utils/trpc';
@@ -12,16 +12,19 @@ type CodeForm = {
 
 export default function StartStudy() {
   const builder = useFormBuilder<CodeForm>();
-  const createParticipation = trpc.participation.create.useMutation();
   const router = useRouter();
+  const [code, setCode] = useState<string | null>(null);
+  const {data: participation} = trpc.participation.get.useQuery(code as string, {enabled: !!code});
 
-  const onSubmit = useCallback(
-    async (form: CodeForm) => {
-      const participation = await createParticipation.mutateAsync(form.code);
-      router.push(`/${participation.id}`);
-    },
-    [createParticipation, router],
-  );
+  const onSubmit = useCallback(async (form: CodeForm) => {
+    setCode(form.code);
+  }, []);
+
+  useEffect(() => {
+    if (participation) {
+      router.push('/' + participation.code);
+    }
+  }, [participation, router]);
 
   return (
     <div className='flex min-h-full w-full flex-col justify-center bg-gray-100 py-12 sm:px-6 lg:px-8'>

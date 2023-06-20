@@ -45,9 +45,10 @@ async function main() {
     await tx.study.create({
       data: {
         name: 'Teststudie',
-        code: '123',
         introductionText: 'Test-Beschreibung',
         durationInMinutes: 10,
+        startLinkTemplate: 'https://example.com/start/{code}',
+        endLinkTemplate: 'https://example.com/end/{code}',
         folder: {
           createMany: {
             data: [
@@ -79,6 +80,16 @@ async function main() {
               {
                 emailId: emails.find((e) => e.backofficeIdentifier === 'Phishing').id,
                 isPhishing: true,
+              },
+            ],
+          },
+        },
+        participation: {
+          createMany: {
+            data: [
+              {
+                createdAt: new Date(),
+                code: '123',
               },
             ],
           },

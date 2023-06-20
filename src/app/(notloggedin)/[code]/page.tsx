@@ -2,9 +2,9 @@
 import clsx from 'clsx';
 import {FC, useCallback, useEffect, useMemo, useState} from 'react';
 import {addMinutes, differenceInSeconds} from 'date-fns';
-import {Email, Folder, ParticipationEmail} from '@prisma/client';
-import {trpc} from '../../../utils/trpc';
-import EmailDisplay from '~/components/email-display';
+import {Folder, ParticipationEmail} from '@prisma/client';
+import {trpc} from '~/utils/trpc';
+import EmailDisplay, {EmailWithFunctionAsBody} from '~/components/email-display';
 import {
   DndContext,
   DragEndEvent,
@@ -34,7 +34,7 @@ const NineDotsIcon = () => (
   </svg>
 );
 
-type EmailItem = ParticipationEmail & {email: Email};
+type EmailItem = ParticipationEmail & {email: EmailWithFunctionAsBody};
 type FolderWithEmails = {folder: Folder; emails: EmailItem[]};
 const introductionEmailId = 'introduction';
 
@@ -77,13 +77,15 @@ const Folders: FC<{
   </div>
 );
 
-const SingleEmail: FC<{email: EmailItem; setAsCurrentEmail: () => void; isCurrentEmail: boolean}> = ({
-  email,
-  setAsCurrentEmail,
-  isCurrentEmail,
-}) => {
+const SingleEmail: FC<{
+  email: EmailItem;
+  setAsCurrentEmail: () => void;
+  isCurrentEmail: boolean;
+  disableDragging: boolean;
+}> = ({email, setAsCurrentEmail, isCurrentEmail, disableDragging}) => {
   const {attributes, listeners, setNodeRef, transform} = useDraggable({
     id: email.id,
+    disabled: disableDragging,
   });
 
   const style = {
@@ -115,7 +117,8 @@ const Emails: FC<{
   currentFolder: FolderWithEmails;
   currentEmail: EmailItem | undefined;
   setCurrentEmail: (e: EmailItem) => void;
-}> = ({currentFolder, currentEmail, setCurrentEmail}) => {
+  disableDragging: boolean;
+}> = ({currentFolder, currentEmail, setCurrentEmail, disableDragging}) => {
   return (
     <div className='flex w-52 flex-shrink-0 flex-col bg-gray-50 shadow'>
       <div className='px-3 leading-loose'>{currentFolder.folder.name}</div>
@@ -126,6 +129,7 @@ const Emails: FC<{
             email={e}
             setAsCurrentEmail={() => setCurrentEmail(e)}
             isCurrentEmail={e.emailId === currentEmail?.emailId}
+            disableDragging={disableDragging}
           />
         ))}
       </div>
@@ -198,26 +202,40 @@ const RemainingTimer: FC<{
   );
 };
 
-const IsFinishedOverlay = () => {
+const IsFinishedOverlay: FC<{onClick: () => void; link?: string}> = ({onClick, link}) => {
   return (
     <div className='z-60 fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-75'>
       <div className='w-1/2 rounded-lg bg-white p-4'>
         <div className='text-2xl font-bold'>Sie haben es geschafft!</div>
         <div className='mt-4'>
-          <Link href='/' className='text-blue-600 hover:text-blue-500'>
-            Zurück zur Startseite
-          </Link>
+          {link ? (
+            <a
+              href={link}
+              onClick={onClick}
+              className='text-blue-600 hover:text-blue-500'
+              target='_blank'
+              rel='noreferrer noopener'
+            >
+              Klicken Sie hier um fortzufahren
+            </a>
+          ) : (
+            <Link href='/' className='text-blue-600 hover:text-blue-500'>
+              Zurück zur Startseite
+            </Link>
+          )}
         </div>
       </div>
     </div>
   );
 };
 
-export default function Run({params: {participationId}}: {params: {participationId: string}}) {
-  const {data, refetch} = trpc.participation.get.useQuery(participationId);
+export default function Run({params: {code}}: {params: {code: string}}) {
+  const {data, refetch} = trpc.participation.get.useQuery(code);
   const startMutation = trpc.participation.start.useMutation();
   const moveEmailMutation = trpc.participation.moveEmail.useMutation();
   const finishMutation = trpc.participation.finish.useMutation();
+  const clickStartLinkMutation = trpc.participation.clickStartLink.useMutation();
+  const clickEndLinkMutation = trpc.participation.clickEndLink.useMutation();
   const trackEventMutation = trpc.participationEvent.track.useMutation();
   const [currentFolderId, setCurrentFolderId] = useState<string>();
   const [currentEmailId, setCurrentEmailId] = useState<string>();
@@ -231,37 +249,37 @@ export default function Run({params: {participationId}}: {params: {participation
       setCurrentEmailId(email.id);
 
       trackEventMutation.mutate({
-        participationId: participationId,
+        participationId: data!.id,
         participationEmailId: email.id,
         event: {
           type: 'email-view',
         } as EMailViewEvent,
       });
     },
-    [participationId, trackEventMutation],
+    [data, trackEventMutation],
   );
 
   const moveEmail = useCallback(
     async (dragEndEvent: DragEndEvent) => {
       if (dragEndEvent.active.id === introductionEmailId && dragEndEvent.over) {
-        await startMutation.mutateAsync(participationId);
+        await startMutation.mutateAsync(data!.id);
         await refetch();
       } else if (dragEndEvent.over) {
         await moveEmailMutation.mutateAsync({
-          participationId: participationId,
+          participationId: data!.id,
           emailId: dragEndEvent.active.id.toString(),
           folderId: dragEndEvent.over.id.toString(),
         });
         await refetch();
       }
     },
-    [moveEmailMutation, participationId, refetch, startMutation],
+    [moveEmailMutation, data, refetch, startMutation],
   );
 
   const finish = useCallback(async () => {
-    await finishMutation.mutateAsync(participationId);
+    await finishMutation.mutateAsync(data!.id);
     await refetch();
-  }, [finishMutation, participationId, refetch]);
+  }, [finishMutation, data, refetch]);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -270,6 +288,14 @@ export default function Run({params: {participationId}}: {params: {participation
       },
     }),
   );
+
+  const requiresStartLinkClick = !!data?.study.startLinkTemplate;
+  const didClickStartLink = !!data?.startLinkClickedAt;
+
+  const onEndLinkClicked = useCallback(async () => {
+    await clickEndLinkMutation.mutateAsync(data!.id);
+    refetch();
+  }, [clickEndLinkMutation, data, refetch]);
 
   if (!data) {
     return null;
@@ -289,7 +315,33 @@ export default function Run({params: {participationId}}: {params: {participation
             senderMail: '',
             senderName: '',
             subject: 'Intro',
-            body: data.study.introductionText + '<br /><br /> Bewegen Sie zum Start die E-Mail in einen der Ordner.',
+            body: () => {
+              const startLink = data.study.startLinkTemplate?.replace('{code}', data.code);
+
+              return (
+                <>
+                  {data.study.introductionText}
+                  <br />
+                  <br />
+                  {requiresStartLinkClick && !didClickStartLink ? (
+                    <a
+                      href={startLink}
+                      target='_blank'
+                      rel='noreferrer noopener'
+                      className='w-max rounded bg-blue-500 px-2 py-1 text-white hover:bg-blue-600'
+                      onClick={async () => {
+                        await clickStartLinkMutation.mutateAsync(data.id);
+                        await refetch();
+                      }}
+                    >
+                      Klicken Sie hier, um zu starten
+                    </a>
+                  ) : (
+                    'Ziehen Sie nun die E-Mail in einen der Ordner um die Bearbeitung zu beginnen.'
+                  )}
+                </>
+              );
+            },
             backofficeIdentifier: '',
             headers: '',
           },
@@ -324,7 +376,9 @@ export default function Run({params: {participationId}}: {params: {participation
 
   return (
     <DndContext onDragEnd={moveEmail} sensors={sensors}>
-      {isFinished && <IsFinishedOverlay />}
+      {isFinished && (
+        <IsFinishedOverlay onClick={onEndLinkClicked} link={data.study.endLinkTemplate?.replace('{code}', data.code)} />
+      )}
       <main className='flex h-screen w-full flex-col bg-gray-100'>
         <div className='flex h-12 items-center bg-blue-600 text-white'>
           <button type='button' className='flex h-12 w-12 items-center justify-center bg-blue-700'>
@@ -340,16 +394,21 @@ export default function Run({params: {participationId}}: {params: {participation
         </div>
         <div className='flex flex-grow'>
           <div className='w-12 flex-shrink-0 bg-gray-200'></div>
-          <div className='mt-4 flex flex-grow gap-4'>
+          <div className='mr-4 mt-4 flex flex-grow gap-4'>
             <Folders folders={foldersWithEmails} setCurrentFolder={setFolder} currentFolder={currentFolder} />
-            <Emails currentFolder={currentFolder} setCurrentEmail={setEmail} currentEmail={currentEmail} />
+            <Emails
+              currentFolder={currentFolder}
+              setCurrentEmail={setEmail}
+              currentEmail={currentEmail}
+              disableDragging={requiresStartLinkClick && !didClickStartLink}
+            />
             <div className='flex flex-grow flex-col'>
               {currentEmail && (
                 <EmailDisplay
                   email={currentEmail.email}
                   onScroll={(p) => {
                     trackEventMutation.mutate({
-                      participationId: participationId,
+                      participationId: data.id,
                       participationEmailId: currentEmail.id,
                       event: {
                         type: 'email-scrolled',
@@ -359,7 +418,7 @@ export default function Run({params: {participationId}}: {params: {participation
                   }}
                   onClick={(href, text) => {
                     trackEventMutation.mutate({
-                      participationId: participationId,
+                      participationId: data.id,
                       participationEmailId: currentEmail.id,
                       event: {
                         type: 'email-link-click',
@@ -370,7 +429,7 @@ export default function Run({params: {participationId}}: {params: {participation
                   }}
                   onHover={(href, text) => {
                     trackEventMutation.mutate({
-                      participationId: participationId,
+                      participationId: data.id,
                       participationEmailId: currentEmail.id,
                       event: {
                         type: 'email-link-hover',
@@ -381,7 +440,7 @@ export default function Run({params: {participationId}}: {params: {participation
                   }}
                   onViewDetails={() => {
                     trackEventMutation.mutate({
-                      participationId: participationId,
+                      participationId: data.id,
                       participationEmailId: currentEmail.id,
                       event: {
                         type: 'email-details-view',
