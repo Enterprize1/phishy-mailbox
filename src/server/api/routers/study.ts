@@ -242,6 +242,15 @@ export const studyRouter = createTRPCRouter({
         });
       }
 
+      if (p.startLinkClickedAt) {
+        emailsExport.unshift({
+          ...partipationExport,
+          Type: 'start-link-clicked',
+          At: p.startLinkClickedAt,
+          ...emptyEvent,
+        });
+      }
+
       if (p.codeUsedAt) {
         emailsExport.unshift({
           ...partipationExport,
@@ -263,6 +272,15 @@ export const studyRouter = createTRPCRouter({
           ...partipationExport,
           Type: 'finished',
           At: p.finishedAt,
+          ...emptyEvent,
+        });
+      }
+
+      if (p.endLinkClickedAt) {
+        emailsExport.push({
+          ...partipationExport,
+          Type: 'end-link-clicked',
+          At: p.endLinkClickedAt,
           ...emptyEvent,
         });
       }
