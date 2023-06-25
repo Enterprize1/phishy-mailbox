@@ -1,0 +1,117 @@
+{
+  "languages": {
+    "language": "Language",
+    "de": "German",
+    "en": "English"
+  },
+  "participants": {
+    "login": {
+      "startTitle": "Start",
+      "enterCode": "Enter the access code you have received here.",
+      "enterCodeLabel": "Access Code",
+      "startButton": "Start"
+    },
+    "folders": "Folders",
+    "finish": "Finish",
+    "remaining": "Remaining",
+    "finishedTitle": "You have completed the study.",
+    "clickToContinue": "Click here to continue",
+    "backToStart": "Back to Start",
+    "introductionEmail": {
+      "subject": "Study Introduction",
+      "clickToStart": "Click here to start",
+      "dragEmailToStart": "This is a sample email. Drag it to one of the folders to start."
+    },
+    "title": "Mailbox"
+  },
+  "admin": {
+    "userMenu": {
+      "open": "Open User Menu",
+      "signOut": "Sign Out"
+    },
+    "sidebar": {
+      "emails": "Emails",
+      "studies": "Studies"
+    },
+    "emails": {
+      "list": {
+        "identifier": "Identifier",
+        "edit": "Edit",
+        "delete": "Delete",
+        "emails": "Emails",
+        "create": "Create"
+      },
+      "edit": {
+        "createEmail": "Create Email",
+        "editEmail": "Edit Email",
+        "identifier": "Identifier in the Back Office",
+        "sender": "Sender",
+        "senderEmail": "Email",
+        "senderName": "Name",
+        "subject": "Subject",
+        "header": "Header",
+        "content": "Content (HTML)",
+        "save": "Save",
+        "dragDrop": "Drag and drop a .eml file here or click to select one"
+      }
+    },
+    "studies": {
+      "list": {
+        "name": "Name",
+        "participants": "Participants",
+        "edit": "Edit",
+        "delete": "Delete",
+        "title": "Studies",
+        "create": "Create",
+        "export": "Export"
+      },
+      "edit": {
+        "createTitle": "Create Study",
+        "editTitle": "Edit Study",
+        "name": "Name",
+        "explanationText": "Explanation Text",
+        "durationInMinutes": "Duration in Minutes",
+        "linkBeforeStart": "Link Before Start",
+        "linkBeforeStartHelper": "Link displayed after access code entry. Format: https://example.com/{code} where {code} is replaced by the access code.",
+        "linkAfterEnd": "Link After End",
+        "linkAfterEndHelper": "Link displayed after completion. Format: https://example.com/{code} where {code} is replaced by the access code.",
+        "folders": "Folders",
+        "folderName": "Name",
+        "phishing": "Phishing",
+        "emails": "Emails",
+        "email": "Email",
+        "save": "Save",
+
+        "participants": {
+          "created": "Created",
+          "code": "Code",
+          "status": "Status",
+          "statusCompleted": "Completed",
+          "statusStarted": "Started",
+          "title": "Participants",
+          "addTitle": "Add More Participants",
+          "amount": "Amount",
+          "add": "Add"
+        }
+      }
+    }
+  },
+  "components": {
+    "masterDetailView": {
+      "addNew": "Add New",
+      "selectElement": "Select an element on the left to edit",
+      "remove": "Remove"
+    },
+    "emailDisplay": {
+      "noTitle": "No Title",
+      "from": "From:",
+      "to": "To: You <postbox@example.com>",
+      "noSender": "No Sender",
+      "details": {
+        "showDetails": "Show Details",
+        "messageDetails": "Message Details",
+        "close": "Close"
+      }
+    }
+  }
+}

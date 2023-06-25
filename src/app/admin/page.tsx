@@ -23,7 +23,7 @@ export default function Login() {
   }, []);
 
   if (session) {
-    redirect('/admin/dashboard');
+    redirect('/admin/emails');
     return null;
   }
 

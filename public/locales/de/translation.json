@@ -1,0 +1,117 @@
+{
+  "languages": {
+    "language": "Sprache",
+    "de": "Deutsch",
+    "en": "Englisch"
+  },
+  "participants": {
+    "login": {
+      "startTitle": "Start",
+      "enterCode": "Geben Sie hier den Zugangs-Code ein, den Sie erhalten haben.",
+      "enterCodeLabel": "Zugangs-Code",
+      "startButton": "Starten"
+    },
+    "folders": "Ordner",
+    "finish": "Abschließen",
+    "remaining": "Verbleibende Zeit",
+    "finishedTitle": "Sie haben es geschafft!",
+    "clickToContinue": "Klicken Sie hier um fortzufahren",
+    "backToStart": "Zurück zur Startseite",
+    "introductionEmail": {
+      "subject": "Einführung",
+      "clickToStart": "Klicken Sie hier, um zu starten",
+      "dragEmailToStart": "Dies ist eine Test-E-Mail, ziehen Sie diese nun in einen der Ordner um die Bearbeitung zu beginnen."
+    },
+    "title": "Mailbox"
+  },
+  "admin": {
+    "userMenu": {
+      "open": "Nutzer-Menü öffnen",
+      "signOut": "Abmelden"
+    },
+    "sidebar": {
+      "emails": "E-Mails",
+      "studies": "Studien"
+    },
+    "emails": {
+      "list": {
+        "identifier": "Identifizierer",
+        "edit": "Bearbeiten",
+        "delete": "Löschen",
+        "emails": "E-Mails",
+        "create": "Anlegen"
+      },
+      "edit": {
+        "createEmail": "E-Mail anlegen",
+        "editEmail": "E-Mail bearbeiten",
+        "identifier": "Identifizierer im Backoffice",
+        "sender": "Absender",
+        "senderEmail": "E-Mail",
+        "senderName": "Name",
+        "subject": "Betreff",
+        "header": "Header",
+        "content": "Inhalt (HTML)",
+        "save": "Speichern",
+        "dragDrop": "Ziehe eine .eml Datei hier hin oder klicke um eine auszuwählen"
+      }
+    },
+    "studies": {
+      "list": {
+        "name": "Name",
+        "participants": "Teilnehmende",
+        "edit": "Bearbeiten",
+        "delete": "Löschen",
+        "title": "Studien",
+        "create": "Anlegen",
+        "export": "Exportieren"
+      },
+      "edit": {
+        "createTitle": "Studie anlegen",
+        "editTitle": "Studie bearbeiten",
+        "name": "Name",
+        "explanationText": "Erklärungstext",
+        "durationInMinutes": "Dauer in Minuten",
+        "linkBeforeStart": "Link vor Beginn",
+        "linkBeforeStartHelper": "Link, der nach der Eingabe des Zugangscodes angezeigt wird. Format: https://example.com/{code} wobei {code} durch den Zugangscode ersetzt wird.",
+        "linkAfterEnd": "Link nach Beendigung",
+        "linkAfterEndHelper": "Link, der nach Bearbeitung angezeigt wird. Format: https://example.com/{code} wobei {code} durch den Zugangscode ersetzt wird.",
+        "folders": "Ordner",
+        "folderName": "Name",
+        "phishing": "Phishing",
+        "emails": "E-Mails",
+        "email": "E-Mail",
+        "save": "Save",
+
+        "participants": {
+          "created": "Erstellt",
+          "code": "Code",
+          "status": "Status",
+          "statusCompleted": "Beendet",
+          "statusStarted": "Begonnen",
+          "title": "Teilnehmende",
+          "addTitle": "Weitere Teilnehmende hinzufügen",
+          "amount": "Anzahl",
+          "add": "Hinzufügen"
+        }
+      }
+    }
+  },
+  "components": {
+    "masterDetailView": {
+      "addNew": "Neu hinzufügen",
+      "selectElement": "Wählen Sie ein Element aus der Liste zum Bearbeiten aus",
+      "remove": "Entfernen"
+    },
+    "emailDisplay": {
+      "noTitle": "Kein Titel",
+      "from": "Von:",
+      "to": "An: Sie <postbox@example.de>",
+      "noSender": "Kein Absender",
+      "details": {
+        "showDetails": "Details anzeigen",
+        "messageDetails": "Nachrichtendetails",
+        "close": "Schließen"
+      }
+    }
+  }
+}

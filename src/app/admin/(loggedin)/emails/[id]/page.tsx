@@ -9,8 +9,10 @@ import CodeTextarea from '~/components/forms/fields/CodeTextarea';
 import EmailDisplay from '~/components/email-display';
 import {useEffect} from 'react';
 import {useRouter} from 'next/navigation';
+import {useTranslation} from 'react-i18next';
 
 const EmlDropzone = ({onNewMessage}: {onNewMessage: (email: Partial<Email>) => void}) => {
+  const {t} = useTranslation(undefined, {keyPrefix: 'admin.emails.edit'});
   const parseMail = trpc.email.parseFile.useMutation();
 
   const {getRootProps, getInputProps} = useDropzone({
@@ -43,7 +45,7 @@ const EmlDropzone = ({onNewMessage}: {onNewMessage: (email: Partial<Email>) => v
       })}
     >
       <input {...getInputProps()} />
-      <p>Ziehe eine .eml Datei hier hin oder klicke um eine auszuwaehlen</p>
+      <p>{t('dragDrop')}</p>
     </div>
   );
 };
@@ -52,6 +54,7 @@ export default function Page({params: {id}}: {params: {id: string}}) {
   const builder = useFormBuilder<Partial<Email>>();
   const addMail = trpc.email.add.useMutation();
   const updateMail = trpc.email.update.useMutation();
+  const {t} = useTranslation(undefined, {keyPrefix: 'admin.emails.edit'});
 
   const isCreate = id === 'create';
   const getMail = trpc.email.get.useQuery(id, {enabled: !isCreate});
@@ -82,29 +85,31 @@ export default function Page({params: {id}}: {params: {id: string}}) {
 
   return (
     <>
-      <h2 className='my-4 text-lg '>{isCreate ? 'E-Mail anlegen' : 'E-Mail bearbeiten'}</h2>
+      <h2 className='my-4 text-lg '>{isCreate ? t('createEmail') : t('editEmail')}</h2>
       <EmlDropzone onNewMessage={onNewMessage} />
       <Form builder={builder} onSubmit={onSubmit}>
         <div className='my-4 flex flex-wrap gap-x-8 gap-y-2'>
           <div className='w-full'>
-            <InputField label='Identifizierer im Backoffice' on={builder.fields.backofficeIdentifier} />
+            <InputField label={t('identifier')} on={builder.fields.backofficeIdentifier} />
           </div>
           <fieldset>
-            <legend className='text-sm font-bold'>Absender</legend>
-            <InputField label='E-Mail' on={builder.fields.senderMail} className='mr-2' />
-            <InputField label='Name' on={builder.fields.senderName} />
+            <legend className='text-sm font-bold'>{t('sender')}</legend>
+            <div className='flex gap-4'>
+              <InputField label={t('senderEmail')} on={builder.fields.senderMail} className='mr-2' />
+              <InputField label={t('senderName')} on={builder.fields.senderName} />
+            </div>
           </fieldset>
         </div>
-        <InputField label='Betreff' on={builder.fields.subject} />
-        <h3 className='text-sm font-bold'>Header</h3>
-        <CodeTextarea label='Headers' on={builder.fields.headers} language='text' />
-        <h3 className='mt-4 text-sm font-bold'>Inhalt (HTML)</h3>
-        <CodeTextarea label='Body' on={builder.fields.body} />
+        <InputField label={t('subject')} on={builder.fields.subject} />
+        <h3 className='text-sm font-bold'>{t('header')}</h3>
+        <CodeTextarea label={t('header')} on={builder.fields.headers} language='text' />
+        <h3 className='mt-4 text-sm font-bold'>{t('content')}</h3>
+        <CodeTextarea label={t('content')} on={builder.fields.body} />
         <button
           type='submit'
           className='mt-4 flex justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600'
         >
-          Speichern
+          {t('save')}
         </button>
       </Form>
 

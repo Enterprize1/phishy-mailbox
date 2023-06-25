@@ -2,7 +2,7 @@
 import {useFormBuilder} from '@atmina/formbuilder';
 import {Participation, Study, Folder, StudyEmail} from '@prisma/client';
 import {trpc} from '~/utils/trpc';
-import {FC, useEffect} from 'react';
+import {FC, useEffect, useMemo} from 'react';
 import Form from '../../../../../components/forms/Form';
 import InputField from '../../../../../components/forms/fields/InputField';
 import {SimpleTable, SimpleTableColumn} from '~/components/simple-table';
@@ -12,45 +12,50 @@ import MasterDetailView from '~/components/forms/fields/MasterDetailView';
 import {CheckboxField} from '~/components/forms/fields/CheckboxField';
 import SelectField from '~/components/forms/fields/SelectField';
 import {useRouter} from 'next/navigation';
-
-const participantsTableColumns: SimpleTableColumn<Participation>[] = [
-  {
-    header: 'Erstellt',
-    cell: (p: Participation) => format(p.createdAt, 'dd.MM.yyyy HH:mm'),
-  },
-  {
-    header: 'Code',
-    cell: (p: Participation) => p.code,
-  },
-  {
-    header: 'Status',
-    cell: (p: Participation) => {
-      if (p.finishedAt) {
-        return 'Beendet';
-      } else if (p.startedAt) {
-        return 'Begonnen';
-      } else {
-        return '';
-      }
-    },
-  },
-];
+import {useTranslation} from 'react-i18next';
 
 type FormFolder = Omit<Folder, 'studyId' | 'id'>;
 type FormEmail = Omit<StudyEmail, 'studyId' | 'id'>;
 
 const ParticipationTable: FC<{studyId: string}> = ({studyId}) => {
+  const {t} = useTranslation(undefined, {keyPrefix: 'admin.studies.edit.participants'});
   const {data: participants, refetch} = trpc.participation.getAllInStudy.useQuery(studyId);
   const builder = useFormBuilder<{count: number}>({defaultValues: {count: 1}});
   const createMultiple = trpc.participation.createMultiple.useMutation();
+
+  const participantsTableColumns: SimpleTableColumn<Participation>[] = useMemo(
+    () => [
+      {
+        header: t('created'),
+        cell: (p: Participation) => format(p.createdAt, 'dd.MM.yyyy HH:mm'),
+      },
+      {
+        header: t('code'),
+        cell: (p: Participation) => p.code,
+      },
+      {
+        header: t('status'),
+        cell: (p: Participation) => {
+          if (p.finishedAt) {
+            return t('statusCompleted');
+          } else if (p.startedAt) {
+            return t('statusStarted');
+          } else {
+            return '';
+          }
+        },
+      },
+    ],
+    [t],
+  );
 
   if (!participants) return null;
 
   return (
     <>
-      <h3 className='mb-2 mt-4 text-lg'>Teilnehmende</h3>
+      <h3 className='mb-2 mt-4 text-lg'>{t('title')}</h3>
       <SimpleTable columns={participantsTableColumns} items={participants} />
-      <h4 className='mb-2 mt-8 text-lg'>Weitere Teilnehmende hinzufügen</h4>
+      <h4 className='mb-2 mt-8 text-lg'>{t('addTitle')}</h4>
       <Form
         builder={builder}
         onSubmit={async (data) => {
@@ -60,7 +65,7 @@ const ParticipationTable: FC<{studyId: string}> = ({studyId}) => {
         className='space-y-4'
       >
         <InputField
-          label='Anzahl'
+          label={t('amount')}
           on={builder.fields.count}
           rules={{valueAsNumber: true}}
           type='number'
@@ -70,7 +75,7 @@ const ParticipationTable: FC<{studyId: string}> = ({studyId}) => {
           type='submit'
           className='flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600'
         >
-          Hinzufügen
+          {t('add')}
         </button>
       </Form>
     </>
@@ -78,6 +83,7 @@ const ParticipationTable: FC<{studyId: string}> = ({studyId}) => {
 };
 
 export default function PageUpsert({params: {id}}: {params: {id: string}}) {
+  const {t} = useTranslation(undefined, {keyPrefix: 'admin.studies.edit'});
   const builder = useFormBuilder<Partial<Study> & {folder: FormFolder[]; email: FormEmail[]}>({
     defaultValues: {
       folder: [],
@@ -112,26 +118,30 @@ export default function PageUpsert({params: {id}}: {params: {id: string}}) {
 
   return (
     <>
-      <h2 className='my-4 text-lg '>{isCreate ? 'Studie anlegen' : 'Studie bearbeiten'}</h2>
+      <h2 className='my-4 text-lg '>{isCreate ? t('createTitle') : t('editTitle')}</h2>
       <Form builder={builder} onSubmit={onSubmit} className='flex flex-col'>
         <div className='flex flex-wrap gap-8'>
-          <InputField label='Name' on={builder.fields.name} />
+          <InputField label={t('name')} on={builder.fields.name} />
         </div>
-        <TextArea label='Erklärungstext' on={builder.fields.introductionText} />
+        <TextArea label={t('explanationText')} on={builder.fields.introductionText} />
 
-        <InputField label='Dauer in Minuten' on={builder.fields.durationInMinutes} rules={{valueAsNumber: true}} />
         <InputField
-          label='Link vor dem Start'
+          label={t('durationInMinutes')}
+          on={builder.fields.durationInMinutes}
+          rules={{valueAsNumber: true}}
+        />
+        <InputField
+          label={t('linkBeforeStart')}
           on={builder.fields.startLinkTemplate}
-          helperText='Link, der nach der Eingabe des Zugangscodes angezeigt wird. Format: https://example.com/{code} wobei {code} durch den Zugangscode ersetzt wird.'
+          helperText={t('linkBeforeStartHelper')}
         />
         <InputField
-          label='Link nach dem Ende'
+          label={t('linkAfterEnd')}
           on={builder.fields.endLinkTemplate}
-          helperText='Link, der nach Bearbeitung angezeigt wird. Format: https://example.com/{code} wobei {code} durch den Zugangscode ersetzt wird.'
+          helperText={t('linkAfterEndHelper')}
         />
 
-        <h3 className='text-md mb-2 mt-8 font-bold'>Ordner</h3>
+        <h3 className='text-md mb-2 mt-8 font-bold'>{t('folders')}</h3>
         <MasterDetailView
           on={builder.fields.folder}
           detailLabel={(v) => v.name}
@@ -144,13 +154,13 @@ export default function PageUpsert({params: {id}}: {params: {id: string}}) {
         >
           {(on) => (
             <div className='flex flex-col'>
-              <InputField label='Name' on={on.name} />
-              <CheckboxField label='Phishing' on={on.isPhishing} />
+              <InputField label={t('folderName')} on={on.name} />
+              <CheckboxField label={t('phishing')} on={on.isPhishing} />
             </div>
           )}
         </MasterDetailView>
 
-        <h3 className='text-md mb-2 mt-8 font-bold'>E-Mail</h3>
+        <h3 className='text-md mb-2 mt-8 font-bold'>{t('emails')}</h3>
         <MasterDetailView
           on={builder.fields.email}
           detailLabel={(v) => emails.data?.find((e) => e.id === v.emailId)?.backofficeIdentifier ?? 'E-Mail'}
@@ -167,10 +177,10 @@ export default function PageUpsert({params: {id}}: {params: {id: string}}) {
                     return {name: e.backofficeIdentifier, value: e.id, key: e.id};
                   }) ?? []
                 }
-                label='E-Mail'
+                label={t('email')}
                 on={on.emailId}
               />
-              <CheckboxField label='Phishing' on={on.isPhishing} />
+              <CheckboxField label={t('phishing')} on={on.isPhishing} />
             </div>
           )}
         </MasterDetailView>
@@ -179,7 +189,7 @@ export default function PageUpsert({params: {id}}: {params: {id: string}}) {
           type='submit'
           className='mt-4 flex justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600'
         >
-          Speichern
+          {t('save')}
         </button>
       </Form>
       {!isCreate && <ParticipationTable studyId={id} />}

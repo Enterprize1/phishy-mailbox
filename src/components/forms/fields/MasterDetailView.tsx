@@ -4,6 +4,7 @@ import {twMerge} from 'tailwind-merge';
 import {useCallback, useState} from 'react';
 import {PlusIcon} from '@heroicons/react/20/solid';
 import {FieldValues} from 'react-hook-form';
+import {useTranslation} from 'react-i18next';
 
 function MasterDetailView<T extends FieldValues>({
   on,
@@ -18,6 +19,7 @@ function MasterDetailView<T extends FieldValues>({
   defaultValue: T;
   reorder?: boolean;
 }) {
+  const {t} = useTranslation(undefined, {keyPrefix: 'components.masterDetailView'});
   const value = on.$useWatch();
   const fieldArray = on.$useFieldArray();
   const [selectedIdx, setSelectedIdx] = useState<number | null>(null);
@@ -82,17 +84,16 @@ function MasterDetailView<T extends FieldValues>({
             onClick={() => fieldArray.append(defaultValue as any)}
           >
             <PlusIcon className='mb-1 h-4 w-4' />
-            Neu hinzufügen
+            {t('addNew')}
           </button>
         </div>
         <div className='flex-grow'>
           {selectedIdx === null ? (
-            <div className='flex h-full items-center justify-center'>Element zum Bearbeiten links auswaehlen</div>
+            <div className='flex h-full items-center justify-center'>{t('selectElement')}</div>
           ) : (
             <div
               className='flex h-full'
               key={
-                // TODO: Right typing, react-hook-form sets this property
                 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                 // @ts-ignore
                 fieldArray.fields[selectedIdx].key
@@ -104,7 +105,7 @@ function MasterDetailView<T extends FieldValues>({
                 onClick={() => removeCurrent()}
                 className='mr-2 mt-2 flex-grow-0 self-start text-sm text-red-600'
               >
-                Entfernen
+                {t('remove')}
               </button>
             </div>
           )}
@@ -113,5 +114,4 @@ function MasterDetailView<T extends FieldValues>({
     </>
   );
 }
-
 export default MasterDetailView;

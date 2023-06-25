@@ -3,6 +3,7 @@ import clsx from 'clsx';
 import debounce from 'lodash.debounce';
 import {FC, ReactNode, SyntheticEvent, useCallback} from 'react';
 import * as Dialog from '@radix-ui/react-dialog';
+import {useTranslation} from 'react-i18next';
 
 export type EmailWithFunctionAsBody = Omit<Email, 'body'> & {body: (() => ReactNode) | Email['body']};
 
@@ -19,6 +20,7 @@ function getParentAnchor(element: HTMLElement | null, body: HTMLElement | undefi
 }
 
 const EmailDisplayDetails: FC<{headers?: string; onViewDetails?: () => void}> = ({headers, onViewDetails}) => {
+  const {t} = useTranslation(undefined, {keyPrefix: 'components.emailDisplay.details'});
   if (!headers) return null;
 
   return (
@@ -28,19 +30,19 @@ const EmailDisplayDetails: FC<{headers?: string; onViewDetails?: () => void}> = 
           className='self-center rounded-md border bg-gray-100 px-2 py-1 hover:bg-gray-200'
           onClick={() => onViewDetails?.()}
         >
-          Details anzeigen
+          {t('showDetails')}
         </button>
       </Dialog.Trigger>
       <Dialog.Portal>
         <Dialog.Overlay className='fixed inset-0 z-50 bg-black/40' />
         <Dialog.Content className='max-height-[85vh] fixed left-1/2 top-1/2 z-50 flex w-[90vw] max-w-[450px] -translate-x-1/2 -translate-y-1/2 flex-col bg-white p-6'>
-          <Dialog.Title className='m-0 font-bold'>Nachrichtendetails</Dialog.Title>
+          <Dialog.Title className='m-0 font-bold'>{t('messageDetails')}</Dialog.Title>
           <Dialog.Description className='flex-shrink overflow-y-scroll whitespace-pre-wrap'>
             {headers}
           </Dialog.Description>
           <Dialog.Close asChild>
             <button className='mt-4 flex justify-center self-end rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600'>
-              Schließen
+              {t('close')}
             </button>
           </Dialog.Close>
         </Dialog.Content>
@@ -64,6 +66,7 @@ export default function EmailDisplay({
   onHover?: (href: string, text: string) => void;
   onViewDetails?: () => void;
 }) {
+  const {t} = useTranslation(undefined, {keyPrefix: 'components.emailDisplay'});
   const didLoad = useCallback(
     (loadEvent: SyntheticEvent<HTMLIFrameElement>) => {
       const iframe = loadEvent.target as HTMLIFrameElement;
@@ -85,7 +88,6 @@ export default function EmailDisplay({
 
         const anchor = getParentAnchor(e.target as HTMLElement | null, iframe.contentDocument?.body);
         if (anchor) {
-          // TODO: Different URL
           window.open('/404', '_blank');
           onClick?.(anchor.href, anchor.innerText);
         }
@@ -140,18 +142,18 @@ export default function EmailDisplay({
     <div className={clsx('flex flex-grow flex-col', className)}>
       <div className='bg-white px-4 py-2 font-bold shadow'>
         {email.subject}
-        {!email.subject && <i className='font-normal'>Kein Titel</i>}
+        {!email.subject && <i className='font-normal'>{t('noTitle')}</i>}
       </div>
       <div className='mb-4 mt-4 flex min-w-0 flex-grow flex-col bg-white p-4 shadow'>
         <div className='flex justify-between'>
           <div>
             <div>
-              Von: {email.senderName}
+              {t('from')} {email.senderName}
               {email.senderName && email.senderMail && <>&lt;{email.senderMail}&gt;</>}
               {!email.senderName && email.senderMail && <>{email.senderMail}</>}
-              {!email.senderName && !email.senderMail && <i className='font-normal'>Kein Absender</i>}
+              {!email.senderName && !email.senderMail && <i className='font-normal'>{t('noSender')}</i>}
             </div>
-            <div>An: Sie (postbox@example.de)</div>
+            <div>{t('to')}</div>
           </div>
           <EmailDisplayDetails headers={email.headers} onViewDetails={onViewDetails} />
         </div>
