@@ -24,6 +24,7 @@ import {
   EMailViewEvent,
   EMailViewDetailsEvent,
 } from '~/server/api/routers/participationEvents';
+import {useTranslation} from 'react-i18next';
 
 const NineDotsIcon = () => (
   <svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'>
@@ -63,19 +64,22 @@ const Folders: FC<{
   folders: FolderWithEmails[];
   setCurrentFolder: (f: Folder) => void;
   currentFolder: FolderWithEmails;
-}> = ({folders, setCurrentFolder, currentFolder}) => (
-  <div className='w-40 flex-shrink-0 pl-1 text-sm text-gray-700'>
-    <div>Ordner</div>
-    {folders.map((f) => (
-      <SingleFolder
-        key={f.folder.id}
-        folder={f}
-        setAsCurrentFolder={() => setCurrentFolder(f.folder)}
-        isCurrentFolder={f.folder.id === currentFolder.folder.id}
-      />
-    ))}
-  </div>
-);
+}> = ({folders, setCurrentFolder, currentFolder}) => {
+  const {t} = useTranslation(undefined, {keyPrefix: 'participants'});
+  return (
+    <div className='w-40 flex-shrink-0 pl-1 text-sm text-gray-700'>
+      <div>{t('folders')}</div>
+      {folders.map((f) => (
+        <SingleFolder
+          key={f.folder.id}
+          folder={f}
+          setAsCurrentFolder={() => setCurrentFolder(f.folder)}
+          isCurrentFolder={f.folder.id === currentFolder.folder.id}
+        />
+      ))}
+    </div>
+  );
+};
 
 const SingleEmail: FC<{
   email: EmailItem;
@@ -89,7 +93,6 @@ const SingleEmail: FC<{
   });
 
   const style = {
-    // Outputs `translate3d(x, y, 0)`
     transform: CSS.Translate.toString(transform),
   };
 
@@ -148,6 +151,7 @@ const RemainingTimer: FC<{
     [durationInMinutes, startedAt],
   ); // useStore((s) => s.shouldFinishAt);
   const [remainingText, setRemainingText] = useState<string | null>();
+  const {t} = useTranslation(undefined, {keyPrefix: 'participants'});
 
   useEffect(() => {
     const update = () => {
@@ -176,10 +180,10 @@ const RemainingTimer: FC<{
       setRemainingText(`${minutes}:${seconds}`);
     };
 
-    const t = setInterval(update, 1000);
+    const timer = setInterval(update, 1000);
     update();
 
-    return () => clearInterval(t);
+    return () => clearInterval(timer);
   }, [shouldFinishAt]);
 
   if (!remainingText || !startedAt) {
@@ -194,19 +198,23 @@ const RemainingTimer: FC<{
           className='mr-2 flex justify-center rounded-md bg-indigo-600 px-3 py-1 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500'
           onClick={finish}
         >
-          Abschliessen
+          {t('finish')}
         </button>
       )}
-      <span className='ml-auto mr-4'>Verbleibend {remainingText}</span>
+      <span className='ml-auto mr-4'>
+        {t('remaining')} {remainingText}
+      </span>
     </>
   );
 };
 
 const IsFinishedOverlay: FC<{onClick: () => void; link?: string}> = ({onClick, link}) => {
+  const {t} = useTranslation(undefined, {keyPrefix: 'participants'});
+
   return (
     <div className='z-60 fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-75'>
       <div className='w-1/2 rounded-lg bg-white p-4'>
-        <div className='text-2xl font-bold'>Sie haben es geschafft!</div>
+        <div className='text-2xl font-bold'>{t('finishedTitle')}</div>
         <div className='mt-4'>
           {link ? (
             <a
@@ -216,11 +224,11 @@ const IsFinishedOverlay: FC<{onClick: () => void; link?: string}> = ({onClick, l
               target='_blank'
               rel='noreferrer noopener'
             >
-              Klicken Sie hier um fortzufahren
+              {t('clickToContinue')}
             </a>
           ) : (
             <Link href='/' className='text-blue-600 hover:text-blue-500'>
-              Zurück zur Startseite
+              {t('backToStart')}
             </Link>
           )}
         </div>
@@ -230,6 +238,7 @@ const IsFinishedOverlay: FC<{onClick: () => void; link?: string}> = ({onClick, l
 };
 
 export default function Run({params: {code}}: {params: {code: string}}) {
+  const {t} = useTranslation(undefined, {keyPrefix: 'participants'});
   const {data, refetch} = trpc.participation.get.useQuery(code);
   const startMutation = trpc.participation.start.useMutation();
   const moveEmailMutation = trpc.participation.moveEmail.useMutation();
@@ -314,7 +323,7 @@ export default function Run({params: {code}}: {params: {code: string}}) {
             id: introductionEmailId,
             senderMail: '',
             senderName: '',
-            subject: 'Intro',
+            subject: t('introductionEmail.subject'),
             body: () => {
               const startLink = data.study.startLinkTemplate?.replace('{code}', data.code);
 
@@ -334,10 +343,10 @@ export default function Run({params: {code}}: {params: {code: string}}) {
                         await refetch();
                       }}
                     >
-                      Klicken Sie hier, um zu starten
+                      {t('introductionEmail.clickToStart')}
                     </a>
                   ) : (
-                    'Ziehen Sie nun die E-Mail in einen der Ordner um die Bearbeitung zu beginnen.'
+                    t('introductionEmail.dragEmailToStart')
                   )}
                 </>
               );
@@ -384,7 +393,7 @@ export default function Run({params: {code}}: {params: {code: string}}) {
           <button type='button' className='flex h-12 w-12 items-center justify-center bg-blue-700'>
             <NineDotsIcon />
           </button>
-          <span className='flex flex-grow items-center px-4 font-bold'>Mailbox</span>
+          <span className='flex flex-grow items-center px-4 font-bold'>{t('title')}</span>
           <RemainingTimer
             startedAt={data.startedAt}
             durationInMinutes={data.study.durationInMinutes}

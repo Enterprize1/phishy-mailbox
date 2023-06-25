@@ -2,13 +2,15 @@
 
 import {FC, Fragment, PropsWithChildren, PropsWithoutRef, SVGProps} from 'react';
 import {Menu, Transition} from '@headlessui/react';
-import {EnvelopeOpenIcon, HomeIcon, ListBulletIcon, UserCircleIcon} from '@heroicons/react/24/outline';
+import {EnvelopeOpenIcon, ListBulletIcon, UserCircleIcon} from '@heroicons/react/24/outline';
 import {ChevronDownIcon} from '@heroicons/react/20/solid';
 import clsx from 'clsx';
 import {signOut, useSession} from 'next-auth/react';
 import Link from 'next/link';
 import * as React from 'react';
 import {redirect, usePathname} from 'next/navigation';
+import {LanguageChooser} from '~/components/language-chooser';
+import {useTranslation} from 'react-i18next';
 
 const SidebarNavLink: FC<PropsWithChildren<{Icon: FC<PropsWithoutRef<SVGProps<SVGSVGElement>>>; href: string}>> = ({
   href,
@@ -34,6 +36,9 @@ const SidebarNavLink: FC<PropsWithChildren<{Icon: FC<PropsWithoutRef<SVGProps<SV
 
 export default function LoggedinLayout({children}: {children: React.ReactNode}) {
   const session = useSession();
+  const {t} = useTranslation();
+
+  console.log(session);
 
   if (session.status === 'unauthenticated') {
     redirect('/admin');
@@ -49,23 +54,23 @@ export default function LoggedinLayout({children}: {children: React.ReactNode}) 
               <li>
                 <ul role='list' className='-mx-2 space-y-1'>
                   <li>
-                    <SidebarNavLink Icon={HomeIcon} href='/admin/dashboard'>
-                      Dashboard
-                    </SidebarNavLink>
-                  </li>
-                  <li>
                     <SidebarNavLink Icon={EnvelopeOpenIcon} href='/admin/emails'>
-                      E-Mails
+                      {t('admin.sidebar.emails')}
                     </SidebarNavLink>
                   </li>
                   <li>
                     <SidebarNavLink Icon={ListBulletIcon} href='/admin/studies'>
-                      Studien
+                      {t('admin.sidebar.studies')}
                     </SidebarNavLink>
                   </li>
                 </ul>
               </li>
             </ul>
+
+            <div className='mt-auto w-max text-white'>
+              <div className='text-sm'>{t('languages.language')}</div>
+              <LanguageChooser />
+            </div>
           </nav>
         </div>
       </div>
@@ -78,7 +83,7 @@ export default function LoggedinLayout({children}: {children: React.ReactNode}) 
             <div className='ml-auto flex items-center gap-x-4 lg:gap-x-6'>
               <Menu as='div' className='relative'>
                 <Menu.Button className='-m-1.5 flex items-center p-1.5'>
-                  <span className='sr-only'>Open user menu</span>
+                  <span className='sr-only'>{t('admin.userMenu.open')}</span>
                   <UserCircleIcon className='h-8 w-8 text-gray-400' aria-hidden='true' />
                   <span className='hidden lg:flex lg:items-center'>
                     <span className='ml-4 text-sm font-semibold leading-6 text-gray-900' aria-hidden='true'>
@@ -108,7 +113,7 @@ export default function LoggedinLayout({children}: {children: React.ReactNode}) 
                             await signOut();
                           }}
                         >
-                          Sign out
+                          {t('admin.userMenu.signOut')}
                         </button>
                       )}
                     </Menu.Item>
