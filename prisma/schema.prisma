@@ -69,9 +69,10 @@ model Study {
   folder            Folder[]
   participation     Participation[]
   email             StudyEmail[]
-  introductionText  String
   durationInMinutes Int
+  startText         String
   startLinkTemplate String?
+  endText           String?
   endLinkTemplate   String?
 }
 

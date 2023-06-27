@@ -208,13 +208,18 @@ const RemainingTimer: FC<{
   );
 };
 
-const IsFinishedOverlay: FC<{onClick: () => void; link?: string}> = ({onClick, link}) => {
+const IsFinishedOverlay: FC<{onClick: () => void; endText?: string | null; link?: string}> = ({
+  onClick,
+  endText,
+  link,
+}) => {
   const {t} = useTranslation(undefined, {keyPrefix: 'participants'});
 
   return (
     <div className='z-60 fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-75'>
       <div className='w-1/2 rounded-lg bg-white p-4'>
         <div className='text-2xl font-bold'>{t('finishedTitle')}</div>
+        {endText && <div className='mb-2 mt-2 whitespace-pre-wrap'>{endText}</div>}
         <div className='mt-4'>
           {link ? (
             <a
@@ -329,7 +334,7 @@ export default function Run({params: {code}}: {params: {code: string}}) {
 
               return (
                 <>
-                  {data.study.introductionText}
+                  {data.study.startText}
                   <br />
                   <br />
                   {requiresStartLinkClick && !didClickStartLink ? (
@@ -386,7 +391,11 @@ export default function Run({params: {code}}: {params: {code: string}}) {
   return (
     <DndContext onDragEnd={moveEmail} sensors={sensors}>
       {isFinished && (
-        <IsFinishedOverlay onClick={onEndLinkClicked} link={data.study.endLinkTemplate?.replace('{code}', data.code)} />
+        <IsFinishedOverlay
+          onClick={onEndLinkClicked}
+          link={data.study.endLinkTemplate?.replace('{code}', data.code)}
+          endText={data.study.endText}
+        />
       )}
       <main className='flex h-screen w-full flex-col bg-gray-100'>
         <div className='flex h-12 items-center bg-blue-600 text-white'>

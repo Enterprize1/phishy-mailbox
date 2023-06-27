@@ -8,7 +8,7 @@ import clsx from 'clsx';
 import {signOut, useSession} from 'next-auth/react';
 import Link from 'next/link';
 import * as React from 'react';
-import {redirect, usePathname} from 'next/navigation';
+import {usePathname, useRouter} from 'next/navigation';
 import {LanguageChooser} from '~/components/language-chooser';
 import {useTranslation} from 'react-i18next';
 
@@ -36,13 +36,8 @@ const SidebarNavLink: FC<PropsWithChildren<{Icon: FC<PropsWithoutRef<SVGProps<SV
 
 export default function LoggedinLayout({children}: {children: React.ReactNode}) {
   const session = useSession();
+  const router = useRouter();
   const {t} = useTranslation();
-
-  console.log(session);
-
-  if (session.status === 'unauthenticated') {
-    redirect('/admin');
-  }
 
   return (
     <div className='min-h-0 w-full overflow-y-auto'>
@@ -110,7 +105,10 @@ export default function LoggedinLayout({children}: {children: React.ReactNode}) 
                             'block w-full px-3 py-1 text-sm leading-6 text-gray-900',
                           )}
                           onClick={async () => {
-                            await signOut();
+                            await signOut({
+                              redirect: false,
+                            });
+                            router.push('/admin');
                           }}
                         >
                           {t('admin.userMenu.signOut')}

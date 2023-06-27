@@ -20,9 +20,10 @@ export const studyRouter = createTRPCRouter({
       z.object({
         study: z.object({
           name: z.string(),
-          introductionText: z.string().default(''),
           durationInMinutes: z.number(),
+          startText: z.string().default(''),
           startLinkTemplate: z.string().optional().nullable(),
+          endText: z.string().default(''),
           endLinkTemplate: z.string().optional().nullable(),
         }),
       }),
@@ -55,9 +56,10 @@ export const studyRouter = createTRPCRouter({
         id: z.string().uuid(),
         study: z.object({
           name: z.string(),
-          introductionText: z.string(),
           durationInMinutes: z.number(),
+          startText: z.string().default(''),
           startLinkTemplate: z.string().optional().nullable(),
+          endText: z.string().default(''),
           endLinkTemplate: z.string().optional().nullable(),
           folder: z.array(
             z.object({
