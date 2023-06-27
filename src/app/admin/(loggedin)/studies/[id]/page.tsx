@@ -53,9 +53,9 @@ const ParticipationTable: FC<{studyId: string}> = ({studyId}) => {
 
   return (
     <>
-      <h3 className='mb-2 mt-4 text-lg'>{t('title')}</h3>
+      <h3 className='mb-4 mt-16 text-xl font-bold'>{t('title')}</h3>
       <SimpleTable columns={participantsTableColumns} items={participants} />
-      <h4 className='mb-2 mt-8 text-lg'>{t('addTitle')}</h4>
+      <h4 className='text-md mb-2 mt-8'>{t('addTitle')}</h4>
       <Form
         builder={builder}
         onSubmit={async (data) => {
@@ -107,7 +107,13 @@ export default function PageUpsert({params: {id}}: {params: {id: string}}) {
 
   const onSubmit = async (data: Partial<Study>) => {
     if (isCreate) {
-      await addStudy.mutateAsync({study: data as Required<Study>});
+      await addStudy.mutateAsync({
+        study: {
+          ...(data as Required<Study>),
+          startText: data.startText ?? undefined,
+          endText: data.endText ?? undefined,
+        },
+      });
     } else {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       await updateStudy.mutateAsync({id: id, study: data as any});
@@ -118,30 +124,27 @@ export default function PageUpsert({params: {id}}: {params: {id: string}}) {
 
   return (
     <>
-      <h2 className='my-4 text-lg '>{isCreate ? t('createTitle') : t('editTitle')}</h2>
+      <h2 className='my-4 text-xl font-bold'>{isCreate ? t('createTitle') : t('editTitle')}</h2>
       <Form builder={builder} onSubmit={onSubmit} className='flex flex-col'>
         <div className='flex flex-wrap gap-8'>
           <InputField label={t('name')} on={builder.fields.name} />
+          <InputField
+            label={t('durationInMinutes')}
+            on={builder.fields.durationInMinutes}
+            rules={{valueAsNumber: true}}
+          />
         </div>
-        <TextArea label={t('explanationText')} on={builder.fields.introductionText} />
-
-        <InputField
-          label={t('durationInMinutes')}
-          on={builder.fields.durationInMinutes}
-          rules={{valueAsNumber: true}}
-        />
+        <h3 className='mb-4 mt-8 text-lg font-bold'>{t('beforeStartHeader')}</h3>
+        <TextArea label={t('explanationText')} on={builder.fields.startText} />
         <InputField
           label={t('linkBeforeStart')}
           on={builder.fields.startLinkTemplate}
           helperText={t('linkBeforeStartHelper')}
         />
-        <InputField
-          label={t('linkAfterEnd')}
-          on={builder.fields.endLinkTemplate}
-          helperText={t('linkAfterEndHelper')}
-        />
 
-        <h3 className='text-md mb-2 mt-8 font-bold'>{t('folders')}</h3>
+        <h3 className='mb-4 mt-8 text-lg font-bold'>{t('duringStudyHeader')}</h3>
+
+        <h3 className='text-md mb-2'>{t('folders')}</h3>
         <MasterDetailView
           on={builder.fields.folder}
           detailLabel={(v) => v.name}
@@ -160,7 +163,7 @@ export default function PageUpsert({params: {id}}: {params: {id: string}}) {
           )}
         </MasterDetailView>
 
-        <h3 className='text-md mb-2 mt-8 font-bold'>{t('emails')}</h3>
+        <h3 className='text-md mb-2 mt-8'>{t('emails')}</h3>
         <MasterDetailView
           on={builder.fields.email}
           detailLabel={(v) => emails.data?.find((e) => e.id === v.emailId)?.backofficeIdentifier ?? 'E-Mail'}
@@ -184,6 +187,15 @@ export default function PageUpsert({params: {id}}: {params: {id: string}}) {
             </div>
           )}
         </MasterDetailView>
+
+        <h3 className='mb-4 mt-8 text-lg font-bold'>{t('afterStudyHeader')}</h3>
+
+        <TextArea label={t('explanationText')} on={builder.fields.endText} />
+        <InputField
+          label={t('linkAfterEnd')}
+          on={builder.fields.endLinkTemplate}
+          helperText={t('linkAfterEndHelper')}
+        />
 
         <button
           type='submit'

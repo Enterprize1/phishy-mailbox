@@ -45,7 +45,10 @@ async function main() {
     await tx.study.create({
       data: {
         name: 'Teststudie',
-        introductionText: 'Test-Beschreibung',
+        startText:
+          'Test-Beschreibung\nHier könnte eine Beschreibung der Durchf stehen oder auch eine kurze thematische Einführung.',
+        endText:
+          'Test-Ende\nHier könnte ein Text stehen, der die Teilnehmenden verabschiedet oder die nächsten Schritte erklärt.',
         durationInMinutes: 10,
         startLinkTemplate: 'https://example.com/start/{code}',
         endLinkTemplate: 'https://example.com/end/{code}',

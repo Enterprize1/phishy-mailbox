@@ -1,10 +1,10 @@
 'use client';
-import {signIn, useSession} from 'next-auth/react';
-import {redirect} from 'next/navigation';
+import {signIn} from 'next-auth/react';
 import InputField from '../../components/forms/fields/InputField';
 import {useFormBuilder} from '@atmina/formbuilder';
 import Form from '../../components/forms/Form';
 import {useCallback} from 'react';
+import {useRouter} from 'next/navigation';
 
 type LoginForm = {
   email: string;
@@ -12,20 +12,21 @@ type LoginForm = {
 };
 
 export default function Login() {
-  const {data: session} = useSession();
+  const router = useRouter();
   const builder = useFormBuilder<LoginForm>();
 
-  const onSubmit = useCallback(async (form: LoginForm) => {
-    await signIn('credentials', {
-      email: form.email,
-      password: form.password,
-    });
-  }, []);
+  const onSubmit = useCallback(
+    async (form: LoginForm) => {
+      await signIn('credentials', {
+        email: form.email,
+        password: form.password,
+        redirect: false,
+      });
 
-  if (session) {
-    redirect('/admin/emails');
-    return null;
-  }
+      router.push('/admin/emails');
+    },
+    [router],
+  );
 
   return (
     <div className='flex min-h-full w-full flex-col justify-center bg-gray-100 py-12 sm:px-6 lg:px-8'>
