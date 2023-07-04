@@ -39,11 +39,16 @@
         "edit": "Bearbeiten",
         "delete": "Löschen",
         "emails": "E-Mails",
-        "create": "Anlegen"
+        "create": "Anlegen",
+        "uploadMultiple": "Mehrere E-Mails hochladen",
+        "dragDrop": "Ziehe eine oder mehrere .eml Datei hier hin oder klicke um diese auszuwählen"
       },
       "edit": {
         "createEmail": "E-Mail anlegen",
         "editEmail": "E-Mail bearbeiten",
+        "uploadEmail": "E-Mail hochladen",
+        "createEmailManually": "E-Mail manuell anlegen",
+        "editEmailManually": "E-Mail manuell bearbeiten",
         "identifier": "Identifizierer im Backoffice",
         "sender": "Absender",
         "senderEmail": "E-Mail",

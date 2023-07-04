@@ -10,7 +10,7 @@ export const emailRouter = createTRPCRouter({
   }),
   parseFile: protectedProcedure
     .input(z.object({file: z.string()}))
-    .mutation(async ({input}): Promise<Partial<Email>> => {
+    .mutation(async ({input}): Promise<Omit<Email, 'id'>> => {
       const buffer = Buffer.from(input.file.split(',')[1], 'base64');
       const readable = Readable.from(buffer);
       const parser = new EmlParser(readable);
@@ -26,6 +26,7 @@ export const emailRouter = createTRPCRouter({
         headers,
         subject: parsed.subject,
         body: parsed.html,
+        backofficeIdentifier: `${parsed.subject} / ${parsed.from.value[0].name}`,
       };
     }),
   add: protectedProcedure

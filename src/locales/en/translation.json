@@ -39,11 +39,16 @@
         "edit": "Edit",
         "delete": "Delete",
         "emails": "Emails",
-        "create": "Create"
+        "create": "Create",
+        "uploadMultiple": "Upload Multiple",
+        "dragDrop": "Drag and drop .eml files here or click to select them"
       },
       "edit": {
         "createEmail": "Create Email",
         "editEmail": "Edit Email",
+        "uploadEmail": "Upload Email",
+        "createEmailManually": "Create Email Manually",
+        "editEmailManually": "Edit Email Manually",
         "identifier": "Identifier in the Back Office",
         "sender": "Sender",
         "senderEmail": "Email",

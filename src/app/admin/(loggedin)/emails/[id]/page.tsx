@@ -41,7 +41,8 @@ const EmlDropzone = ({onNewMessage}: {onNewMessage: (email: Partial<Email>) => v
   return (
     <div
       {...getRootProps({
-        className: 'align-center px-4 py-6 border-2 border-dashed rounded-sm cursor-pointer',
+        className:
+          'align-center px-4 py-6 border-2 border-dashed rounded-sm cursor-pointer min-h-[6rem] flex items-center justify-center',
       })}
     >
       <input {...getInputProps()} />
@@ -84,23 +85,23 @@ export default function Page({params: {id}}: {params: {id: string}}) {
   const email = builder.watch();
 
   return (
-    <>
-      <h2 className='my-4 text-lg '>{isCreate ? t('createEmail') : t('editEmail')}</h2>
+    <div className='max-w-6xl'>
+      <h2 className='mb-4 text-lg'>{isCreate ? t('createEmail') : t('editEmail')}</h2>
+      <h3 className='text-sm font-bold'>{t('uploadEmail')}</h3>
       <EmlDropzone onNewMessage={onNewMessage} />
+      <h3 className='mt-4 text-sm font-bold'>{isCreate ? t('createEmailManually') : t('editEmailManually')}</h3>
       <Form builder={builder} onSubmit={onSubmit}>
-        <div className='my-4 flex flex-wrap gap-x-8 gap-y-2'>
-          <div className='w-full'>
-            <InputField label={t('identifier')} on={builder.fields.backofficeIdentifier} />
-          </div>
-          <fieldset>
+        <div className='my-2 flex flex-col gap-x-8 gap-y-2'>
+          <InputField label={t('identifier')} on={builder.fields.backofficeIdentifier} />
+          <fieldset className='flex flex-wrap'>
             <legend className='text-sm font-bold'>{t('sender')}</legend>
             <div className='flex gap-4'>
               <InputField label={t('senderEmail')} on={builder.fields.senderMail} className='mr-2' />
               <InputField label={t('senderName')} on={builder.fields.senderName} />
             </div>
           </fieldset>
+          <InputField label={t('subject')} on={builder.fields.subject} />
         </div>
-        <InputField label={t('subject')} on={builder.fields.subject} />
         <h3 className='text-sm font-bold'>{t('header')}</h3>
         <CodeTextarea label={t('header')} on={builder.fields.headers} language='text' />
         <h3 className='mt-4 text-sm font-bold'>{t('content')}</h3>
@@ -114,6 +115,6 @@ export default function Page({params: {id}}: {params: {id: string}}) {
       </Form>
 
       <EmailDisplay email={email} className='mt-12' />
-    </>
+    </div>
   );
 }
