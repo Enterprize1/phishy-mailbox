@@ -2,6 +2,7 @@ import {createTRPCRouter, protectedProcedure, publicProcedure} from '~/server/ap
 import {z} from 'zod';
 import {addMinutes} from 'date-fns';
 import {EMailMovedEvent} from '~/server/api/routers/participationEvents';
+import {TRPCError} from '@trpc/server';
 
 export const participationRouter = createTRPCRouter({
   createMultiple: protectedProcedure
@@ -88,6 +89,13 @@ export const participationRouter = createTRPCRouter({
         },
       },
     });
+
+    if (!participation) {
+      throw new TRPCError({
+        code: 'NOT_FOUND',
+        message: 'Participation not found',
+      });
+    }
 
     if (participation && !participation.codeUsedAt) {
       await ctx.prisma.participation.update({
