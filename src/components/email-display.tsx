@@ -35,7 +35,7 @@ const EmailDisplayDetails: FC<{headers?: string; onViewDetails?: () => void}> = 
       </Dialog.Trigger>
       <Dialog.Portal>
         <Dialog.Overlay className='fixed inset-0 z-50 bg-black/40' />
-        <Dialog.Content className='max-height-[85vh] fixed left-1/2 top-1/2 z-50 flex w-[90vw] max-w-[450px] -translate-x-1/2 -translate-y-1/2 flex-col bg-white p-6'>
+        <Dialog.Content className='fixed left-1/2 top-1/2 z-50 flex max-h-[85vh] max-w-[85vw] -translate-x-1/2 -translate-y-1/2 flex-col bg-white p-6'>
           <Dialog.Title className='m-0 font-bold'>{t('messageDetails')}</Dialog.Title>
           <Dialog.Description className='flex-shrink overflow-y-scroll whitespace-pre-wrap'>
             {headers}
