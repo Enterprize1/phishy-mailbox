@@ -195,7 +195,7 @@ export const studyRouter = createTRPCRouter({
 
     return study.participation.flatMap((p) => {
       const partipationExport = {
-        'Participation-ID': p.id,
+        Code: p.code,
       };
 
       const emailsExport = p.emails.flatMap((e) => {
