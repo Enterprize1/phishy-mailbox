@@ -51,7 +51,6 @@ model ParticipationEmail {
   email           Email                     @relation(fields: [emailId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "participation_email_email_id_email_id_fk")
   folderId        String?                   @db.Uuid
   folder          Folder?                   @relation(fields: [folderId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "participation_email_folder_id_folder_id_fk")
-  openedAt        DateTime?                 @db.Timestamptz(3)
   events          ParticipationEmailEvent[]
 }
 

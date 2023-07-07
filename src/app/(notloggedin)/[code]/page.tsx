@@ -51,7 +51,11 @@ const SingleFolder: FC<{
   return (
     <button
       type='button'
-      className={twMerge('flex w-full rounded pl-4 pr-1', isCurrentFolder && 'bg-blue-100', isOver && 'bg-blue-200')}
+      className={twMerge(
+        'flex w-full rounded py-2 pl-4 pr-1',
+        isCurrentFolder && 'bg-blue-100',
+        isOver && 'bg-blue-200',
+      )}
       onClick={setAsCurrentFolder}
       ref={setNodeRef}
     >
@@ -87,7 +91,7 @@ const SingleEmail: FC<{
   isCurrentEmail: boolean;
   disableDragging: boolean;
 }> = ({email, setAsCurrentEmail, isCurrentEmail, disableDragging}) => {
-  const {attributes, listeners, setNodeRef, transform} = useDraggable({
+  const {attributes, listeners, setNodeRef, transform, isDragging} = useDraggable({
     id: email.id,
     disabled: disableDragging,
   });
@@ -100,10 +104,10 @@ const SingleEmail: FC<{
     <button
       type='button'
       onClick={setAsCurrentEmail}
-      className={clsx(
-        'flex w-full flex-col border-l-4 px-2 py-2 text-left text-sm',
-        isCurrentEmail ? 'bg-blue-100' : 'bg-gray-50',
-        !email.openedAt ? '!border-l-blue-600 font-bold' : '!border-l-transparent',
+      className={twMerge(
+        'flex w-full flex-col border-l-4 px-2 py-2 text-left text-sm hover:!border-l-gray-400',
+        isCurrentEmail ? 'bg-blue-100' : 'bg-gray-50 hover:bg-gray-100',
+        isDragging && 'opacity-70',
       )}
       ref={setNodeRef}
       style={style}
@@ -111,7 +115,7 @@ const SingleEmail: FC<{
       {...attributes}
     >
       <div className='w-full truncate'>{email.email.senderName}</div>
-      <div className={clsx('w-full truncate', !email.openedAt && 'text-blue-700')}>{email.email.subject}</div>
+      <div className={clsx('w-full truncate')}>{email.email.subject}</div>
     </button>
   );
 };
@@ -323,7 +327,6 @@ export default function Run({params: {code}}: {params: {code: string}}) {
           emailId: introductionEmailId,
           folderId: null,
           participationId: data.id,
-          openedAt: new Date(),
           email: {
             id: introductionEmailId,
             senderMail: '',
