@@ -9,7 +9,8 @@
       "startTitle": "Start",
       "enterCode": "Geben Sie hier den Zugangs-Code ein, den Sie erhalten haben.",
       "enterCodeLabel": "Zugangs-Code",
-      "startButton": "Starten"
+      "startButton": "Starten",
+      "invalid": "Ungültiger Zugangs-Code."
     },
     "folders": "Ordner",
     "finish": "Abschließen",
@@ -25,6 +26,13 @@
     "title": "Mailbox"
   },
   "admin": {
+    "login": {
+      "title": "Anmelden",
+      "invalid": "Die Zugangsdaten sind ungültig.",
+      "email": "E-Mail Adresse",
+      "password": "Passwort",
+      "signIn": "Anmelden"
+    },
     "userMenu": {
       "open": "Nutzer-Menü öffnen",
       "signOut": "Abmelden"

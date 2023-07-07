@@ -9,7 +9,8 @@
       "startTitle": "Start",
       "enterCode": "Enter the access code you have received here.",
       "enterCodeLabel": "Access Code",
-      "startButton": "Start"
+      "startButton": "Start",
+      "invalid": "Invalid access code."
     },
     "folders": "Folders",
     "finish": "Finish",
@@ -25,6 +26,13 @@
     "title": "Mailbox"
   },
   "admin": {
+    "login": {
+      "title": "Login",
+      "invalid": "Invalid credentials.",
+      "email": "Email",
+      "password": "Password",
+      "signIn": "Sign In"
+    },
     "userMenu": {
       "open": "Open User Menu",
       "signOut": "Sign Out"

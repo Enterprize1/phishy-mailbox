@@ -1,7 +1,7 @@
 'use client';
 import {useFormBuilder} from '@atmina/formbuilder';
 import {useRouter} from 'next/navigation';
-import {useCallback, useEffect, useState} from 'react';
+import {useCallback, useEffect, useMemo, useState} from 'react';
 import InputField from '~/components/forms/fields/InputField';
 import Form from '~/components/forms/Form';
 import {trpc} from '~/utils/trpc';
@@ -16,8 +16,12 @@ export default function StartStudy() {
   const builder = useFormBuilder<CodeForm>();
   const router = useRouter();
   const [code, setCode] = useState<string | null>(null);
-  const {data: participation} = trpc.participation.get.useQuery(code as string, {enabled: !!code});
+  const {data: participation, isLoading, error} = trpc.participation.get.useQuery(code as string, {enabled: !!code});
   const {t} = useTranslation();
+
+  const didNotFindParticipation = useMemo(() => {
+    return error?.data?.code === 'NOT_FOUND' && !isLoading;
+  }, [error?.data?.code, isLoading]);
 
   const onSubmit = useCallback(async (form: CodeForm) => {
     setCode(form.code);
@@ -41,6 +45,7 @@ export default function StartStudy() {
       <div className='mt-8 bg-white px-4 py-8 shadow sm:mx-auto sm:w-full sm:max-w-max sm:rounded-lg sm:px-10'>
         <Form builder={builder} className='space-y-4' onSubmit={onSubmit}>
           {t('languages.language')}: <LanguageChooser />
+          {didNotFindParticipation && <p className='text-red-500'>{t('participants.login.invalid')}</p>}
           <InputField
             label={t('participants.login.enterCodeLabel')}
             on={builder.fields.code}

@@ -42,6 +42,12 @@ const TrpcProvider: React.FC<{children: React.ReactNode}> = (p) => {
   const [queryClient] = useState(
     () =>
       new QueryClient({
+        defaultOptions: {
+          queries: {
+            retry: 1,
+            retryDelay: 100,
+          },
+        },
         queryCache: new QueryCache({
           onError: (error) => {
             if (typeof window === 'undefined') return false;
