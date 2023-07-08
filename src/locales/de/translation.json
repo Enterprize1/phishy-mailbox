@@ -26,6 +26,11 @@
     "title": "Mailbox"
   },
   "admin": {
+    "confirm": {
+      "title": "Sind Sie sich sicher?",
+      "confirmation": "Weiter",
+      "cancel": "Abbrechen"
+    },
     "login": {
       "title": "Anmelden",
       "invalid": "Die Zugangsdaten sind ungültig.",
@@ -48,6 +53,9 @@
         "delete": "Löschen",
         "emails": "E-Mails",
         "create": "Anlegen",
+        "deleteConfirm": "Sind Sie sich sicher, dass Sie diese E-Mail löschen möchten?",
+        "deleteSuccess": "E-Mail erfolgreich gelöscht",
+        "deleteError": "E-Mail konnte nicht gelöscht werden. Wird sie in einer Studie genutzt?",
         "uploadMultiple": "Mehrere E-Mails hochladen",
         "dragDrop": "Ziehe eine oder mehrere .eml Datei hier hin oder klicke um diese auszuwählen"
       },
@@ -76,7 +84,10 @@
         "delete": "Löschen",
         "title": "Studien",
         "create": "Anlegen",
-        "export": "Exportieren"
+        "export": "Exportieren",
+        "deleteConfirm": "Sind Sie sich sicher, dass Sie diese Studie löschen möchten? Dies entfernt alle Einstellungen, Teilnehmer und Daten.",
+        "deleteSuccess": "Studie erfolgreich gelöscht",
+        "deleteError": "Studie konnte nicht gelöscht werden."
       },
       "edit": {
         "createTitle": "Studie anlegen",

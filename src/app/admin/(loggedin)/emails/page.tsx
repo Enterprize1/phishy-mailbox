@@ -3,10 +3,12 @@ import {trpc} from '~/utils/trpc';
 import {SimpleTable, SimpleTableColumn} from '~/components/simple-table';
 import {Email} from '@prisma/client';
 import Link from 'next/link';
-import {FC, useMemo, useState} from 'react';
+import {FC, useCallback, useMemo, useState} from 'react';
 import {useTranslation} from 'react-i18next';
 import {useDropzone} from 'react-dropzone';
 import {LinearProgress} from '@mui/material';
+import {toast} from 'react-toastify';
+import {useConfirm} from 'material-ui-confirm';
 
 const UploadMultiple: FC<{refetch: () => void}> = ({refetch}) => {
   const {t} = useTranslation(undefined, {keyPrefix: 'admin.emails.list'});
@@ -66,7 +68,30 @@ const UploadMultiple: FC<{refetch: () => void}> = ({refetch}) => {
 
 export default function Page() {
   const {data, refetch} = trpc.email.getAll.useQuery();
+  const {mutateAsync: deleteMail} = trpc.email.delete.useMutation();
   const {t} = useTranslation(undefined, {keyPrefix: 'admin.emails.list'});
+  const confirm = useConfirm();
+
+  const deleteClick = useCallback(
+    async (id: string) => {
+      try {
+        await confirm({
+          description: t('deleteConfirm'),
+        });
+      } catch (e) {
+        return;
+      }
+
+      try {
+        await deleteMail(id);
+        toast.success(t('deletedSuccess'));
+        refetch();
+      } catch (e) {
+        toast.error(t('deletedError'));
+      }
+    },
+    [confirm, deleteMail, refetch, t],
+  );
 
   const emailsColumns: SimpleTableColumn<Email>[] = useMemo(
     () => [
@@ -82,13 +107,15 @@ export default function Page() {
               <Link href={'/admin/emails/' + e.id} className='text-indigo-600'>
                 {t('edit')}
               </Link>
-              <button className='text-red-600'>{t('delete')}</button>
+              <button className='text-red-600' type='button' onClick={() => deleteClick(e.id)}>
+                {t('delete')}
+              </button>
             </div>
           );
         },
       },
     ],
-    [t],
+    [deleteClick, t],
   );
 
   return (

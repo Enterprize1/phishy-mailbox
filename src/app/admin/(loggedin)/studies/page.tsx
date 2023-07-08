@@ -6,6 +6,8 @@ import Link from 'next/link';
 import {FC, useCallback, useMemo} from 'react';
 import papaparse from 'papaparse';
 import {useTranslation} from 'react-i18next';
+import {toast} from 'react-toastify';
+import {useConfirm} from 'material-ui-confirm';
 
 const ExportButton: FC<{studyId: string}> = ({studyId}) => {
   const {t} = useTranslation(undefined, {keyPrefix: 'admin.studies.list'});
@@ -32,7 +34,30 @@ const ExportButton: FC<{studyId: string}> = ({studyId}) => {
 
 export default function Page() {
   const {t} = useTranslation(undefined, {keyPrefix: 'admin.studies.list'});
-  const {data} = trpc.study.getAll.useQuery();
+  const {data, refetch} = trpc.study.getAll.useQuery();
+  const {mutateAsync: deleteStudy} = trpc.study.delete.useMutation();
+  const confirm = useConfirm();
+
+  const onDelete = useCallback(
+    async (studyId: string) => {
+      try {
+        await confirm({
+          description: t('deleteConfirm'),
+        });
+      } catch (e) {
+        return;
+      }
+
+      try {
+        await deleteStudy(studyId);
+        toast.success(t('deleteSuccess'));
+        refetch();
+      } catch (e) {
+        toast.error(t('deleteError'));
+      }
+    },
+    [confirm, deleteStudy, refetch, t],
+  );
 
   const studiesColumns: SimpleTableColumn<Study & {_count: {participation: number}}>[] = useMemo(
     () => [
@@ -55,7 +80,7 @@ export default function Page() {
               <Link href={'/admin/studies/' + s.id} className='text-indigo-600'>
                 {t('edit')}
               </Link>
-              <button className='text-red-600' type='button'>
+              <button className='text-red-600' type='button' onClick={() => onDelete(s.id)}>
                 {t('delete')}
               </button>
             </div>
@@ -63,7 +88,7 @@ export default function Page() {
         },
       },
     ],
-    [t],
+    [onDelete, t],
   );
 
   return (

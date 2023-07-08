@@ -2,7 +2,9 @@ import {z} from 'zod';
 import {createTRPCRouter, protectedProcedure} from '~/server/api/trpc';
 import {Readable} from 'stream';
 import EmlParser from 'eml-parser';
-import {Email} from '@prisma/client';
+import {Email, Prisma} from '@prisma/client';
+import PrismaClientKnownRequestError = Prisma.PrismaClientKnownRequestError;
+import {TRPCError} from '@trpc/server';
 
 export const emailRouter = createTRPCRouter({
   getAll: protectedProcedure.query(({ctx}) => {
@@ -76,4 +78,24 @@ export const emailRouter = createTRPCRouter({
         data: input.email,
       });
     }),
+  delete: protectedProcedure.input(z.string().uuid()).mutation(async ({ctx, input}) => {
+    try {
+      return await ctx.prisma.email.delete({
+        where: {
+          id: input,
+        },
+      });
+    } catch (e) {
+      if (e instanceof PrismaClientKnownRequestError) {
+        if (e.code === 'P2003') {
+          throw new TRPCError({
+            code: 'PRECONDITION_FAILED',
+            message: 'Email is in use',
+          });
+        }
+      }
+
+      throw e;
+    }
+  }),
 });
