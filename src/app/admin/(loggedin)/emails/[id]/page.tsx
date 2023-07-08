@@ -11,6 +11,7 @@ import {useEffect} from 'react';
 import {useRouter} from 'next/navigation';
 import {useTranslation} from 'react-i18next';
 import {Headline} from '~/components/headline';
+import {toast} from 'react-toastify';
 
 const EmlDropzone = ({onNewMessage}: {onNewMessage: (email: Partial<Email>) => void}) => {
   const {t} = useTranslation(undefined, {keyPrefix: 'admin.emails.edit'});
@@ -76,13 +77,17 @@ export default function Page({params: {id}}: {params: {id: string}}) {
   }, [getMail.data, isCreate]);
 
   const onSubmit = async (data: Partial<Email>) => {
-    if (isCreate) {
-      await addMail.mutateAsync({email: data as Required<Email>});
-    } else {
-      await updateMail.mutateAsync({id: id, email: data as Required<Email>});
-    }
+    try {
+      if (isCreate) {
+        await addMail.mutateAsync({email: data as Required<Email>});
+      } else {
+        await updateMail.mutateAsync({id: id, email: data as Required<Email>});
+      }
 
-    router.push('/admin/emails');
+      router.push('/admin/emails');
+    } catch (e) {
+      toast.error(t('errorDuringSave'));
+    }
   };
 
   const onNewMessage = (message: Partial<Email>) => {

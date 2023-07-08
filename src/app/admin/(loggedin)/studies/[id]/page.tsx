@@ -14,6 +14,7 @@ import SelectField from '~/components/forms/fields/SelectField';
 import {useRouter} from 'next/navigation';
 import {useTranslation} from 'react-i18next';
 import {Headline} from '~/components/headline';
+import {toast} from 'react-toastify';
 
 type FormFolder = Omit<Folder, 'studyId' | 'id'>;
 type FormEmail = Omit<StudyEmail, 'studyId' | 'id'>;
@@ -112,20 +113,23 @@ export default function PageUpsert({params: {id}}: {params: {id: string}}) {
   }, [getStudy.data, isCreate]);
 
   const onSubmit = async (data: Partial<Study>) => {
-    if (isCreate) {
-      await addStudy.mutateAsync({
-        study: {
-          ...(data as Required<Study>),
-          startText: data.startText ?? undefined,
-          endText: data.endText ?? undefined,
-        },
-      });
-    } else {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      await updateStudy.mutateAsync({id: id, study: data as any});
+    try {
+      if (isCreate) {
+        await addStudy.mutateAsync({
+          study: {
+            ...(data as Required<Study>),
+            startText: data.startText ?? undefined,
+            endText: data.endText ?? undefined,
+          },
+        });
+      } else {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        await updateStudy.mutateAsync({id: id, study: data as any});
+      }
+      router.push('/admin/studies');
+    } catch (e) {
+      toast.error(t('errorDuringSave'));
     }
-
-    router.push('/admin/studies');
   };
 
   return (
