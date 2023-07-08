@@ -40,8 +40,8 @@ export default function LoggedinLayout({children}: {children: React.ReactNode}) 
   const {t} = useTranslation();
 
   return (
-    <div className='min-h-0 w-full overflow-y-auto'>
-      <div className='hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col'>
+    <div className='min-h-0 w-full min-w-[50rem] overflow-y-auto bg-gray-50'>
+      <div className='fixed inset-y-0 z-50 flex w-72 flex-col'>
         <div className='flex grow flex-col gap-y-5 overflow-y-auto bg-gray-900 px-6 pb-4'>
           <div className='flex h-16 shrink-0 items-center'></div>
           <nav className='flex flex-1 flex-col'>
@@ -70,7 +70,7 @@ export default function LoggedinLayout({children}: {children: React.ReactNode}) 
         </div>
       </div>
 
-      <div className='lg:pl-72'>
+      <div className='pl-72'>
         <div className='sticky top-0 z-40 flex h-16 shrink-0 items-center gap-x-4 border-b border-gray-200 bg-white px-4 shadow-sm sm:gap-x-6 sm:px-6 lg:px-8'>
           <div className='h-6 w-px bg-gray-900/10 lg:hidden' aria-hidden='true' />
 
@@ -80,7 +80,7 @@ export default function LoggedinLayout({children}: {children: React.ReactNode}) 
                 <Menu.Button className='-m-1.5 flex items-center p-1.5'>
                   <span className='sr-only'>{t('admin.userMenu.open')}</span>
                   <UserCircleIcon className='h-8 w-8 text-gray-400' aria-hidden='true' />
-                  <span className='hidden lg:flex lg:items-center'>
+                  <span className='flex items-center'>
                     <span className='ml-4 text-sm font-semibold leading-6 text-gray-900' aria-hidden='true'>
                       {session.data?.user?.email}
                     </span>
