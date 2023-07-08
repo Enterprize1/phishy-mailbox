@@ -1,0 +1,5 @@
+@import "react-toastify/dist/ReactToastify.min.css";
+
+:root {
+    --toastify-color-progress-light: rgb(79, 70, 229);
+}

@@ -26,6 +26,11 @@
     "title": "Mailbox"
   },
   "admin": {
+    "confirm": {
+      "title": "Are you sure?",
+      "confirmation": "Continue",
+      "cancel": "Cancel"
+    },
     "login": {
       "title": "Login",
       "invalid": "Invalid credentials.",
@@ -48,6 +53,9 @@
         "delete": "Delete",
         "emails": "Emails",
         "create": "Create",
+        "deleteConfirm": "Are you sure you want to delete this email?",
+        "deletedSuccess": "E-Mail deleted successfully.",
+        "deletedError": "E-Mail could not be deleted. Is it still used in a study?",
         "uploadMultiple": "Upload Multiple",
         "dragDrop": "Drag and drop .eml files here or click to select them"
       },
@@ -76,7 +84,10 @@
         "delete": "Delete",
         "title": "Studies",
         "create": "Create",
-        "export": "Export"
+        "export": "Export",
+        "deleteConfirm": "Are you sure you want to delete this study? All data will be lost.",
+        "deleteSuccess": "Study deleted successfully",
+        "deleteError": "Study could not be deleted"
       },
       "edit": {
         "createTitle": "Create Study",

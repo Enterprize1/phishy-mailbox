@@ -160,6 +160,78 @@ export const studyRouter = createTRPCRouter({
         });
       });
     }),
+  delete: protectedProcedure.input(z.string().uuid()).mutation(async ({ctx, input}) => {
+    const study = await ctx.prisma.study.findUnique({
+      where: {
+        id: input,
+      },
+      include: {
+        folder: true,
+        email: true,
+        participation: {
+          include: {
+            emails: {
+              include: {
+                events: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!study) {
+      throw new Error('Study not found');
+    }
+
+    return ctx.prisma.$transaction(async (tx) => {
+      await tx.participationEmailEvent.deleteMany({
+        where: {
+          id: {
+            in: study.participation.flatMap((p) => p.emails.flatMap((e) => e.events.map((ev) => ev.id))),
+          },
+        },
+      });
+
+      await tx.participationEmail.deleteMany({
+        where: {
+          id: {
+            in: study.participation.flatMap((p) => p.emails.map((e) => e.id)),
+          },
+        },
+      });
+
+      await tx.participation.deleteMany({
+        where: {
+          id: {
+            in: study.participation.map((p) => p.id),
+          },
+        },
+      });
+
+      await tx.folder.deleteMany({
+        where: {
+          id: {
+            in: study.folder.map((f) => f.id),
+          },
+        },
+      });
+
+      await tx.studyEmail.deleteMany({
+        where: {
+          id: {
+            in: study.email.map((e) => e.id),
+          },
+        },
+      });
+
+      await tx.study.delete({
+        where: {
+          id: input,
+        },
+      });
+    });
+  }),
   export: protectedProcedure.input(z.string().uuid()).mutation(async ({ctx, input}) => {
     const study = await ctx.prisma.study.findUnique({
       where: {

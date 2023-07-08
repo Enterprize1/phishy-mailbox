@@ -88,6 +88,7 @@ export default function PageUpsert({params: {id}}: {params: {id: string}}) {
     defaultValues: {
       folder: [],
       email: [],
+      durationInMinutes: 10,
     },
   });
   const addStudy = trpc.study.add.useMutation();
@@ -127,7 +128,7 @@ export default function PageUpsert({params: {id}}: {params: {id: string}}) {
       <h2 className='my-4 text-xl font-bold'>{isCreate ? t('createTitle') : t('editTitle')}</h2>
       <Form builder={builder} onSubmit={onSubmit} className='flex flex-col'>
         <div className='flex flex-wrap gap-8'>
-          <InputField label={t('name')} on={builder.fields.name} />
+          <InputField label={t('name')} on={builder.fields.name} rules={{required: true}} />
           <InputField
             label={t('durationInMinutes')}
             on={builder.fields.durationInMinutes}
