@@ -13,6 +13,7 @@ import {CheckboxField} from '~/components/forms/fields/CheckboxField';
 import SelectField from '~/components/forms/fields/SelectField';
 import {useRouter} from 'next/navigation';
 import {useTranslation} from 'react-i18next';
+import {Headline} from '~/components/headline';
 
 type FormFolder = Omit<Folder, 'studyId' | 'id'>;
 type FormEmail = Omit<StudyEmail, 'studyId' | 'id'>;
@@ -53,9 +54,13 @@ const ParticipationTable: FC<{studyId: string}> = ({studyId}) => {
 
   return (
     <>
-      <h3 className='mb-4 mt-16 text-xl font-bold'>{t('title')}</h3>
+      <Headline size={1} className='mb-4 mt-16'>
+        {t('title')}
+      </Headline>
       <SimpleTable columns={participantsTableColumns} items={participants} />
-      <h4 className='text-md mb-2 mt-8'>{t('addTitle')}</h4>
+      <Headline size={2} className='mt-8'>
+        {t('addTitle')}
+      </Headline>
       <Form
         builder={builder}
         onSubmit={async (data) => {
@@ -124,8 +129,10 @@ export default function PageUpsert({params: {id}}: {params: {id: string}}) {
   };
 
   return (
-    <>
-      <h2 className='my-4 text-xl font-bold'>{isCreate ? t('createTitle') : t('editTitle')}</h2>
+    <div className='max-w-6xl'>
+      <Headline size={1} className='mb-4'>
+        {isCreate ? t('createTitle') : t('editTitle')}
+      </Headline>
       <Form builder={builder} onSubmit={onSubmit} className='flex flex-col'>
         <div className='flex flex-wrap gap-8'>
           <InputField label={t('name')} on={builder.fields.name} rules={{required: true}} />
@@ -135,7 +142,9 @@ export default function PageUpsert({params: {id}}: {params: {id: string}}) {
             rules={{valueAsNumber: true}}
           />
         </div>
-        <h3 className='mb-4 mt-8 text-lg font-bold'>{t('beforeStartHeader')}</h3>
+        <Headline size={2} className='mt-4'>
+          {t('beforeStartHeader')}
+        </Headline>
         <TextArea label={t('explanationText')} on={builder.fields.startText} />
         <InputField
           label={t('linkBeforeStart')}
@@ -143,9 +152,11 @@ export default function PageUpsert({params: {id}}: {params: {id: string}}) {
           helperText={t('linkBeforeStartHelper')}
         />
 
-        <h3 className='mb-4 mt-8 text-lg font-bold'>{t('duringStudyHeader')}</h3>
+        <Headline size={2} className='mb-2 mt-4'>
+          {t('duringStudyHeader')}
+        </Headline>
 
-        <h3 className='text-md mb-2'>{t('folders')}</h3>
+        <Headline size={3}>{t('folders')}</Headline>
         <MasterDetailView
           on={builder.fields.folder}
           detailLabel={(v) => v.name}
@@ -164,7 +175,9 @@ export default function PageUpsert({params: {id}}: {params: {id: string}}) {
           )}
         </MasterDetailView>
 
-        <h3 className='text-md mb-2 mt-8'>{t('emails')}</h3>
+        <Headline size={3} className='mt-4'>
+          {t('emails')}
+        </Headline>
         <MasterDetailView
           on={builder.fields.email}
           detailLabel={(v) => emails.data?.find((e) => e.id === v.emailId)?.backofficeIdentifier ?? 'E-Mail'}
@@ -188,9 +201,9 @@ export default function PageUpsert({params: {id}}: {params: {id: string}}) {
             </div>
           )}
         </MasterDetailView>
-
-        <h3 className='mb-4 mt-8 text-lg font-bold'>{t('afterStudyHeader')}</h3>
-
+        <Headline size={2} className='mt-4'>
+          {t('afterStudyHeader')}
+        </Headline>
         <TextArea label={t('explanationText')} on={builder.fields.endText} />
         <InputField
           label={t('linkAfterEnd')}
@@ -206,6 +219,6 @@ export default function PageUpsert({params: {id}}: {params: {id: string}}) {
         </button>
       </Form>
       {!isCreate && <ParticipationTable studyId={id} />}
-    </>
+    </div>
   );
 }

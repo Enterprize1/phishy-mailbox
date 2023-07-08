@@ -9,6 +9,7 @@ import {useDropzone} from 'react-dropzone';
 import {LinearProgress} from '@mui/material';
 import {toast} from 'react-toastify';
 import {useConfirm} from 'material-ui-confirm';
+import {Headline} from '~/components/headline';
 
 const UploadMultiple: FC<{refetch: () => void}> = ({refetch}) => {
   const {t} = useTranslation(undefined, {keyPrefix: 'admin.emails.list'});
@@ -48,7 +49,9 @@ const UploadMultiple: FC<{refetch: () => void}> = ({refetch}) => {
 
   return (
     <>
-      <h3 className='mb-4 mt-8 text-lg font-bold'>{t('uploadMultiple')}</h3>
+      <Headline size={2} className='mb-4 mt-8'>
+        {t('uploadMultiple')}
+      </Headline>
       <div
         {...getRootProps({
           className:
@@ -121,7 +124,7 @@ export default function Page() {
   return (
     <div className='max-w-6xl'>
       <div className='mb-2 flex content-center justify-between'>
-        <h2 className='my-4 text-xl font-bold'>{t('emails')}</h2>
+        <Headline size={1}>{t('emails')}</Headline>
         <Link
           className='flex justify-center self-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600'
           href='/admin/emails/create'

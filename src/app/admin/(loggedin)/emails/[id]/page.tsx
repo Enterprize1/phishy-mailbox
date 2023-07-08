@@ -10,6 +10,7 @@ import EmailDisplay from '~/components/email-display';
 import {useEffect} from 'react';
 import {useRouter} from 'next/navigation';
 import {useTranslation} from 'react-i18next';
+import {Headline} from '~/components/headline';
 
 const EmlDropzone = ({onNewMessage}: {onNewMessage: (email: Partial<Email>) => void}) => {
   const {t} = useTranslation(undefined, {keyPrefix: 'admin.emails.edit'});
@@ -52,7 +53,13 @@ const EmlDropzone = ({onNewMessage}: {onNewMessage: (email: Partial<Email>) => v
 };
 
 export default function Page({params: {id}}: {params: {id: string}}) {
-  const builder = useFormBuilder<Partial<Email>>();
+  const builder = useFormBuilder<Partial<Email>>({
+    defaultValues: {
+      subject: '',
+      body: '',
+      headers: '',
+    },
+  });
   const addMail = trpc.email.add.useMutation();
   const updateMail = trpc.email.update.useMutation();
   const {t} = useTranslation(undefined, {keyPrefix: 'admin.emails.edit'});
@@ -86,15 +93,21 @@ export default function Page({params: {id}}: {params: {id: string}}) {
 
   return (
     <div className='max-w-6xl'>
-      <h2 className='mb-4 text-lg'>{isCreate ? t('createEmail') : t('editEmail')}</h2>
-      <h3 className='text-sm font-bold'>{t('uploadEmail')}</h3>
+      <Headline size={1} className='mb-4'>
+        {isCreate ? t('createEmail') : t('editEmail')}
+      </Headline>
+      <Headline size={2} className='mb-4'>
+        {t('uploadEmail')}
+      </Headline>
       <EmlDropzone onNewMessage={onNewMessage} />
-      <h3 className='mt-4 text-sm font-bold'>{isCreate ? t('createEmailManually') : t('editEmailManually')}</h3>
+      <Headline size={2} className='mt-8'>
+        {isCreate ? t('createEmailManually') : t('editEmailManually')}
+      </Headline>
       <Form builder={builder} onSubmit={onSubmit}>
         <div className='my-2 flex flex-col gap-x-8 gap-y-2'>
-          <InputField label={t('identifier')} on={builder.fields.backofficeIdentifier} />
+          <InputField label={t('identifier')} on={builder.fields.backofficeIdentifier} rules={{required: true}} />
           <fieldset className='flex flex-wrap'>
-            <legend className='text-sm font-bold'>{t('sender')}</legend>
+            <legend className='text-md font-semibold'>{t('sender')}</legend>
             <div className='flex gap-4'>
               <InputField label={t('senderEmail')} on={builder.fields.senderMail} className='mr-2' />
               <InputField label={t('senderName')} on={builder.fields.senderName} />
@@ -102,9 +115,12 @@ export default function Page({params: {id}}: {params: {id: string}}) {
           </fieldset>
           <InputField label={t('subject')} on={builder.fields.subject} />
         </div>
-        <h3 className='text-sm font-bold'>{t('header')}</h3>
+        <Headline size={3}>{t('header')}</Headline>
         <CodeTextarea label={t('header')} on={builder.fields.headers} language='text' />
-        <h3 className='mt-4 text-sm font-bold'>{t('content')}</h3>
+
+        <Headline size={3} className='mt-4'>
+          {t('content')}
+        </Headline>
         <CodeTextarea label={t('content')} on={builder.fields.body} />
         <button
           type='submit'
