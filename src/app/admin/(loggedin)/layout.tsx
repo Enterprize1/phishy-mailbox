@@ -2,7 +2,7 @@
 
 import {FC, Fragment, PropsWithChildren, PropsWithoutRef, SVGProps} from 'react';
 import {Menu, Transition} from '@headlessui/react';
-import {EnvelopeOpenIcon, ListBulletIcon, UserCircleIcon} from '@heroicons/react/24/outline';
+import {EnvelopeOpenIcon, ListBulletIcon, UserCircleIcon, UserGroupIcon} from '@heroicons/react/24/outline';
 import {ChevronDownIcon} from '@heroicons/react/20/solid';
 import clsx from 'clsx';
 import {signOut, useSession} from 'next-auth/react';
@@ -56,6 +56,11 @@ export default function LoggedinLayout({children}: {children: React.ReactNode}) 
                   <li>
                     <SidebarNavLink Icon={ListBulletIcon} href='/admin/studies'>
                       {t('admin.sidebar.studies')}
+                    </SidebarNavLink>
+                  </li>
+                  <li>
+                    <SidebarNavLink Icon={UserGroupIcon} href='/admin/users'>
+                      {t('admin.sidebar.users')}
                     </SidebarNavLink>
                   </li>
                 </ul>

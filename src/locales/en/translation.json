@@ -44,7 +44,8 @@
     },
     "sidebar": {
       "emails": "Emails",
-      "studies": "Studies"
+      "studies": "Studies",
+      "users": "Users"
     },
     "emails": {
       "list": {
@@ -122,6 +123,27 @@
           "amount": "Amount",
           "add": "Add"
         }
+      }
+    },
+    "users": {
+      "list": {
+        "edit": "Edit",
+        "delete": "Delete",
+        "users": "Users",
+        "email": "Email",
+        "create": "Create",
+        "deleteConfirm": "Are you sure you want to delete this user?",
+        "deletedSuccess": "User deleted successfully.",
+        "deletedError": "User could not be deleted. Is it still used?"
+      },
+      "edit": {
+        "createUser": "Create User",
+        "editUser": "Edit User",
+        "email": "Email",
+        "password": "Password",
+        "passwordHint": "Leave empty to keep the current password",
+        "save": "Save",
+        "errorDuringSave": "An error occurred during saving. Are all fields filled in correctly?"
       }
     }
   },

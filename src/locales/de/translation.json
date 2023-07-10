@@ -44,7 +44,8 @@
     },
     "sidebar": {
       "emails": "E-Mails",
-      "studies": "Studien"
+      "studies": "Studien",
+      "users": "Nutzende"
     },
     "emails": {
       "list": {
@@ -122,6 +123,27 @@
           "amount": "Anzahl",
           "add": "Hinzufügen"
         }
+      }
+    },
+    "users": {
+      "list": {
+        "edit": "Bearbeiten",
+        "delete": "Löschen",
+        "users": "Nutzende",
+        "email": "E-Mail",
+        "create": "Anlegen",
+        "deleteConfirm": "Sind Sie sich sicher, dass Sie diese/n Nutzer:in löschen möchten?",
+        "deletedSuccess": "Nutzer:in erfolgreich gelöscht",
+        "deletedError": "Nutzer:in konnte nicht gelöscht werden"
+      },
+      "edit": {
+        "createUser": "Nutzenden anlegen",
+        "editUser": "Nutzenden bearbeiten",
+        "email": "E-Mail",
+        "password": "Passwort",
+        "passwordHint": "Leer lassen, um das Passwort nicht zu ändern",
+        "save": "Speichern",
+        "errorDuringSave": "Fehler beim Speichern. Sind alle Felder korrekt ausgefüllt?"
       }
     }
   },
