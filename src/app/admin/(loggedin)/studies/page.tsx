@@ -8,6 +8,7 @@ import papaparse from 'papaparse';
 import {useTranslation} from 'react-i18next';
 import {toast} from 'react-toastify';
 import {useConfirm} from 'material-ui-confirm';
+import {Headline} from '~/components/headline';
 
 const ExportButton: FC<{studyId: string}> = ({studyId}) => {
   const {t} = useTranslation(undefined, {keyPrefix: 'admin.studies.list'});
@@ -92,9 +93,9 @@ export default function Page() {
   );
 
   return (
-    <>
+    <div className='max-w-6xl'>
       <div className='mb-2 flex content-center justify-between'>
-        <h2>{t('title')}</h2>
+        <Headline size={1}>{t('title')}</Headline>
         <Link
           className='flex justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600'
           href='/admin/studies/create'
@@ -103,6 +104,6 @@ export default function Page() {
         </Link>
       </div>
       <SimpleTable columns={studiesColumns} items={data ?? []} />
-    </>
+    </div>
   );
 }
