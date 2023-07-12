@@ -150,7 +150,7 @@
   },
   "components": {
     "masterDetailView": {
-      "addNew": "Neu hinzufügen",
+      "addNew": "Hinzufügen",
       "selectElement": "Wählen Sie ein Element aus der Liste zum Bearbeiten aus",
       "remove": "Entfernen"
     },

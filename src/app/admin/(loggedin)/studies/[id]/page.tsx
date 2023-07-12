@@ -9,7 +9,6 @@ import {SimpleTable, SimpleTableColumn} from '~/components/simple-table';
 import {format} from 'date-fns';
 import TextArea from '~/components/forms/fields/TextArea';
 import MasterDetailView from '~/components/forms/fields/MasterDetailView';
-import {CheckboxField} from '~/components/forms/fields/CheckboxField';
 import SelectField from '~/components/forms/fields/SelectField';
 import {useRouter} from 'next/navigation';
 import {useTranslation} from 'react-i18next';
@@ -90,8 +89,9 @@ const ParticipationTable: FC<{studyId: string}> = ({studyId}) => {
 
 export default function PageUpsert({params: {id}}: {params: {id: string}}) {
   const {t} = useTranslation(undefined, {keyPrefix: 'admin.studies.edit'});
-  const builder = useFormBuilder<Partial<Study> & {folder: FormFolder[]; email: FormEmail[]}>({
+  const builder = useFormBuilder<Study & {folder: FormFolder[]; email: FormEmail[]}>({
     defaultValues: {
+      name: '',
       folder: [],
       email: [],
       durationInMinutes: 10,
@@ -112,12 +112,12 @@ export default function PageUpsert({params: {id}}: {params: {id: string}}) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [getStudy.data, isCreate]);
 
-  const onSubmit = async (data: Partial<Study>) => {
+  const onSubmit = async (data: Study & {folder: FormFolder[]; email: FormEmail[]}) => {
     try {
       if (isCreate) {
         await addStudy.mutateAsync({
           study: {
-            ...(data as Required<Study>),
+            ...data,
             startText: data.startText ?? undefined,
             endText: data.endText ?? undefined,
           },
@@ -167,14 +167,12 @@ export default function PageUpsert({params: {id}}: {params: {id: string}}) {
           defaultValue={{
             name: '',
             order: builder.fields.folder.$useFieldArray().fields.length,
-            isPhishing: false,
           }}
           reorder
         >
           {(on) => (
             <div className='flex flex-col'>
               <InputField label={t('folderName')} on={on.name} />
-              <CheckboxField label={t('phishing')} on={on.isPhishing} />
             </div>
           )}
         </MasterDetailView>
@@ -186,8 +184,7 @@ export default function PageUpsert({params: {id}}: {params: {id: string}}) {
           on={builder.fields.email}
           detailLabel={(v) => emails.data?.find((e) => e.id === v.emailId)?.backofficeIdentifier ?? 'E-Mail'}
           defaultValue={{
-            emailId: '',
-            isPhishing: false,
+            emailId: null as any,
           }}
         >
           {(on) => (
@@ -201,7 +198,6 @@ export default function PageUpsert({params: {id}}: {params: {id: string}}) {
                 label={t('email')}
                 on={on.emailId}
               />
-              <CheckboxField label={t('phishing')} on={on.isPhishing} />
             </div>
           )}
         </MasterDetailView>

@@ -370,7 +370,6 @@ export default function Run({params: {code}}: {params: {code: string}}) {
       folder: {
         id: 'inbox',
         name: 'Inbox',
-        isPhishing: false,
         order: -1,
         studyId: data.study.id,
       },

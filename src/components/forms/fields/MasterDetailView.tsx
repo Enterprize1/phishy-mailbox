@@ -29,8 +29,8 @@ function MasterDetailView<T extends FieldValues>({
 
     if (fieldArray.fields.length === 1) {
       setSelectedIdx(null);
-    } else if (selectedIdx >= fieldArray.fields.length - 1) {
-      setSelectedIdx(fieldArray.fields.length - 1);
+    } else if (selectedIdx > 0) {
+      setSelectedIdx(selectedIdx - 1);
     }
 
     fieldArray.remove(selectedIdx);
@@ -39,49 +39,62 @@ function MasterDetailView<T extends FieldValues>({
   return (
     <>
       <div className='flex h-64 rounded border border-gray-200'>
-        <div className='flex w-48 flex-shrink-0 flex-col overflow-y-auto border-r border-r-gray-300'>
-          {value?.map((v, i) => (
-            <div
-              key={i}
-              className={twMerge(
-                'flex border-b border-b-gray-300 px-2 py-2',
-                i === selectedIdx ? 'bg-indigo-300' : 'hover:bg-indigo-200',
-              )}
-            >
-              <button
+        <div className='flex w-48 flex-shrink-0 flex-col border-r border-r-gray-300'>
+          <div className='flex flex-shrink flex-grow flex-col overflow-y-auto'>
+            {value?.map((v, i) => (
+              <div
                 key={i}
-                className='mr-2 flex flex-grow gap-4 text-left'
-                type='button'
-                onClick={() => setSelectedIdx(i)}
+                className={twMerge(
+                  'flex border-b border-b-gray-300 px-2 py-2',
+                  i === selectedIdx ? 'bg-indigo-300' : 'hover:bg-indigo-200',
+                )}
               >
-                {detailLabel(v)}
-              </button>
-              {reorder && (
                 <button
+                  key={i}
+                  className='mr-2 flex flex-grow gap-4 text-left'
                   type='button'
-                  disabled={i === 0}
-                  className='disabled:invisible'
-                  onClick={() => fieldArray.move(i, i - 1)}
+                  onClick={() => setSelectedIdx(i)}
                 >
-                  <ArrowUpIcon className='h-4 w-4' />
+                  {detailLabel(v)}
                 </button>
-              )}
-              {reorder && (
-                <button
-                  type='button'
-                  disabled={i === value.length - 1}
-                  className='disabled:invisible'
-                  onClick={() => fieldArray.move(i, i + 1)}
-                >
-                  <ArrowDownIcon className='h-4 w-4' />
-                </button>
-              )}
-            </div>
-          ))}
+                {reorder && (
+                  <button
+                    type='button'
+                    disabled={i === 0}
+                    className='disabled:invisible'
+                    onClick={() => {
+                      fieldArray.move(i, i - 1);
+                      if (selectedIdx === i) setSelectedIdx(i - 1);
+                      if (selectedIdx === i - 1) setSelectedIdx(i);
+                    }}
+                  >
+                    <ArrowUpIcon className='h-4 w-4' />
+                  </button>
+                )}
+                {reorder && (
+                  <button
+                    type='button'
+                    disabled={i === value.length - 1}
+                    className='disabled:invisible'
+                    onClick={() => {
+                      fieldArray.move(i, i + 1);
+                      if (selectedIdx === i) setSelectedIdx(i + 1);
+                      if (selectedIdx === i + 1) setSelectedIdx(i);
+                    }}
+                  >
+                    <ArrowDownIcon className='h-4 w-4' />
+                  </button>
+                )}
+              </div>
+            ))}
+          </div>
           <button
             type='button'
-            className='mt-auto flex items-center p-2 hover:bg-indigo-200'
-            onClick={() => fieldArray.append(defaultValue as any)}
+            className='mt-auto flex items-center border-t p-2 hover:bg-indigo-200'
+            onClick={() => {
+              fieldArray.append(defaultValue as any);
+              setSelectedIdx(fieldArray.fields.length);
+            }}
           >
             <PlusIcon className='mb-1 h-4 w-4' />
             {t('addNew')}
@@ -96,14 +109,14 @@ function MasterDetailView<T extends FieldValues>({
               key={
                 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                 // @ts-ignore
-                fieldArray.fields[selectedIdx].key
+                fieldArray.fields[selectedIdx]?.key
               }
             >
               <div className='flex-grow p-4'>{children(on[selectedIdx])}</div>
               <button
                 type='button'
                 onClick={() => removeCurrent()}
-                className='mr-2 mt-2 flex-grow-0 self-start text-sm text-red-600'
+                className='mr-2 mt-8 flex-grow-0 self-start text-sm text-red-600'
               >
                 {t('remove')}
               </button>

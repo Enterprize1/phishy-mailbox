@@ -23,7 +23,6 @@ model Folder {
   id                 String               @id @default(uuid()) @db.Uuid
   studyId            String               @db.Uuid
   name               String
-  isPhishing         Boolean
   order              Int
   study              Study                @relation(fields: [studyId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "folder_study_id_study_id_fk")
   ParticipationEmail ParticipationEmail[]
@@ -81,7 +80,6 @@ model StudyEmail {
   study      Study   @relation(fields: [studyId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "study_email_study_id_study_id_fk")
   emailId    String  @db.Uuid
   email      Email   @relation(fields: [emailId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "study_email_email_id_email_id_fk")
-  isPhishing Boolean
 }
 
 model User {

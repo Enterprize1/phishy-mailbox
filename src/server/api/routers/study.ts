@@ -23,15 +23,38 @@ export const studyRouter = createTRPCRouter({
           durationInMinutes: z.number(),
           startText: z.string().default(''),
           startLinkTemplate: z.string().optional().nullable(),
+          folder: z.array(
+            z.object({
+              name: z.string(),
+              order: z.number().optional(),
+            }),
+          ),
+          email: z.array(
+            z.object({
+              emailId: z.string().nullable(),
+            }),
+          ),
           endText: z.string().default(''),
           endLinkTemplate: z.string().optional().nullable(),
         }),
       }),
     )
     .mutation(async ({ctx, input}) => {
+      const {folder, email, ...data} = input.study;
+
       return ctx.prisma.study.create({
         data: {
-          ...input.study,
+          ...data,
+          folder: {
+            createMany: {
+              data: folder.map((f, i) => ({name: f.name, order: i})),
+            },
+          },
+          email: {
+            createMany: {
+              data: email.filter((e): e is {emailId: string} => !!e.emailId),
+            },
+          },
         },
       });
     }),
@@ -66,14 +89,12 @@ export const studyRouter = createTRPCRouter({
               id: z.string().uuid().optional(),
               name: z.string(),
               order: z.number(),
-              isPhishing: z.boolean(),
             }),
           ),
           email: z.array(
             z.object({
               id: z.string().uuid().optional(),
               emailId: z.string().uuid(),
-              isPhishing: z.boolean(),
             }),
           ),
         }),
@@ -95,6 +116,7 @@ export const studyRouter = createTRPCRouter({
 
         const foldersToDelete = currentStudy.folder.filter((f) => !folder.some((f2) => f2.id === f.id));
         const emailsToDelete = currentStudy.email.filter((e) => !email.some((f) => f.id === e.id));
+        const folderWithOrder = folder.map((f, order) => ({...f, order}));
 
         return ctx.prisma.study.update({
           where: {
@@ -108,7 +130,7 @@ export const studyRouter = createTRPCRouter({
                   in: foldersToDelete.map((f) => f.id),
                 },
               },
-              updateMany: folder
+              updateMany: folderWithOrder
                 .filter((f) => f.id)
                 .map((f) => ({
                   where: {
@@ -117,16 +139,14 @@ export const studyRouter = createTRPCRouter({
                   data: {
                     name: f.name,
                     order: f.order,
-                    isPhishing: f.isPhishing,
                   },
                 })),
               createMany: {
-                data: folder
+                data: folderWithOrder
                   .filter((f) => !f.id)
                   .map((f) => ({
                     name: f.name,
                     order: f.order,
-                    isPhishing: f.isPhishing,
                   })),
               },
             },
@@ -144,7 +164,6 @@ export const studyRouter = createTRPCRouter({
                   },
                   data: {
                     emailId: f.emailId,
-                    isPhishing: f.isPhishing,
                   },
                 })),
               createMany: {
@@ -152,7 +171,6 @@ export const studyRouter = createTRPCRouter({
                   .filter((f) => !f.id)
                   .map((f) => ({
                     emailId: f.emailId,
-                    isPhishing: f.isPhishing,
                   })),
               },
             },
