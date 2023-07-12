@@ -57,17 +57,14 @@ async function main() {
             data: [
               {
                 name: 'Jetzt bearbeiten',
-                isPhishing: false,
                 order: 0,
               },
               {
                 name: 'Später bearbeiten',
-                isPhishing: false,
                 order: 1,
               },
               {
                 name: 'Junk',
-                isPhishing: true,
                 order: 2,
               },
             ],
@@ -78,11 +75,9 @@ async function main() {
             data: [
               {
                 emailId: emails.find((e) => e.backofficeIdentifier === 'Not-Phishing').id,
-                isPhishing: false,
               },
               {
                 emailId: emails.find((e) => e.backofficeIdentifier === 'Phishing').id,
-                isPhishing: true,
               },
             ],
           },

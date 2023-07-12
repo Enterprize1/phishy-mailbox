@@ -40,6 +40,7 @@
     },
     "userMenu": {
       "open": "Open User Menu",
+      "changePassword": "Change Password",
       "signOut": "Sign Out"
     },
     "sidebar": {
@@ -149,7 +150,7 @@
   },
   "components": {
     "masterDetailView": {
-      "addNew": "Add New",
+      "addNew": "Add",
       "selectElement": "Select an element on the left to edit",
       "remove": "Remove"
     },
