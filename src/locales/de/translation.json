@@ -40,6 +40,7 @@
     },
     "userMenu": {
       "open": "Nutzer-Menü öffnen",
+      "changePassword": "Passwort ändern",
       "signOut": "Abmelden"
     },
     "sidebar": {
@@ -137,8 +138,8 @@
         "deletedError": "Nutzer:in konnte nicht gelöscht werden"
       },
       "edit": {
-        "createUser": "Nutzenden anlegen",
-        "editUser": "Nutzenden bearbeiten",
+        "createUser": "Nutzer:in anlegen",
+        "editUser": "Nutzer:in bearbeiten",
         "email": "E-Mail",
         "password": "Passwort",
         "passwordHint": "Leer lassen, um das Passwort nicht zu ändern",

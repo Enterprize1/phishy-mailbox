@@ -40,6 +40,7 @@
     },
     "userMenu": {
       "open": "Open User Menu",
+      "changePassword": "Change Password",
       "signOut": "Sign Out"
     },
     "sidebar": {

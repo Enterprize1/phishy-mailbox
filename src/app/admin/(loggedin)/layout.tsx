@@ -110,6 +110,23 @@ export default function LoggedinLayout({children}: {children: React.ReactNode}) 
                             'block w-full px-3 py-1 text-sm leading-6 text-gray-900',
                           )}
                           onClick={async () => {
+                            if (session.data?.user?.name) {
+                              router.push(`admin/users/${session.data.user.name}`);
+                            }
+                          }}
+                        >
+                          {t('admin.userMenu.changePassword')}
+                        </button>
+                      )}
+                    </Menu.Item>
+                    <Menu.Item>
+                      {({active}) => (
+                        <button
+                          className={clsx(
+                            active && 'bg-gray-50',
+                            'block w-full px-3 py-1 text-sm leading-6 text-gray-900',
+                          )}
+                          onClick={async () => {
                             await signOut({
                               redirect: false,
                             });
