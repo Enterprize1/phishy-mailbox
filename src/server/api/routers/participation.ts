@@ -24,8 +24,9 @@ export const participationRouter = createTRPCRouter({
       }
 
       for (let i = 0; i < input.count; i++) {
-        const totalCount = await ctx.prisma.study.count();
+        const totalCount = await ctx.prisma.participation.count({where: {studyId: study.id}});
         const codeLength = Math.max(2, Math.ceil(Math.log10((totalCount + 1) * 2)));
+
         const getNewRandomCode = async (): Promise<string> => {
           const code = Math.floor(Math.random() * 10 ** codeLength)
             .toString()
