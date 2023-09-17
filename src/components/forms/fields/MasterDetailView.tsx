@@ -1,7 +1,7 @@
 import {FormBuilder} from '@atmina/formbuilder';
 import {ArrowDownIcon, ArrowUpIcon} from '@heroicons/react/24/solid';
 import {twMerge} from 'tailwind-merge';
-import {useCallback, useState} from 'react';
+import {useCallback, useState, KeyboardEvent} from 'react';
 import {PlusIcon} from '@heroicons/react/20/solid';
 import {FieldValues} from 'react-hook-form';
 import {useTranslation} from 'react-i18next';
@@ -36,9 +36,15 @@ function MasterDetailView<T extends FieldValues>({
     fieldArray.remove(selectedIdx);
   }, [fieldArray, selectedIdx]);
 
+  const preventEnterPress = useCallback((e: KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+    }
+  }, []);
+
   return (
     <>
-      <div className='flex h-64 rounded border border-gray-200'>
+      <div className='flex h-64 rounded border border-gray-200' onKeyDown={preventEnterPress}>
         <div className='flex w-48 flex-shrink-0 flex-col border-r border-r-gray-300'>
           <div className='flex flex-shrink flex-grow flex-col overflow-y-auto'>
             {value?.map((v, i) => (
