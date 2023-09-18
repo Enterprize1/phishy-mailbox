@@ -59,6 +59,7 @@
   },
   "devDependencies": {
     "@next/bundle-analyzer": "^13.4.2",
+    "@playwright/test": "^1.38.0",
     "@types/bcrypt": "^5.0.0",
     "@types/lodash.debounce": "^4.0.7",
     "@types/node": "20.1.4",
