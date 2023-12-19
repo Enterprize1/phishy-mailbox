@@ -10,9 +10,3 @@ services:
       - 5432:5432
     volumes:
       - ./src/db/migrations:/docker-entrypoint-initdb.d
-  app:
-    image: phishy-mailbox:latest
-    environment:
-      DATABASE_URL: postgresql://mailbox:mailbox@postgres:5432/mailbox?schema=public
-    ports:
-      - 3000:3000
