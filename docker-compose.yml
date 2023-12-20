@@ -11,8 +11,9 @@ services:
     volumes:
       - ./src/db/migrations:/docker-entrypoint-initdb.d
   app:
-    image: phishy-mailbox:latest
+    image: thorstenthiel/phishy-mailbox:latest
     environment:
       DATABASE_URL: postgresql://mailbox:mailbox@postgres:5432/mailbox?schema=public
+      NEXTAUTH_SECRET: secret1234256w5w4
     ports:
       - 3000:3000
