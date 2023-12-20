@@ -88,6 +88,10 @@
         "title": "Studien",
         "create": "Anlegen",
         "export": "Exportieren",
+        "participantsData": "Daten der Teilnahmen zur Auswertung",
+        "studyData": "Struktur der Studie zum Import",
+        "importStudy": "Studie importieren",
+        "dragDrop": "Ziehe eine exportierte .json Datei hier hin oder klicke um eine auszuwählen",
         "deleteConfirm": "Sind Sie sich sicher, dass Sie diese Studie löschen möchten? Dies entfernt alle Einstellungen, Teilnehmer und Daten.",
         "deleteSuccess": "Studie erfolgreich gelöscht",
         "deleteError": "Studie konnte nicht gelöscht werden."

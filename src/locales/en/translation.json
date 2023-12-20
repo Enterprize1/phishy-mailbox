@@ -88,6 +88,10 @@
         "title": "Studies",
         "create": "Create",
         "export": "Export",
+        "participantsData": "Participants Data for analysis",
+        "studyData": "Structure of Study for import",
+        "importStudy": "Import Study",
+        "dragDrop": "Drag and drop a exported .json file here or click to select one",
         "deleteConfirm": "Are you sure you want to delete this study? All data will be lost.",
         "deleteSuccess": "Study deleted successfully",
         "deleteError": "Study could not be deleted"
