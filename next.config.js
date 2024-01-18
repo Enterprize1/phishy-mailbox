@@ -7,6 +7,7 @@ const nextConfig = removeImports({
     appDir: true,
     esmExternals: true,
   },
+  output: 'standalone',
 });
 
 module.exports = nextConfig;
