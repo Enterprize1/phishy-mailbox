@@ -1,6 +1,6 @@
 #!/bin/sh
 
-yarn prisma db push
+prisma db push
 
 yarn node ./prisma/seed.js
 

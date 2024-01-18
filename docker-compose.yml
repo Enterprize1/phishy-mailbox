@@ -10,10 +10,21 @@ services:
       - 5432:5432
     volumes:
       - ./src/db/migrations:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U mailbox"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
   app:
     image: thorstenthiel/phishy-mailbox:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
     environment:
       DATABASE_URL: postgresql://mailbox:mailbox@postgres:5432/mailbox?schema=public
       NEXTAUTH_SECRET: secret1234256w5w4
     ports:
       - 3000:3000
+    depends_on:
+      postgres:
+        condition: service_healthy
