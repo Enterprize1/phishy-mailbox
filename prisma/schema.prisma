@@ -69,6 +69,7 @@ model Study {
   email             StudyEmail[]
   timerMode         TimerMode       @default(VISIBLE)
   durationInMinutes Int?
+  openParticipation Boolean         @default(false)
   startText         String
   startLinkTemplate String?
   endText           String?

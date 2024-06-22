@@ -4,6 +4,40 @@ import {addMinutes} from 'date-fns';
 import {EMailMovedEvent} from '~/server/api/routers/participationEvents';
 import {TRPCError} from '@trpc/server';
 import {TimerMode} from '.prisma/client';
+import {PrismaClient} from '@prisma/client';
+
+export async function createNewParticipation(prisma: PrismaClient, studyId: string) {
+  const totalCount = await prisma.participation.count();
+  const codeLength = Math.max(2, Math.ceil(Math.log10((totalCount + 1) * 2)));
+
+  const getNewRandomCode = async (): Promise<string> => {
+    const code = Math.floor(Math.random() * 10 ** codeLength)
+      .toString()
+      .padStart(codeLength, '0');
+
+    if (
+      await prisma.participation.findUnique({
+        where: {
+          code,
+        },
+      })
+    ) {
+      return getNewRandomCode();
+    }
+
+    return code;
+  };
+
+  const code = await getNewRandomCode();
+
+  return prisma.participation.create({
+    data: {
+      code,
+      studyId,
+      createdAt: new Date(),
+    },
+  });
+}
 
 export const participationRouter = createTRPCRouter({
   createMultiple: protectedProcedure
@@ -25,36 +59,7 @@ export const participationRouter = createTRPCRouter({
       }
 
       for (let i = 0; i < input.count; i++) {
-        const totalCount = await ctx.prisma.participation.count({where: {studyId: study.id}});
-        const codeLength = Math.max(2, Math.ceil(Math.log10((totalCount + 1) * 2)));
-
-        const getNewRandomCode = async (): Promise<string> => {
-          const code = Math.floor(Math.random() * 10 ** codeLength)
-            .toString()
-            .padStart(codeLength, '0');
-
-          if (
-            await ctx.prisma.participation.findUnique({
-              where: {
-                code,
-              },
-            })
-          ) {
-            return getNewRandomCode();
-          }
-
-          return code;
-        };
-
-        const code = await getNewRandomCode();
-
-        await ctx.prisma.participation.create({
-          data: {
-            code,
-            studyId: study.id,
-            createdAt: new Date(),
-          },
-        });
+        await createNewParticipation(ctx.prisma, study.id);
       }
     }),
   delete: protectedProcedure.input(z.string().uuid()).mutation(async ({ctx, input}) => {

@@ -100,6 +100,9 @@
         "createTitle": "Create Study",
         "editTitle": "Edit Study",
         "name": "Name",
+        "participationMode": "Participation Mode",
+        "participationModeOpen": "Open, the same link is used for all participants",
+        "participationModeClosed": "Closed, all participants are created beforehand",
         "beforeStartHeader": "Before Start",
         "explanationText": "Explanation Text",
         "linkBeforeStart": "Link Before Start",
@@ -130,7 +133,10 @@
           "title": "Participants",
           "addTitle": "Add More Participants",
           "amount": "Amount",
-          "add": "Add"
+          "add": "Add",
+          "openLink": "Link for open participation",
+          "copySuccess": "Link successfully copied",
+          "copyError": "Link could not be copied"
         }
       }
     },

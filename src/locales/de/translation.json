@@ -100,6 +100,9 @@
         "createTitle": "Studie anlegen",
         "editTitle": "Studie bearbeiten",
         "name": "Name",
+        "participationMode": "Teilnahmemodus",
+        "participationModeOpen": "Offen, es wird der gleiche Link für alle Teilnehmenden verwendet",
+        "participationModeClosed": "Geschlossen, alle Teilnehmenden werden angelegt",
         "beforeStartHeader": "Vor dem Start",
         "explanationText": "Erklärungstext",
         "linkBeforeStart": "Link vor Beginn",
@@ -130,7 +133,10 @@
           "title": "Teilnehmende",
           "addTitle": "Weitere Teilnehmende hinzufügen",
           "amount": "Anzahl",
-          "add": "Hinzufügen"
+          "add": "Hinzufügen",
+          "openLink": "Link zur freien Teilnahme",
+          "copySuccess": "Link erfolgreich kopiert",
+          "copyError": "Link konnte nicht kopiert werden"
         }
       }
     },

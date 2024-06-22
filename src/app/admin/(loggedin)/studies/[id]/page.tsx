@@ -15,6 +15,8 @@ import {useTranslation} from 'react-i18next';
 import {Headline} from '~/components/headline';
 import {toast} from 'react-toastify';
 import TimerMode = $Enums.TimerMode;
+import {IconButton, InputAdornment, TextField} from '@mui/material';
+import {DocumentDuplicateIcon} from '@heroicons/react/24/outline';
 
 type FormFolder = Omit<Folder, 'studyId' | 'id'>;
 type FormEmail = Omit<StudyEmail, 'studyId' | 'id'>;
@@ -58,6 +60,17 @@ const ParticipationTable: FC<{studyId: string}> = ({studyId}) => {
     [t, study],
   );
 
+  const link = window.location.origin + '/new/' + studyId;
+
+  const copyText = async () => {
+    try {
+      await navigator.clipboard.writeText(link);
+      toast.success(t('copySuccess'));
+    } catch (e) {
+      toast.error(t('copyError'));
+    }
+  };
+
   if (!participants) return null;
 
   return (
@@ -65,6 +78,24 @@ const ParticipationTable: FC<{studyId: string}> = ({studyId}) => {
       <Headline size={1} className='mb-4 mt-16'>
         {t('title')}
       </Headline>
+      {study?.openParticipation && (
+        <TextField
+          size='small'
+          label={t('openLink')}
+          value={link}
+          className='mb-4'
+          disabled
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position='end'>
+                <IconButton onClick={copyText}>
+                  <DocumentDuplicateIcon className='size-5' />
+                </IconButton>
+              </InputAdornment>
+            ),
+          }}
+        />
+      )}
       <SimpleTable columns={participantsTableColumns} items={participants} />
       <Headline size={2} className='mt-8'>
         {t('addTitle')}
@@ -100,6 +131,7 @@ export default function PageUpsert({params: {id}}: {params: {id: string}}) {
   const builder = useFormBuilder<Study & {folder: FormFolder[]; email: FormEmail[]}>({
     defaultValues: {
       name: '',
+      openParticipation: false,
       folder: [],
       email: [],
       timerMode: TimerMode.VISIBLE,
@@ -148,7 +180,25 @@ export default function PageUpsert({params: {id}}: {params: {id: string}}) {
         {isCreate ? t('createTitle') : t('editTitle')}
       </Headline>
       <Form builder={builder} onSubmit={onSubmit} className='flex flex-col'>
-        <InputField label={t('name')} on={builder.fields.name} rules={{required: true}} />
+        <div className='flex flex-wrap gap-8'>
+          <InputField label={t('name')} on={builder.fields.name} rules={{required: true}} />
+          <SelectField
+            label={t('participationMode')}
+            on={builder.fields.openParticipation}
+            items={[
+              {
+                name: t('participationModeOpen'),
+                value: true,
+                key: 'open',
+              },
+              {
+                name: t('participationModeClosed'),
+                value: false,
+                key: 'closed',
+              },
+            ]}
+          />
+        </div>
         <Headline size={2} className='mt-4'>
           {t('beforeStartHeader')}
         </Headline>
