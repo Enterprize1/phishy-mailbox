@@ -184,7 +184,7 @@ export default function PageUpsert({params: {id}}: {params: {id: string}}) {
           on={builder.fields.email}
           detailLabel={(v) => emails.data?.find((e) => e.id === v.emailId)?.backofficeIdentifier ?? 'E-Mail'}
           defaultValue={{
-            emailId: null as any,
+            emailId: null as any, // eslint-disable-line @typescript-eslint/no-explicit-any
           }}
         >
           {(on) => (

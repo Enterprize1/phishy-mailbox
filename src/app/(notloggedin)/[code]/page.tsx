@@ -14,6 +14,7 @@ import {
   useSensor,
   useSensors,
 } from '@dnd-kit/core';
+// eslint-disable-next-line @typescript-eslint/no-redeclare
 import {CSS} from '@dnd-kit/utilities';
 import {twMerge} from 'tailwind-merge';
 import Link from 'next/link';

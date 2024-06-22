@@ -497,10 +497,10 @@ export const studyRouter = createTRPCRouter({
         for (const email of input.email) {
           await tx.email.upsert({
             where: {
-              id: email.id
+              id: email.id,
             },
             update: email,
-            create: email
+            create: email,
           });
         }
 
@@ -515,13 +515,13 @@ export const studyRouter = createTRPCRouter({
 
         await tx.studyEmail.createMany({
           data: input.email
-            .filter(email => !study.email.some(e => e.emailId == email.id))
+            .filter((email) => !study.email.some((e) => e.emailId == email.id))
             .map((e) => {
               return {
                 studyId: input.id,
                 emailId: e.id,
-              }
-            })
+              };
+            }),
         });
       });
     }),

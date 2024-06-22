@@ -10,7 +10,6 @@ import {toast} from 'react-toastify';
 import {useConfirm} from 'material-ui-confirm';
 import {Headline} from '~/components/headline';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
-import {ArrowDownIcon} from '@heroicons/react/24/solid';
 import {ChevronDownIcon} from '@heroicons/react/20/solid';
 import {useDropzone} from 'react-dropzone';
 import {LinearProgress} from '@mui/material';

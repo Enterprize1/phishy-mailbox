@@ -82,7 +82,7 @@ const TrpcProvider: FC<PropsWithChildren> = (p) => {
   );
 };
 
-const ConfirmProviderFixedType = ConfirmProvider as any;
+const ConfirmProviderFixedType = ConfirmProvider as any; // eslint-disable-line @typescript-eslint/no-explicit-any
 
 export default function AppLayout({children}: PropsWithChildren) {
   const {t} = useTranslation();

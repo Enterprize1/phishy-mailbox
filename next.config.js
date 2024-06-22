@@ -4,7 +4,6 @@ const removeImports = require('next-remove-imports')();
 const nextConfig = removeImports({
   reactStrictMode: true,
   experimental: {
-    appDir: true,
     esmExternals: true,
   },
   output: 'standalone',

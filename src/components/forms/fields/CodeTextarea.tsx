@@ -4,9 +4,10 @@ import {FieldProps} from './common';
 import dynamic from 'next/dynamic';
 import '@uiw/react-textarea-code-editor/dist.css';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const CodeEditor = dynamic(() => import('@uiw/react-textarea-code-editor').then((mod) => mod.default) as any, {
   ssr: false,
-}) as any;
+}) as any; // eslint-disable-line @typescript-eslint/no-explicit-any
 
 function CodeTextarea({on, rules, language = 'html'}: FieldProps<string> & {language?: string}) {
   const {

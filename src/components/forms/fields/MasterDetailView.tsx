@@ -1,6 +1,7 @@
 import {FormBuilder} from '@atmina/formbuilder';
 import {ArrowDownIcon, ArrowUpIcon} from '@heroicons/react/24/solid';
 import {twMerge} from 'tailwind-merge';
+// eslint-disable-next-line @typescript-eslint/no-redeclare
 import {useCallback, useState, KeyboardEvent} from 'react';
 import {PlusIcon} from '@heroicons/react/20/solid';
 import {FieldValues} from 'react-hook-form';
@@ -98,7 +99,7 @@ function MasterDetailView<T extends FieldValues>({
             type='button'
             className='mt-auto flex items-center border-t p-2 hover:bg-indigo-200'
             onClick={() => {
-              fieldArray.append(defaultValue as any);
+              fieldArray.append(defaultValue as any); // eslint-disable-line @typescript-eslint/no-explicit-any
               setSelectedIdx(fieldArray.fields.length);
             }}
           >
