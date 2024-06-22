@@ -1,12 +1,12 @@
 'use client';
 import {useFormBuilder} from '@atmina/formbuilder';
-import {Participation, Study, Folder, StudyEmail} from '@prisma/client';
+import {Participation, Study, Folder, StudyEmail, $Enums} from '@prisma/client';
 import {trpc} from '~/utils/trpc';
 import {FC, useEffect, useMemo} from 'react';
 import Form from '../../../../../components/forms/Form';
 import InputField from '../../../../../components/forms/fields/InputField';
 import {SimpleTable, SimpleTableColumn} from '~/components/simple-table';
-import {format} from 'date-fns';
+import {addMinutes, format} from 'date-fns';
 import TextArea from '~/components/forms/fields/TextArea';
 import MasterDetailView from '~/components/forms/fields/MasterDetailView';
 import SelectField from '~/components/forms/fields/SelectField';
@@ -14,6 +14,7 @@ import {useRouter} from 'next/navigation';
 import {useTranslation} from 'react-i18next';
 import {Headline} from '~/components/headline';
 import {toast} from 'react-toastify';
+import TimerMode = $Enums.TimerMode;
 
 type FormFolder = Omit<Folder, 'studyId' | 'id'>;
 type FormEmail = Omit<StudyEmail, 'studyId' | 'id'>;
@@ -21,6 +22,7 @@ type FormEmail = Omit<StudyEmail, 'studyId' | 'id'>;
 const ParticipationTable: FC<{studyId: string}> = ({studyId}) => {
   const {t} = useTranslation(undefined, {keyPrefix: 'admin.studies.edit.participants'});
   const {data: participants, refetch} = trpc.participation.getAllInStudy.useQuery(studyId);
+  const {data: study} = trpc.study.get.useQuery(studyId);
   const builder = useFormBuilder<{count: number}>({defaultValues: {count: 1}});
   const createMultiple = trpc.participation.createMultiple.useMutation();
 
@@ -37,7 +39,13 @@ const ParticipationTable: FC<{studyId: string}> = ({studyId}) => {
       {
         header: t('status'),
         cell: (p: Participation) => {
-          if (p.finishedAt) {
+          if (
+            p.finishedAt ||
+            (p.startedAt &&
+              study &&
+              study.timerMode !== TimerMode.DISABLED &&
+              new Date() > addMinutes(p.startedAt, study.durationInMinutes ?? 0))
+          ) {
             return t('statusCompleted');
           } else if (p.startedAt) {
             return t('statusStarted');
@@ -47,7 +55,7 @@ const ParticipationTable: FC<{studyId: string}> = ({studyId}) => {
         },
       },
     ],
-    [t],
+    [t, study],
   );
 
   if (!participants) return null;
@@ -94,9 +102,11 @@ export default function PageUpsert({params: {id}}: {params: {id: string}}) {
       name: '',
       folder: [],
       email: [],
+      timerMode: TimerMode.VISIBLE,
       durationInMinutes: 10,
     },
   });
+  const timerMode = builder.fields.timerMode.$useWatch();
   const addStudy = trpc.study.add.useMutation();
   const updateStudy = trpc.study.update.useMutation();
   const emails = trpc.email.getAll.useQuery();
@@ -138,14 +148,7 @@ export default function PageUpsert({params: {id}}: {params: {id: string}}) {
         {isCreate ? t('createTitle') : t('editTitle')}
       </Headline>
       <Form builder={builder} onSubmit={onSubmit} className='flex flex-col'>
-        <div className='flex flex-wrap gap-8'>
-          <InputField label={t('name')} on={builder.fields.name} rules={{required: true}} />
-          <InputField
-            label={t('durationInMinutes')}
-            on={builder.fields.durationInMinutes}
-            rules={{valueAsNumber: true}}
-          />
-        </div>
+        <InputField label={t('name')} on={builder.fields.name} rules={{required: true}} />
         <Headline size={2} className='mt-4'>
           {t('beforeStartHeader')}
         </Headline>
@@ -159,6 +162,36 @@ export default function PageUpsert({params: {id}}: {params: {id: string}}) {
         <Headline size={2} className='mb-2 mt-4'>
           {t('duringStudyHeader')}
         </Headline>
+        <div className='flex flex-wrap gap-8'>
+          <SelectField
+            label={t('timerMode')}
+            on={builder.fields.timerMode}
+            items={[
+              {
+                name: t('timerModeDisabled'),
+                value: TimerMode.DISABLED,
+                key: TimerMode.DISABLED,
+              },
+              {
+                name: t('timerModeHidden'),
+                value: TimerMode.HIDDEN,
+                key: TimerMode.HIDDEN,
+              },
+              {
+                name: t('timerModeVisible'),
+                value: TimerMode.VISIBLE,
+                key: TimerMode.VISIBLE,
+              },
+            ]}
+          />
+          {timerMode !== TimerMode.DISABLED && (
+            <InputField
+              label={t('durationInMinutes')}
+              on={builder.fields.durationInMinutes}
+              rules={{valueAsNumber: true}}
+            />
+          )}
+        </div>
 
         <Headline size={3}>{t('folders')}</Headline>
         <MasterDetailView

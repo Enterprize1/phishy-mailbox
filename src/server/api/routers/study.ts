@@ -4,7 +4,8 @@ import {ParticipationEvents} from '~/server/api/routers/participationEvents';
 
 const studyShape = z.object({
   name: z.string(),
-  durationInMinutes: z.number(),
+  timerMode: z.enum(['DISABLED', 'HIDDEN', 'VISIBLE']).default('VISIBLE'),
+  durationInMinutes: z.number().optional().nullable(),
   startText: z.string().default(''),
   startLinkTemplate: z.string().optional().nullable(),
   endText: z.string().default(''),

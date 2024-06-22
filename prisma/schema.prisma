@@ -67,11 +67,18 @@ model Study {
   folder            Folder[]
   participation     Participation[]
   email             StudyEmail[]
-  durationInMinutes Int
+  timerMode         TimerMode       @default(VISIBLE)
+  durationInMinutes Int?
   startText         String
   startLinkTemplate String?
   endText           String?
   endLinkTemplate   String?
+}
+
+enum TimerMode {
+  DISABLED
+  HIDDEN
+  VISIBLE
 }
 
 model StudyEmail {

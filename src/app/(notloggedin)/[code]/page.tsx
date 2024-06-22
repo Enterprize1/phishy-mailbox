@@ -26,6 +26,7 @@ import {
   EMailViewDetailsEvent,
 } from '~/server/api/routers/participationEvents';
 import {useTranslation} from 'react-i18next';
+import {TimerMode} from '.prisma/client';
 
 const NineDotsIcon = () => (
   <svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'>
@@ -148,9 +149,10 @@ const Emails: FC<{
 const RemainingTimer: FC<{
   startedAt: Date | null;
   durationInMinutes: number;
+  timerVisible: boolean;
   canFinish: boolean;
   finish: () => void;
-}> = ({startedAt, durationInMinutes, canFinish, finish}) => {
+}> = ({startedAt, durationInMinutes, timerVisible, canFinish, finish}) => {
   const shouldFinishAt = useMemo(
     () => (startedAt ? addMinutes(startedAt, durationInMinutes) : new Date()),
     [durationInMinutes, startedAt],
@@ -206,9 +208,11 @@ const RemainingTimer: FC<{
           {t('finish')}
         </button>
       )}
-      <span className='ml-auto mr-4'>
-        {t('remaining')} {remainingText}
-      </span>
+      {timerVisible && (
+        <span className='ml-auto mr-4'>
+          {t('remaining')} {remainingText}
+        </span>
+      )}
     </>
   );
 };
@@ -316,6 +320,28 @@ export default function Run({params: {code}}: {params: {code: string}}) {
     refetch();
   }, [clickEndLinkMutation, data, refetch]);
 
+  const [isFinished, setIsFinished] = useState(false);
+
+  useEffect(() => {
+    const checkFinished = () => {
+      const now = new Date();
+      const finished =
+        !!data &&
+        !!data.startedAt &&
+        (!!data.finishedAt ||
+          (data.study.timerMode !== TimerMode.DISABLED &&
+            now > addMinutes(data.startedAt, data.study.durationInMinutes ?? 0)));
+      setIsFinished(finished);
+    };
+
+    checkFinished();
+    const timer = setInterval(checkFinished, 1000);
+
+    return () => {
+      clearInterval(timer);
+    };
+  }, [data]);
+
   if (!data) {
     return null;
   }
@@ -388,8 +414,6 @@ export default function Run({params: {code}}: {params: {code: string}}) {
   const currentFolder = foldersWithEmails.find((f) => f.folder.id === currentFolderId) ?? foldersWithEmails[0];
   const currentEmail = data.startedAt ? emails.find((e) => e.id === currentEmailId) : foldersWithEmails[0].emails[0];
   const canFinish = !!data.startedAt && emails.every((e) => e.folderId !== null);
-  const isFinished =
-    !!data.startedAt && (!!data.finishedAt || new Date() > addMinutes(data.startedAt, data.study.durationInMinutes));
 
   return (
     <DndContext onDragEnd={moveEmail} sensors={sensors}>
@@ -406,12 +430,15 @@ export default function Run({params: {code}}: {params: {code: string}}) {
             <NineDotsIcon />
           </button>
           <span className='flex flex-grow items-center px-4 font-bold'>{t('title')}</span>
-          <RemainingTimer
-            startedAt={data.startedAt}
-            durationInMinutes={data.study.durationInMinutes}
-            canFinish={canFinish}
-            finish={finish}
-          />
+          {data.study.timerMode !== TimerMode.DISABLED && data.study.durationInMinutes !== null && (
+            <RemainingTimer
+              startedAt={data.startedAt}
+              durationInMinutes={data.study.durationInMinutes}
+              timerVisible={data.study.timerMode === TimerMode.VISIBLE}
+              canFinish={canFinish}
+              finish={finish}
+            />
+          )}
         </div>
         <div className='flex flex-grow'>
           <div className='w-12 flex-shrink-0 bg-gray-200'></div>

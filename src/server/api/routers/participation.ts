@@ -3,6 +3,7 @@ import {z} from 'zod';
 import {addMinutes} from 'date-fns';
 import {EMailMovedEvent} from '~/server/api/routers/participationEvents';
 import {TRPCError} from '@trpc/server';
+import {TimerMode} from '.prisma/client';
 
 export const participationRouter = createTRPCRouter({
   createMultiple: protectedProcedure
@@ -169,9 +170,12 @@ export const participationRouter = createTRPCRouter({
       throw new Error('Participation not found');
     }
 
-    const automatedFinishAt = addMinutes(participation.startedAt, participation.study.durationInMinutes);
+    const automatedFinishAt =
+      participation.study.timerMode !== TimerMode.DISABLED
+        ? addMinutes(participation.startedAt, participation.study.durationInMinutes ?? 0)
+        : null;
 
-    if (participation.emails.some((email) => !email.folderId) && new Date() < automatedFinishAt) {
+    if (participation.emails.some((email) => !email.folderId) && automatedFinishAt && new Date() < automatedFinishAt) {
       throw new Error('Not all emails have been sorted and the participation has not yet finished');
     }
 
