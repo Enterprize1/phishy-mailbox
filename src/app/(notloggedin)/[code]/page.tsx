@@ -2,7 +2,7 @@
 import clsx from 'clsx';
 import {FC, useCallback, useEffect, useMemo, useState} from 'react';
 import {addMinutes, differenceInSeconds} from 'date-fns';
-import {Folder, ParticipationEmail} from '@prisma/client';
+import {ExternalImageMode, Folder, ParticipationEmail} from '@prisma/client';
 import {trpc} from '~/utils/trpc';
 import EmailDisplay, {EmailWithFunctionAsBody} from '~/components/email-display';
 import {
@@ -23,6 +23,7 @@ import {
   EMailLinkHoverEvent,
   EMailScrolledEvent,
   EMailViewEvent,
+  EMailViewExternalImagesEvent,
   EMailViewDetailsEvent,
 } from '~/server/api/routers/participationEvents';
 import {useTranslation} from 'react-i18next';
@@ -347,7 +348,13 @@ export default function Run({params: {code}}: {params: {code: string}}) {
   }
 
   const emails: EmailItem[] = data.startedAt
-    ? data.emails
+    ? data.emails.map((email) => ({
+        ...email,
+        email: {
+          ...email.email,
+          body: null,
+        },
+      }))
     : [
         {
           id: introductionEmailId,
@@ -363,7 +370,7 @@ export default function Run({params: {code}}: {params: {code: string}}) {
               const startLink = data.study.startLinkTemplate?.replace('{code}', data.code);
 
               return (
-                <>
+                <div className='p-4 whitespace-pre-line'>
                   {data.study.startText}
                   <br />
                   <br />
@@ -383,9 +390,10 @@ export default function Run({params: {code}}: {params: {code: string}}) {
                   ) : (
                     t('introductionEmail.dragEmailToStart')
                   )}
-                </>
+                </div>
               );
             },
+            allowExternalImages: false,
             backofficeIdentifier: '',
             headers: '',
           },
@@ -454,6 +462,10 @@ export default function Run({params: {code}}: {params: {code: string}}) {
               {currentEmail && (
                 <EmailDisplay
                   email={currentEmail.email}
+                  studyId={data.study.id}
+                  studyExternalImageMode={
+                    currentEmail.email.allowExternalImages ? data.study.externalImageMode : ExternalImageMode.HIDE
+                  }
                   onScroll={(p) => {
                     trackEventMutation.mutate({
                       participationId: data.id,
@@ -493,6 +505,15 @@ export default function Run({params: {code}}: {params: {code: string}}) {
                       event: {
                         type: 'email-details-view',
                       } as EMailViewDetailsEvent,
+                    });
+                  }}
+                  onViewExternalImages={() => {
+                    trackEventMutation.mutate({
+                      participationId: data.id,
+                      participationEmailId: currentEmail.id,
+                      event: {
+                        type: 'email-external-images-view',
+                      } as EMailViewExternalImagesEvent,
                     });
                   }}
                 />

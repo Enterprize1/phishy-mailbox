@@ -74,6 +74,7 @@
         "subject": "Subject",
         "header": "Header",
         "content": "Content (HTML)",
+        "allowExternalImages": "The content contains external images that may be displayed",
         "save": "Save",
         "errorDuringSave": "An error occurred during saving. Are all fields filled in correctly?",
         "dragDrop": "Drag and drop a .eml file here or click to select one"
@@ -120,6 +121,10 @@
         "phishing": "Phishing",
         "emails": "Emails",
         "email": "Email",
+        "externalImageMode": "External Images",
+        "externalImageModeAsk": "Ask for each email",
+        "externalImageModeHide": "Always Hide",
+        "externalImageModeShow": "Always Show",
         "afterStudyHeader": "After Study",
         "save": "Save",
         "errorDuringSave": "An error occurred during saving. Are all fields filled in correctly?",
@@ -177,7 +182,9 @@
         "showDetails": "Show Details",
         "messageDetails": "Message Details",
         "close": "Close"
-      }
+      },
+      "imagesBlocked": "Images in this email have been blocked.",
+      "showImages": "Show Images"
     }
   }
 }

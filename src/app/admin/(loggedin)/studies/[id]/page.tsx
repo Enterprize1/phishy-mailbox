@@ -1,6 +1,6 @@
 'use client';
 import {useFormBuilder} from '@atmina/formbuilder';
-import {Participation, Study, Folder, StudyEmail, $Enums} from '@prisma/client';
+import {Participation, Study, Folder, StudyEmail, $Enums, ExternalImageMode} from '@prisma/client';
 import {trpc} from '~/utils/trpc';
 import {FC, useEffect, useMemo} from 'react';
 import Form from '../../../../../components/forms/Form';
@@ -263,6 +263,27 @@ export default function PageUpsert({params: {id}}: {params: {id: string}}) {
         <Headline size={3} className='mt-4'>
           {t('emails')}
         </Headline>
+        <SelectField
+          label={t('externalImageMode')}
+          on={builder.fields.externalImageMode}
+          items={[
+            {
+              name: t('externalImageModeAsk'),
+              value: ExternalImageMode.ASK,
+              key: ExternalImageMode.ASK,
+            },
+            {
+              name: t('externalImageModeHide'),
+              value: ExternalImageMode.HIDE,
+              key: ExternalImageMode.HIDE,
+            },
+            {
+              name: t('externalImageModeShow'),
+              value: ExternalImageMode.SHOW,
+              key: ExternalImageMode.SHOW,
+            },
+          ]}
+        />
         <MasterDetailView
           on={builder.fields.email}
           detailLabel={(v) => emails.data?.find((e) => e.id === v.emailId)?.backofficeIdentifier ?? 'E-Mail'}

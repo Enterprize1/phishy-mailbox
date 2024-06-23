@@ -28,6 +28,7 @@ export const emailRouter = createTRPCRouter({
         headers,
         subject: parsed.subject,
         body: parsed.html,
+        allowExternalImages: false,
         backofficeIdentifier: `${parsed.subject} / ${parsed.from.value[0].name}`,
       };
     }),
@@ -40,6 +41,7 @@ export const emailRouter = createTRPCRouter({
           subject: z.string(),
           headers: z.string(),
           body: z.string(),
+          allowExternalImages: z.boolean(),
           backofficeIdentifier: z.string(),
         }),
       }),
@@ -66,6 +68,7 @@ export const emailRouter = createTRPCRouter({
           subject: z.string(),
           headers: z.string(),
           body: z.string(),
+          allowExternalImages: z.boolean(),
           backofficeIdentifier: z.string(),
         }),
       }),

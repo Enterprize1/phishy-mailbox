@@ -46,7 +46,7 @@ async function main() {
       data: {
         name: 'Teststudie',
         startText:
-          'Test-Beschreibung\nHier könnte eine Beschreibung der Durchf stehen oder auch eine kurze thematische Einführung.',
+          'Test-Beschreibung\nHier könnte eine Beschreibung stehen oder auch eine kurze thematische Einführung.',
         endText:
           'Test-Ende\nHier könnte ein Text stehen, der die Teilnehmenden verabschiedet oder die nächsten Schritte erklärt.',
         durationInMinutes: 10,

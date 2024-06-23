@@ -11,6 +11,11 @@ export const eMailViewDetailsEvent = z.object({
 });
 export type EMailViewDetailsEvent = z.infer<typeof eMailViewDetailsEvent>;
 
+export const eMailViewExternalImagesEvent = z.object({
+  type: z.literal('email-external-images-view'),
+});
+export type EMailViewExternalImagesEvent = z.infer<typeof eMailViewExternalImagesEvent>;
+
 export const eMailMovedEvent = z.object({
   type: z.literal('email-moved'),
   fromFolderId: z.string().uuid(),
@@ -41,6 +46,7 @@ export type EMailLinkHoverEvent = z.infer<typeof eMailLinkHoverEvent>;
 export const participationEvents = z.union([
   eMailViewEvent,
   eMailViewDetailsEvent,
+  eMailViewExternalImagesEvent,
   eMailMovedEvent,
   eMailScrolledEvent,
   eMailLinkClickEvent,

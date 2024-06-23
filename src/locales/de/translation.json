@@ -74,6 +74,7 @@
         "subject": "Betreff",
         "header": "Header",
         "content": "Inhalt (HTML)",
+        "allowExternalImages": "Im Inhalt sind externe Bilder, die angezeigt werden dürfen",
         "save": "Speichern",
         "errorDuringSave": "Fehler beim Speichern. Sind alle Felder korrekt ausgefüllt?",
         "dragDrop": "Ziehe eine .eml Datei hier hin oder klicke um eine auszuwählen"
@@ -120,6 +121,10 @@
         "phishing": "Phishing",
         "emails": "E-Mails",
         "email": "E-Mail",
+        "externalImageMode": "Externe Bilder",
+        "externalImageModeAsk": "Bei allen E-Mails fragen",
+        "externalImageModeHide": "Immer Verstecken",
+        "externalImageModeShow": "Immer Anzeigen",
         "afterStudyHeader": "Nach der Bearbeitung",
         "save": "Speichern",
         "errorDuringSave": "Fehler beim Speichern. Sind alle Felder korrekt ausgefüllt?",
@@ -177,7 +182,9 @@
         "showDetails": "Details anzeigen",
         "messageDetails": "Nachrichtendetails",
         "close": "Schließen"
-      }
+      },
+      "imagesBlocked": "Bilder in dieser E-Mail wurden blockiert.",
+      "showImages": "Bilder anzeigen"
     }
   }
 }

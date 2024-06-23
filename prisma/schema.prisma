@@ -14,6 +14,7 @@ model Email {
   subject              String
   headers              String
   body                 String
+  allowExternalImages  Boolean             @default(false)
   backofficeIdentifier String
   StudyEmail           StudyEmail[]
   ParticipationEmail   ParticipationEmail[]
@@ -62,18 +63,25 @@ model ParticipationEmailEvent {
 }
 
 model Study {
-  id                String          @id @default(uuid()) @db.Uuid
+  id                String            @id @default(uuid()) @db.Uuid
   name              String
   folder            Folder[]
   participation     Participation[]
   email             StudyEmail[]
-  timerMode         TimerMode       @default(VISIBLE)
+  timerMode         TimerMode         @default(VISIBLE)
+  externalImageMode ExternalImageMode @default(ASK)
   durationInMinutes Int?
-  openParticipation Boolean         @default(false)
+  openParticipation Boolean           @default(false)
   startText         String
   startLinkTemplate String?
   endText           String?
   endLinkTemplate   String?
+}
+
+enum ExternalImageMode {
+  SHOW
+  HIDE
+  ASK
 }
 
 enum TimerMode {

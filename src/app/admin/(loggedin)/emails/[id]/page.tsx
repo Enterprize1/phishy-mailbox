@@ -4,7 +4,7 @@ import {trpc} from '~/utils/trpc';
 import Form from '~/components/forms/Form';
 import {useFormBuilder} from '@atmina/formbuilder';
 import InputField from '~/components/forms/fields/InputField';
-import {Email} from '@prisma/client';
+import {Email, ExternalImageMode} from '@prisma/client';
 import CodeTextarea from '~/components/forms/fields/CodeTextarea';
 import EmailDisplay from '~/components/email-display';
 import {useEffect} from 'react';
@@ -12,6 +12,7 @@ import {useRouter} from 'next/navigation';
 import {useTranslation} from 'react-i18next';
 import {Headline} from '~/components/headline';
 import {toast} from 'react-toastify';
+import {CheckboxField} from '~/components/forms/fields/CheckboxField';
 
 const EmlDropzone = ({onNewMessage}: {onNewMessage: (email: Partial<Email>) => void}) => {
   const {t} = useTranslation(undefined, {keyPrefix: 'admin.emails.edit'});
@@ -127,6 +128,7 @@ export default function Page({params: {id}}: {params: {id: string}}) {
           {t('content')}
         </Headline>
         <CodeTextarea label={t('content')} on={builder.fields.body} />
+        <CheckboxField label={t('allowExternalImages')} on={builder.fields.allowExternalImages} />
         <button
           type='submit'
           className='mt-4 flex justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600'
@@ -135,7 +137,12 @@ export default function Page({params: {id}}: {params: {id: string}}) {
         </button>
       </Form>
 
-      <EmailDisplay email={email} className='mt-12' />
+      <EmailDisplay
+        email={email}
+        studyId=''
+        studyExternalImageMode={email.allowExternalImages ? ExternalImageMode.ASK : ExternalImageMode.HIDE}
+        className='mt-12'
+      />
     </div>
   );
 }

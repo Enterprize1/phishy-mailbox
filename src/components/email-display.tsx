@@ -1,11 +1,12 @@
-import {Email} from '@prisma/client';
+import {Email, ExternalImageMode} from '@prisma/client';
 import clsx from 'clsx';
 import debounce from 'lodash.debounce';
-import {FC, ReactNode, SyntheticEvent, useCallback} from 'react';
+import {FC, ReactNode, SyntheticEvent, useCallback, useMemo, useState} from 'react';
 import * as Dialog from '@radix-ui/react-dialog';
 import {useTranslation} from 'react-i18next';
+import {InformationCircleIcon} from '@heroicons/react/24/solid';
 
-export type EmailWithFunctionAsBody = Omit<Email, 'body'> & {body: (() => ReactNode) | Email['body']};
+export type EmailWithFunctionAsBody = Omit<Email, 'body'> & {body: (() => ReactNode) | Email['body'] | null};
 
 function getParentAnchor(element: HTMLElement | null, body: HTMLElement | undefined): HTMLAnchorElement | null {
   while (element && element !== body) {
@@ -27,7 +28,7 @@ const EmailDisplayDetails: FC<{headers?: string; onViewDetails?: () => void}> = 
     <Dialog.Root>
       <Dialog.Trigger asChild>
         <button
-          className='self-center rounded-md border bg-gray-100 px-2 py-1 hover:bg-gray-200'
+          className='self-center rounded-sm border bg-gray-100 px-2 py-1 hover:bg-gray-200'
           onClick={() => onViewDetails?.()}
         >
           {t('showDetails')}
@@ -53,18 +54,24 @@ const EmailDisplayDetails: FC<{headers?: string; onViewDetails?: () => void}> = 
 
 export default function EmailDisplay({
   email,
+  studyId,
+  studyExternalImageMode,
   className,
   onScroll,
   onClick,
   onHover,
   onViewDetails,
+  onViewExternalImages,
 }: {
   email: Partial<EmailWithFunctionAsBody>;
+  studyId: string;
+  studyExternalImageMode: ExternalImageMode;
   className?: string;
   onScroll?: (scroll: number) => void;
   onClick?: (href: string, text: string) => void;
   onHover?: (href: string, text: string) => void;
   onViewDetails?: () => void;
+  onViewExternalImages?: () => void;
 }) {
   const {t} = useTranslation(undefined, {keyPrefix: 'components.emailDisplay'});
   const didLoad = useCallback(
@@ -138,14 +145,48 @@ export default function EmailDisplay({
     [onClick, onHover, onScroll],
   );
 
+  const [showExternalImages, setShowExternalImages] = useState(studyExternalImageMode === ExternalImageMode.SHOW);
+
+  const emailElement = useMemo(() => {
+    if (email.body === null) {
+      return (
+        <iframe
+          src={'/email/' + studyId + '/' + email.id + (showExternalImages ? '?showExternalImages=true' : '')}
+          className='h-72 flex-grow'
+          onLoad={didLoad}
+          sandbox='allow-same-origin'
+          {...{csp: "default-src 'none'; style-src 'unsafe-inline'; navigate-to 'none'; img-src https: data:;"}}
+        />
+      );
+    }
+
+    if (typeof email.body === 'function') {
+      return email.body();
+    }
+
+    return (
+      <iframe
+        srcDoc={email.body}
+        className='h-72 flex-grow'
+        onLoad={didLoad}
+        sandbox='allow-same-origin'
+        {...{
+          csp:
+            "default-src 'none'; style-src 'unsafe-inline'; navigate-to 'none';" +
+            (showExternalImages ? ' img-src https: data:;' : ''),
+        }}
+      />
+    );
+  }, [email, studyId, didLoad, showExternalImages]);
+
   return (
     <div className={clsx('flex flex-grow flex-col', className)}>
       <div className='bg-white px-4 py-2 font-bold shadow'>
         {email.subject}
         {!email.subject && <i className='font-normal'>{t('noTitle')}</i>}
       </div>
-      <div className='mb-4 mt-4 flex min-w-0 flex-grow flex-col bg-white p-4 shadow'>
-        <div className='flex justify-between'>
+      <div className='mb-4 mt-4 flex min-w-0 flex-grow flex-col bg-white shadow'>
+        <div className='flex justify-between p-4'>
           <div>
             <div>
               {t('from')} {email.senderName}
@@ -157,17 +198,23 @@ export default function EmailDisplay({
           </div>
           <EmailDisplayDetails headers={email.headers} onViewDetails={onViewDetails} />
         </div>
-        {typeof email.body === 'function' ? (
-          email.body()
-        ) : (
-          <iframe
-            srcDoc={email.body}
-            className='h-72 flex-grow'
-            onLoad={didLoad}
-            sandbox='allow-same-origin'
-            {...{csp: "default-src 'none'; style-src 'unsafe-inline'; navigate-to 'none';"}}
-          />
+        {studyExternalImageMode === ExternalImageMode.ASK && !showExternalImages && (
+          <div className='flex gap-4 bg-gray-50 px-4 py-2 items-center border-y'>
+            <InformationCircleIcon className='size-4 text-gray-500' />
+            <div>{t('imagesBlocked')}</div>
+            <button
+              type='button'
+              className='bg-white rounded-sm border px-2 py-1 ml-auto'
+              onClick={() => {
+                onViewExternalImages?.();
+                setShowExternalImages(true);
+              }}
+            >
+              {t('showImages')}
+            </button>
+          </div>
         )}
+        <div className='flex flex-col flex-grow'>{emailElement}</div>
       </div>
     </div>
   );
