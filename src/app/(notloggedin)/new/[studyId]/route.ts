@@ -1,8 +1,8 @@
 import {prisma} from '~/server/db';
 import {createNewParticipation} from '~/server/api/routers/participation';
+import {redirect} from 'next/navigation';
 
-export async function GET(request: Request, {params: {studyId}}: {params: {studyId: string}}) {
-  const url = new URL(request.url);
+export async function GET(_request: Request, {params: {studyId}}: {params: {studyId: string}}) {
   const study = await prisma.study.findUnique({
     where: {
       id: studyId,
@@ -10,14 +10,14 @@ export async function GET(request: Request, {params: {studyId}}: {params: {study
   });
 
   if (!study) {
-    return Response.redirect(url.origin + '/');
+    redirect('/');
   }
 
   if (!study.openParticipation) {
-    return Response.redirect(url.origin + '/');
+    redirect('/');
   }
 
   const {code} = await createNewParticipation(prisma, study.id);
 
-  return Response.redirect(url.origin + '/' + code);
+  redirect('/' + code);
 }
