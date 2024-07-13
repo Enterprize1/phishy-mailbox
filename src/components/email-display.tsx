@@ -166,6 +166,7 @@ export default function EmailDisplay({
 
     return (
       <iframe
+        key={(email.body ?? '') + showExternalImages}
         srcDoc={email.body}
         className='h-72 flex-grow'
         onLoad={didLoad}
