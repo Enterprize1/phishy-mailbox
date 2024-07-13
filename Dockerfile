@@ -7,6 +7,9 @@ RUN yarn --frozen-lockfile
 
 FROM base as builder
 WORKDIR /app
+ARG VERSION
+RUN test -n "$VERSION" || (echo "VERSION build-arg is required" && false)
+ENV NEXT_PUBLIC_VERSION=$VERSION
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 RUN yarn prisma generate && yarn build
