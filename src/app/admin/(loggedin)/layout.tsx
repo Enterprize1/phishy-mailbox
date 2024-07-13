@@ -67,9 +67,14 @@ export default function LoggedinLayout({children}: {children: React.ReactNode}) 
               </li>
             </ul>
 
-            <div className='mt-auto w-max text-white'>
-              <div className='text-sm'>{t('languages.language')}</div>
-              <LanguageChooser />
+            <div className='mt-auto text-white flex'>
+              <div>
+                <div className='text-sm'>{t('languages.language')}</div>
+                <LanguageChooser />
+              </div>
+              <div className='ml-auto self-end text-gray-600 hover:text-gray-200'>
+                {process.env.NEXT_PUBLIC_VERSION || 'dev'}
+              </div>
             </div>
           </nav>
         </div>
