@@ -132,7 +132,7 @@ const Emails: FC<{
   return (
     <div className='flex w-52 flex-shrink-0 flex-col bg-gray-50 shadow'>
       <div className='px-3 leading-loose'>{currentFolder.folder.name}</div>
-      <div className='flex flex-grow flex-col divide-y divide-gray-300'>
+      <div className='flex flex-grow flex-col divide-y divide-gray-300 overflow-y-auto flex-[1_1_0px]'>
         {currentFolder.emails.map((e) => (
           <SingleEmail
             key={e.emailId}
