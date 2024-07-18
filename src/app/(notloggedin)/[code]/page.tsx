@@ -370,7 +370,7 @@ export default function Run({params: {code}}: {params: {code: string}}) {
               const startLink = data.study.startLinkTemplate?.replace('{code}', data.code);
 
               return (
-                <div className='p-4 whitespace-pre-line'>
+                <div className='p-4 whitespace-pre-line overflow-y-auto min-h-0 flex-[1_1_0px]'>
                   {data.study.startText}
                   <br />
                   <br />
