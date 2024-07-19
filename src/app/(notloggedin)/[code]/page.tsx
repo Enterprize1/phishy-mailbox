@@ -258,6 +258,7 @@ export default function Run({params: {code}}: {params: {code: string}}) {
   const trackEventMutation = trpc.participationEvent.track.useMutation();
   const [currentFolderId, setCurrentFolderId] = useState<string>();
   const [currentEmailId, setCurrentEmailId] = useState<string>();
+  const [draggingEmail, setDraggingEmail] = useState<Email | EmailWithFunctionAsBody | undefined>(undefined);
 
   const setFolder = useCallback((folder: Folder) => {
     setCurrentFolderId(folder.id);
@@ -280,6 +281,7 @@ export default function Run({params: {code}}: {params: {code: string}}) {
 
   const moveEmail = useCallback(
     async (dragEndEvent: DragEndEvent) => {
+      setDraggingEmail(undefined);
       if (dragEndEvent.active.id === introductionEmailId && dragEndEvent.over) {
         await startMutation.mutateAsync(data!.id);
         await refetch();
@@ -338,14 +340,6 @@ export default function Run({params: {code}}: {params: {code: string}}) {
     };
   }, [data]);
 
-  const [draggingEmail, setDraggingEmail] = useState<Email | EmailWithFunctionAsBody | undefined>(undefined);
-  const onDragStart = useCallback(
-    (event: DragStartEvent) => {
-      setDraggingEmail(data?.emails.find((e) => e.id === event.active.id)?.email);
-    },
-    [data?.emails],
-  );
-
   if (!data) {
     return null;
   }
@@ -402,6 +396,10 @@ export default function Run({params: {code}}: {params: {code: string}}) {
           },
         },
       ];
+
+  const onDragStart = (event: DragStartEvent) => {
+    setDraggingEmail(emails.find((e) => e.id === event.active.id)?.email);
+  };
 
   const foldersWithEmails = [
     {
@@ -523,11 +521,13 @@ export default function Run({params: {code}}: {params: {code: string}}) {
           </div>
         </div>
       </main>
-      <DragOverlay>
-        <div className='flex w-full flex-col border-l-4 px-2 py-2 text-left text-sm hover:!border-l-gray-400 opacity-70 bg-blue-100'>
-          <div className='w-full truncate'>{draggingEmail?.senderName}</div>
-          <div className='w-full truncate'>{draggingEmail?.subject}</div>
-        </div>
+      <DragOverlay dropAnimation={null}>
+        {draggingEmail && (
+          <div className='flex w-full flex-col border-l-4 px-2 py-2 text-left text-sm hover:!border-l-gray-400 opacity-70 bg-blue-100'>
+            <div className='w-full truncate'>{draggingEmail.senderName}</div>
+            <div className='w-full truncate'>{draggingEmail.subject}</div>
+          </div>
+        )}
       </DragOverlay>
     </DndContext>
   );
