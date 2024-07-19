@@ -2,20 +2,20 @@
 import clsx from 'clsx';
 import {FC, useCallback, useEffect, useMemo, useState} from 'react';
 import {addMinutes, differenceInSeconds} from 'date-fns';
-import {ExternalImageMode, Folder, ParticipationEmail} from '@prisma/client';
+import {Email, ExternalImageMode, Folder, ParticipationEmail} from '@prisma/client';
 import {trpc} from '~/utils/trpc';
 import EmailDisplay, {EmailWithFunctionAsBody} from '~/components/email-display';
 import {
   DndContext,
   DragEndEvent,
+  DragOverlay,
+  DragStartEvent,
   PointerSensor,
   useDraggable,
   useDroppable,
   useSensor,
   useSensors,
 } from '@dnd-kit/core';
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-import {CSS} from '@dnd-kit/utilities';
 import {twMerge} from 'tailwind-merge';
 import Link from 'next/link';
 import {
@@ -94,14 +94,10 @@ const SingleEmail: FC<{
   isCurrentEmail: boolean;
   disableDragging: boolean;
 }> = ({email, setAsCurrentEmail, isCurrentEmail, disableDragging}) => {
-  const {attributes, listeners, setNodeRef, transform, isDragging} = useDraggable({
+  const {attributes, listeners, setNodeRef, isDragging} = useDraggable({
     id: email.id,
     disabled: disableDragging,
   });
-
-  const style = {
-    transform: CSS.Translate.toString(transform),
-  };
 
   return (
     <button
@@ -110,10 +106,9 @@ const SingleEmail: FC<{
       className={twMerge(
         'flex w-full flex-col border-l-4 px-2 py-2 text-left text-sm hover:!border-l-gray-400',
         isCurrentEmail ? 'bg-blue-100' : 'bg-gray-50 hover:bg-gray-100',
-        isDragging && 'opacity-70',
+        isDragging && 'opacity-0',
       )}
       ref={setNodeRef}
-      style={style}
       {...listeners}
       {...attributes}
     >
@@ -132,7 +127,7 @@ const Emails: FC<{
   return (
     <div className='flex w-52 flex-shrink-0 flex-col bg-gray-50 shadow'>
       <div className='px-3 leading-loose'>{currentFolder.folder.name}</div>
-      <div className='flex flex-grow flex-col divide-y divide-gray-300 overflow-y-auto flex-[1_1_0px]'>
+      <div className='flex flex-grow flex-col divide-y divide-gray-300 overflow-y-auto overflow-x-hidden flex-[1_1_0px]'>
         {currentFolder.emails.map((e) => (
           <SingleEmail
             key={e.emailId}
@@ -149,15 +144,15 @@ const Emails: FC<{
 
 const RemainingTimer: FC<{
   startedAt: Date | null;
-  durationInMinutes: number;
-  timerVisible: boolean;
+  durationInMinutes: number | null;
+  timerMode: TimerMode;
   canFinish: boolean;
   finish: () => void;
-}> = ({startedAt, durationInMinutes, timerVisible, canFinish, finish}) => {
+}> = ({startedAt, durationInMinutes, timerMode, canFinish, finish}) => {
   const shouldFinishAt = useMemo(
-    () => (startedAt ? addMinutes(startedAt, durationInMinutes) : new Date()),
+    () => (startedAt && durationInMinutes ? addMinutes(startedAt, durationInMinutes) : new Date()),
     [durationInMinutes, startedAt],
-  ); // useStore((s) => s.shouldFinishAt);
+  );
   const [remainingText, setRemainingText] = useState<string | null>();
   const {t} = useTranslation(undefined, {keyPrefix: 'participants'});
 
@@ -209,7 +204,7 @@ const RemainingTimer: FC<{
           {t('finish')}
         </button>
       )}
-      {timerVisible && (
+      {timerMode == TimerMode.VISIBLE && (
         <span className='ml-auto mr-4'>
           {t('remaining')} {remainingText}
         </span>
@@ -343,6 +338,14 @@ export default function Run({params: {code}}: {params: {code: string}}) {
     };
   }, [data]);
 
+  const [draggingEmail, setDraggingEmail] = useState<Email | EmailWithFunctionAsBody | undefined>(undefined);
+  const onDragStart = useCallback(
+    (event: DragStartEvent) => {
+      setDraggingEmail(data?.emails.find((e) => e.id === event.active.id)?.email);
+    },
+    [data?.emails],
+  );
+
   if (!data) {
     return null;
   }
@@ -424,7 +427,7 @@ export default function Run({params: {code}}: {params: {code: string}}) {
   const canFinish = !!data.startedAt && emails.every((e) => e.folderId !== null);
 
   return (
-    <DndContext onDragEnd={moveEmail} sensors={sensors}>
+    <DndContext onDragStart={onDragStart} onDragEnd={moveEmail} sensors={sensors}>
       {isFinished && (
         <IsFinishedOverlay
           onClick={onEndLinkClicked}
@@ -438,15 +441,13 @@ export default function Run({params: {code}}: {params: {code: string}}) {
             <NineDotsIcon />
           </button>
           <span className='flex flex-grow items-center px-4 font-bold'>{t('title')}</span>
-          {data.study.timerMode !== TimerMode.DISABLED && data.study.durationInMinutes !== null && (
-            <RemainingTimer
-              startedAt={data.startedAt}
-              durationInMinutes={data.study.durationInMinutes}
-              timerVisible={data.study.timerMode === TimerMode.VISIBLE}
-              canFinish={canFinish}
-              finish={finish}
-            />
-          )}
+          <RemainingTimer
+            startedAt={data.startedAt}
+            durationInMinutes={data.study.durationInMinutes}
+            timerMode={data.study.timerMode}
+            canFinish={canFinish}
+            finish={finish}
+          />
         </div>
         <div className='flex flex-grow'>
           <div className='w-12 flex-shrink-0 bg-gray-200'></div>
@@ -522,6 +523,12 @@ export default function Run({params: {code}}: {params: {code: string}}) {
           </div>
         </div>
       </main>
+      <DragOverlay>
+        <div className='flex w-full flex-col border-l-4 px-2 py-2 text-left text-sm hover:!border-l-gray-400 opacity-70 bg-blue-100'>
+          <div className='w-full truncate'>{draggingEmail?.senderName}</div>
+          <div className='w-full truncate'>{draggingEmail?.subject}</div>
+        </div>
+      </DragOverlay>
     </DndContext>
   );
 }
