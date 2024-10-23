@@ -146,6 +146,10 @@
       }
     },
     "users": {
+      "common": {
+        "canManageUsers": "Kann Nutzende verwalten",
+        "canManageUsersHelperText": "Neue Nutzer:innen einladen, bearbeiten und Passwörter ändern"
+      },
       "list": {
         "edit": "Bearbeiten",
         "delete": "Löschen",
