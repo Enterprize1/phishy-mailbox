@@ -58,11 +58,13 @@ export default function LoggedinLayout({children}: {children: React.ReactNode}) 
                       {t('admin.sidebar.studies')}
                     </SidebarNavLink>
                   </li>
-                  <li>
-                    <SidebarNavLink Icon={UserGroupIcon} href='/admin/users'>
-                      {t('admin.sidebar.users')}
-                    </SidebarNavLink>
-                  </li>
+                  {session.data?.user?.canManageUsers && (
+                    <li>
+                      <SidebarNavLink Icon={UserGroupIcon} href='/admin/users'>
+                        {t('admin.sidebar.users')}
+                      </SidebarNavLink>
+                    </li>
+                  )}
                 </ul>
               </li>
             </ul>
@@ -116,7 +118,7 @@ export default function LoggedinLayout({children}: {children: React.ReactNode}) 
                           )}
                           onClick={async () => {
                             if (session.data?.user?.name) {
-                              router.push(`admin/users/${session.data.user.name}`);
+                              router.push(`/admin/users/${session.data.user.name}`);
                             }
                           }}
                         >

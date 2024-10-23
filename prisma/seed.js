@@ -16,6 +16,7 @@ async function main() {
       data: {
         email: 'admin@example.com',
         password: await bcrypt.hash('123456', 10),
+        canManageUsers: true,
       },
     });
 

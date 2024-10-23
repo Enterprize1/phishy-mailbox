@@ -14,7 +14,7 @@ model Email {
   subject              String
   headers              String
   body                 String
-  allowExternalImages  Boolean             @default(false)
+  allowExternalImages  Boolean              @default(false)
   backofficeIdentifier String
   StudyEmail           StudyEmail[]
   ParticipationEmail   ParticipationEmail[]
@@ -91,16 +91,17 @@ enum TimerMode {
 }
 
 model StudyEmail {
-  id         String  @id @default(uuid()) @db.Uuid
-  studyId    String  @db.Uuid
-  study      Study   @relation(fields: [studyId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "study_email_study_id_study_id_fk")
-  emailId    String  @db.Uuid
-  email      Email   @relation(fields: [emailId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "study_email_email_id_email_id_fk")
+  id      String @id @default(uuid()) @db.Uuid
+  studyId String @db.Uuid
+  study   Study  @relation(fields: [studyId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "study_email_study_id_study_id_fk")
+  emailId String @db.Uuid
+  email   Email  @relation(fields: [emailId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "study_email_email_id_email_id_fk")
 }
 
 model User {
-  id         String    @id @default(uuid()) @db.Uuid
-  email      String    @unique(map: "email_idx")
-  password   String
-  created_at DateTime? @db.Timestamptz(3)
+  id             String    @id @default(uuid()) @db.Uuid
+  email          String    @unique(map: "email_idx")
+  password       String
+  created_at     DateTime? @db.Timestamptz(3)
+  canManageUsers Boolean   @default(true)
 }

@@ -146,6 +146,10 @@
       }
     },
     "users": {
+      "common": {
+        "canManageUsers": "Can manage users",
+        "canManageUsersHelperText": "Invite new users, edit and change passwords"
+      },
       "list": {
         "edit": "Edit",
         "delete": "Delete",

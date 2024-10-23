@@ -1,11 +1,20 @@
 import {type GetServerSidePropsContext} from 'next';
-import {getServerSession, type NextAuthOptions} from 'next-auth';
+import {DefaultSession, getServerSession, type NextAuthOptions} from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
 import * as z from 'zod';
 import * as bcrypt from 'bcrypt';
 import {PrismaClient} from '@prisma/client';
 
 const db = new PrismaClient();
+
+declare module 'next-auth' {
+  interface Session {
+      user: ({
+        id: string;
+        canManageUsers: boolean;
+      } & DefaultSession['user']) | undefined;
+  }
+}
 
 export const authOptions: NextAuthOptions = {
   callbacks: {
@@ -26,8 +35,10 @@ export const authOptions: NextAuthOptions = {
 
         if (user) {
           session.user = {
+            id: user.id,
             name: user.id,
             email: user.email,
+            canManageUsers: user.canManageUsers,
           };
         } else {
           session.user = undefined;
