@@ -15,12 +15,12 @@ services:
       timeout: 5s
       retries: 5
   app:
-    image: thorstenthiel/phishy-mailbox:v1.2.3
+    image: thorstenthiel/phishy-mailbox:v1.3.0
     build:
       context: .
       dockerfile: Dockerfile
       args:
-        VERSION: v1.2.3
+        VERSION: v1.3.0
     environment:
       DATABASE_URL: postgresql://mailbox:mailbox@postgres:5432/mailbox?schema=public
       NEXTAUTH_SECRET: secret1234256w5w4
