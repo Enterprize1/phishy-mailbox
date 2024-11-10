@@ -34,8 +34,12 @@ const UploadMultiple: FC<{refetch: () => void}> = ({refetch}) => {
 
           const base64 = await readFile;
 
-          const parsedFile = await parseMail.mutateAsync({file: base64});
-          await addMail.mutateAsync({email: parsedFile});
+          try {
+            const parsedFile = await parseMail.mutateAsync({file: base64});
+            await addMail.mutateAsync({email: parsedFile});
+          } catch (e) {
+            toast.error(t('uploadError'));
+          }
         }
       } finally {
         setProgress(null);

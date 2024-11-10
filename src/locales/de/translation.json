@@ -59,6 +59,7 @@
         "deleteSuccess": "E-Mail erfolgreich gelöscht",
         "deleteError": "E-Mail konnte nicht gelöscht werden. Wird sie in einer Studie genutzt?",
         "uploadMultiple": "Mehrere E-Mails hochladen",
+        "uploadError": "Fehler beim Hochladen der E-Mail. Ist die Datei im .eml Format?",
         "dragDrop": "Ziehe eine oder mehrere .eml Datei hier hin oder klicke um diese auszuwählen"
       },
       "edit": {
