@@ -59,6 +59,7 @@
         "deletedSuccess": "E-Mail deleted successfully.",
         "deletedError": "E-Mail could not be deleted. Is it still used in a study?",
         "uploadMultiple": "Upload Multiple",
+        "uploadError": "An error occurred during upload. Are all files .eml files?",
         "dragDrop": "Drag and drop .eml files here or click to select them"
       },
       "edit": {

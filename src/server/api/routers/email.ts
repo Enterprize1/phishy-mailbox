@@ -27,7 +27,7 @@ export const emailRouter = createTRPCRouter({
         senderName: parsed.from.value[0].name,
         headers,
         subject: parsed.subject,
-        body: parsed.html,
+        body: parsed.html || parsed.textAsHtml,
         allowExternalImages: false,
         backofficeIdentifier: `${parsed.subject} / ${parsed.from.value[0].name}`,
       };
