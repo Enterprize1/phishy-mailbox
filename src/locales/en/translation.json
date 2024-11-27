@@ -19,7 +19,7 @@
     "clickToContinue": "Click here to continue",
     "backToStart": "Back to Start",
     "consent": {
-      "title": "Consent",
+      "title": "Participation Information",
       "yes": "Yes, I agree",
       "no": "No, I do not agree",
       "continueButtonText": "Read the above text, agree to it and click here to continue"
@@ -192,7 +192,7 @@
     "emailDisplay": {
       "noTitle": "No Title",
       "from": "From:",
-      "to": "To: You <postbox@example.com>",
+      "to": "To: You <postbox@stud.uni-hannover.de>",
       "noSender": "No Sender",
       "details": {
         "showDetails": "Show Details",

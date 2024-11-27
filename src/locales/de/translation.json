@@ -19,7 +19,7 @@
     "clickToContinue": "Klicken Sie hier um fortzufahren",
     "backToStart": "Zurück zur Startseite",
     "consent": {
-      "title": "Einwilligung",
+      "title": "Teilnahmeinformationen",
       "yes": "Ja, ich stimme zu",
       "no": "Nein, ich stimme nicht zu",
       "continueButtonText": "Lesen Sie den obigen Text, erklären Sie sich einverstanden und klicken Sie hier um fortzufahren"
@@ -193,7 +193,7 @@
     "emailDisplay": {
       "noTitle": "Kein Titel",
       "from": "Von:",
-      "to": "An: Sie <postbox@example.de>",
+      "to": "An: Sie <postbox@stud.uni-hannover.de>",
       "noSender": "Kein Absender",
       "details": {
         "showDetails": "Details anzeigen",

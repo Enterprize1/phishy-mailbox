@@ -39,7 +39,7 @@ const NineDotsIcon = () => (
   </svg>
 );
 
-type EmailItem = ParticipationEmail & {email: EmailWithFunctionAsBody};
+type EmailItem = Omit<ParticipationEmail, 'order'> & {email: EmailWithFunctionAsBody};
 type FolderWithEmails = {folder: Folder; emails: EmailItem[]};
 const introductionEmailId = 'introduction';
 
