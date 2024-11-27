@@ -132,6 +132,8 @@ export default function PageUpsert({params: {id}}: {params: {id: string}}) {
     defaultValues: {
       name: '',
       openParticipation: false,
+      consentRequired: true,
+      consentText: '',
       folder: [],
       email: [],
       timerMode: TimerMode.VISIBLE,
@@ -199,6 +201,33 @@ export default function PageUpsert({params: {id}}: {params: {id: string}}) {
             ]}
           />
         </div>
+
+        <Headline size={2} className='mt-4'>
+          {t('consentHeader')}
+        </Headline>
+        <div className='flex flex-wrap gap-8'>
+          <SelectField
+            label={t('consentRequired')}
+            on={builder.fields.consentRequired}
+            className='block w-full'
+            items={[
+              {
+                name: t('yes'),
+                value: true,
+                key: 'yes',
+              },
+              {
+                name: t('no'),
+                value: false,
+                key: 'no',
+              },
+            ]}
+          />
+        </div>
+        {builder.fields.consentRequired.$useWatch() && (
+          <TextArea label={t('consentText')} on={builder.fields.consentText} />
+        )}
+
         <Headline size={2} className='mt-4'>
           {t('beforeStartHeader')}
         </Headline>

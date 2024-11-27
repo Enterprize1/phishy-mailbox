@@ -36,6 +36,7 @@ model Participation {
   study              Study                @relation(fields: [studyId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "participation_study_id_study_id_fk")
   createdAt          DateTime             @db.Timestamptz(3)
   codeUsedAt         DateTime?            @db.Timestamptz(3)
+  consentGivenAt     DateTime?            @db.Timestamptz(3)
   startedAt          DateTime?            @db.Timestamptz(3)
   finishedAt         DateTime?            @db.Timestamptz(3)
   startLinkClickedAt DateTime?            @db.Timestamptz(3)
@@ -72,6 +73,8 @@ model Study {
   externalImageMode ExternalImageMode @default(ASK)
   durationInMinutes Int?
   openParticipation Boolean           @default(false)
+  consentRequired   Boolean           @default(false)
+  consentText       String?
   startText         String
   startLinkTemplate String?
   endText           String?

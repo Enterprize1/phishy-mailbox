@@ -18,6 +18,12 @@
     "finishedTitle": "You have completed the study.",
     "clickToContinue": "Click here to continue",
     "backToStart": "Back to Start",
+    "consent": {
+      "title": "Consent",
+      "yes": "Yes, I agree",
+      "no": "No, I do not agree",
+      "continueButtonText": "Read the above text, agree to it and click here to continue"
+    },
     "introductionEmail": {
       "subject": "Study Introduction",
       "clickToStart": "Click here to start",
@@ -129,6 +135,11 @@
         "afterStudyHeader": "After Study",
         "save": "Save",
         "errorDuringSave": "An error occurred during saving. Are all fields filled in correctly?",
+        "consentHeader": "Consent",
+        "consentRequired": "Consent required",
+        "consentText": "Consent text",
+        "yes": "Yes, ask for consent before participation",
+        "no": "No, do not ask for consent before participation",
 
         "participants": {
           "created": "Created",

@@ -5,6 +5,8 @@ import {ParticipationEvents} from '~/server/api/routers/participationEvents';
 const studyShape = z.object({
   name: z.string(),
   openParticipation: z.boolean().default(false),
+  consentRequired: z.boolean().default(false),
+  consentText: z.string().default(''),
   timerMode: z.enum(['DISABLED', 'HIDDEN', 'VISIBLE']).default('VISIBLE'),
   externalImageMode: z.enum(['ASK', 'HIDE', 'SHOW']).default('HIDE'),
   durationInMinutes: z.number().optional().nullable(),
@@ -352,6 +354,15 @@ export const studyRouter = createTRPCRouter({
           ...partipationExport,
           Type: 'code-used',
           At: p.codeUsedAt,
+          ...emptyEvent,
+        });
+      }
+
+      if (p.consentGivenAt) {
+        emailsExport.unshift({
+          ...partipationExport,
+          Type: 'consent-given',
+          At: p.consentGivenAt,
           ...emptyEvent,
         });
       }
