@@ -15,9 +15,15 @@
     "folders": "Ordner",
     "finish": "Abschließen",
     "remaining": "Verbleibende Zeit",
-    "finishedTitle": "Sie haben es geschafft!",
+    "finishedTitle": "Sie haben es geschafft!", 
     "clickToContinue": "Klicken Sie hier um fortzufahren",
     "backToStart": "Zurück zur Startseite",
+    "consent": {
+      "title": "Einwilligung",
+      "yes": "Ja, ich stimme zu",
+      "no": "Nein, ich stimme nicht zu",
+      "continueButtonText": "Lesen Sie den obigen Text, erklären Sie sich einverstanden und klicken Sie hier um fortzufahren"
+    },
     "introductionEmail": {
       "subject": "Einführung",
       "clickToStart": "Klicken Sie hier, um zu starten",
@@ -129,6 +135,11 @@
         "afterStudyHeader": "Nach der Bearbeitung",
         "save": "Speichern",
         "errorDuringSave": "Fehler beim Speichern. Sind alle Felder korrekt ausgefüllt?",
+        "consentHeader": "Einwilligung",
+        "consentRequired": "Einwilligung erforderlich",
+        "consentText": "Einwilligungstext",
+        "yes": "Ja, Einwilligung vor der Teilnahme abfragen",
+        "no": "Nein, keine Einwilligung vor der Teilnahme abfragen",
 
         "participants": {
           "created": "Erstellt",

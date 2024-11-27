@@ -140,6 +140,16 @@ export const participationRouter = createTRPCRouter({
       },
     });
   }),
+  giveConsent: publicProcedure.input(z.string().uuid()).mutation(async ({ctx, input}) => {
+    return ctx.prisma.participation.update({
+      where: {
+        id: input,
+      },
+      data: {
+        consentGivenAt: new Date(),
+      },
+    });
+  }),
   start: publicProcedure.input(z.string().uuid()).mutation(async ({ctx, input}) => {
     const participation = await ctx.prisma.participation.findUnique({
       where: {

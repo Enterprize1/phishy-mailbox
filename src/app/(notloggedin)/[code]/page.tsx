@@ -247,10 +247,66 @@ const IsFinishedOverlay: FC<{onClick: () => void; endText?: string | null; link?
   );
 };
 
+const ConsentOverlay: FC<{onClick: () => void; text: string | null}> = ({onClick, text}) => {
+  const {t} = useTranslation(undefined, {keyPrefix: 'participants'});
+  const [consent, setConsent] = useState<'yes' | 'no' | null>(null);
+
+
+  return (
+    <div className='z-60 fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-75'>
+      <div className='w-1/2 rounded-lg bg-white p-4'>
+        <div className='text-2xl font-bold'>{t('consent.title')}</div>
+        {text && <div className='mb-2 mt-2 whitespace-pre-wrap overflow-y-auto h-[80vh]'>
+          {text}
+          <form className='mt-4 flex gap-4'>
+            <label className='flex items-center'>
+              <input
+                type="radio"
+                name="consent"
+                value="yes"
+                className='mr-2 h-4 w-4 text-blue-600'
+                checked={consent === 'yes'}
+                onChange={() => setConsent('yes')}
+              />
+              {t('consent.yes')}
+            </label>
+            <label className='flex items-center'>
+              <input
+                type='radio'
+                name='consent'
+                value='no'
+                className='mr-2 h-4 w-4 text-blue-600'
+                checked={consent === 'no'}
+                onChange={() => setConsent('no')}
+              />
+              {t('consent.no')}
+            </label>
+          </form>
+        </div>}
+
+        <div className='mt-4 flex justify-between'>
+          <button
+            type='button'
+            onClick={() => consent && onClick()}
+            className='text-blue-600 hover:text-blue-500 disabled:text-gray-400'
+            disabled={consent !== 'yes'}
+          >
+            {consent !== 'yes' ? t('consent.continueButtonText') : t('clickToContinue')}
+          </button>
+          <Link href='/' className='text-blue-600 hover:text-blue-500'>
+            {t('backToStart')}
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 export default function Run({params: {code}}: {params: {code: string}}) {
   const {t} = useTranslation(undefined, {keyPrefix: 'participants'});
   const {data, refetch} = trpc.participation.get.useQuery(code);
   const startMutation = trpc.participation.start.useMutation();
+  const giveConsentMutation = trpc.participation.giveConsent.useMutation();
   const moveEmailMutation = trpc.participation.moveEmail.useMutation();
   const finishMutation = trpc.participation.finish.useMutation();
   const clickStartLinkMutation = trpc.participation.clickStartLink.useMutation();
@@ -313,6 +369,11 @@ export default function Run({params: {code}}: {params: {code: string}}) {
   const requiresStartLinkClick = !!data?.study.startLinkTemplate;
   const didClickStartLink = !!data?.startLinkClickedAt;
 
+  const onConsentGiven = useCallback(async () => {
+    await giveConsentMutation.mutateAsync(data!.id);
+    refetch();
+  }, [giveConsentMutation, data, refetch]);
+
   const onEndLinkClicked = useCallback(async () => {
     await clickEndLinkMutation.mutateAsync(data!.id);
     refetch();
@@ -339,6 +400,9 @@ export default function Run({params: {code}}: {params: {code: string}}) {
       clearInterval(timer);
     };
   }, [data]);
+
+
+  const consentNotGiven = !!data?.study.consentRequired && !data?.consentGivenAt;
 
   if (!data) {
     return null;
@@ -426,6 +490,7 @@ export default function Run({params: {code}}: {params: {code: string}}) {
 
   return (
     <DndContext onDragStart={onDragStart} onDragEnd={moveEmail} sensors={sensors}>
+      {consentNotGiven && <ConsentOverlay onClick={onConsentGiven} text={data.study.consentText} />}
       {isFinished && (
         <IsFinishedOverlay
           onClick={onEndLinkClicked}
