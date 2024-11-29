@@ -1,10 +1,30 @@
 import {defineConfig, devices} from '@playwright/test';
+import {CoverageReportOptions} from "monocart-reporter";
 
-/**
- * Read environment variables from file.
- * https://github.com/motdotla/dotenv
- */
-// require('dotenv').config();
+const coverageReportOptions: CoverageReportOptions = {
+  // logging: 'debug',
+  name: 'Next.js V8 Coverage Report',
+
+  entryFilter: (entry) => {
+    return entry.url.includes('next/static/chunks') || entry.url.includes('next/server/app');
+  },
+
+  sourceFilter: (sourcePath) => {
+    return sourcePath.startsWith('src/');
+  },
+
+  sourcePath: (fileSource) => {
+    const list = ['_N_E/', 'phishy-mailbox/'];
+    for (const pre of list) {
+      if (fileSource.startsWith(pre)) {
+        return fileSource.slice(pre.length);
+      }
+    }
+    return fileSource;
+  },
+
+  reports: ['v8', 'codecov', 'console-summary']
+};
 
 /**
  * See https://playwright.dev/docs/test-configuration.
@@ -20,18 +40,22 @@ export default defineConfig({
   /* Opt out of parallel tests on CI. */
   workers: process.env.CI ? 1 : undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: 'html',
+  reporter: [
+    ['list'],
+    ['monocart-reporter', {
+      outputFile: './monocart-report/index.html',
+      coverage: coverageReportOptions
+    }]
+  ],
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
-    /* Base URL to use in actions like `await page.goto('/')`. */
-    baseURL: 'http://127.0.0.1:3000',
     trace: 'on',
   },
 
   /* Configure projects for major browsers */
   projects: [
     {
-      name: 'chromium',
+      name: 'Desktop Chromium',
       use: {...devices['Desktop Chrome']},
     },
   ],

@@ -1,4 +1,5 @@
-import {test, expect, Page} from '@playwright/test';
+import {Page} from '@playwright/test';
+import {test, expect} from './base-fixtures';
 
 async function dragDropEmail(page: Page, fromName: string, toName: string) {
   // As described in https://playwright.dev/docs/input#dragging-manually the drag and drop implementation needs to
@@ -14,9 +15,8 @@ async function dragDropEmail(page: Page, fromName: string, toName: string) {
   await page.mouse.up();
 }
 
-test('Smoke test of the participant interface', async ({page}) => {
+test.only('Smoke test of the participant interface', async ({page}) => {
   await page.goto('/');
-  await page.getByLabel('Access Code').click();
   await page.getByLabel('Access Code').fill('123');
   await page.getByRole('button', {name: 'Start'}).click();
   const pageStartPromise = page.waitForEvent('popup');
@@ -34,4 +34,20 @@ test('Smoke test of the participant interface', async ({page}) => {
   const pageEnd = await pageEndPromise;
 
   expect(pageEnd.url()).toBe('https://example.com/end/123');
+});
+
+test('Shows error if access code is invalid', async ({page}) => {
+  await page.goto('/');
+  await page.getByLabel('Access Code').fill('42');
+  await page.getByRole('button', {name: 'Start'}).click();
+  await expect(page.getByText('Access code is invalid')).toBeVisible();
+});
+
+test('Can login to the admin interface', async ({page}) => {
+  await page.goto('/admin');
+  await page.getByLabel('Email').fill('admin@example.com');
+  await page.getByLabel('Password').fill('123456');
+  await page.getByRole('button', { name: 'Sign In' }).click();
+  await page.getByRole('link', { name: 'Studies' }).click();
+  await page.getByRole('link', { name: 'Users' }).click();
 });

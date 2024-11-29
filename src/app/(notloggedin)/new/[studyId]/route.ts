@@ -2,7 +2,13 @@ import {prisma} from '~/server/db';
 import {createNewParticipation} from '~/server/api/routers/participation';
 import {redirect} from 'next/navigation';
 
-export async function GET(_request: Request, {params: {studyId}}: {params: {studyId: string}}) {
+export async function GET(_request: Request, props: {params: Promise<{studyId: string}>}) {
+  const params = await props.params;
+
+  const {
+    studyId
+  } = params;
+
   const study = await prisma.study.findUnique({
     where: {
       id: studyId,

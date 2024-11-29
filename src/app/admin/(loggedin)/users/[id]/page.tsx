@@ -3,7 +3,7 @@ import {trpc} from '~/utils/trpc';
 import Form from '~/components/forms/Form';
 import {useFormBuilder} from '@atmina/formbuilder';
 import InputField from '~/components/forms/fields/InputField';
-import {useEffect} from 'react';
+import { useEffect, use } from 'react';
 import {useRouter} from 'next/navigation';
 import {useTranslation} from 'react-i18next';
 import {Headline} from '~/components/headline';
@@ -11,7 +11,13 @@ import {toast} from 'react-toastify';
 import { CheckboxField } from '~/components/forms/fields/CheckboxField';
 import { useSession } from 'next-auth/react';
 
-export default function Page({params: {id}}: {params: {id: string}}) {
+export default function Page(props: {params: Promise<{id: string}>}) {
+  const params = use(props.params);
+
+  const {
+    id
+  } = params;
+
   const builder = useFormBuilder<{email: string; password: string; canManageUsers: boolean}>({
     defaultValues: {
       email: '',

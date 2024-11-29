@@ -2,7 +2,7 @@
 import {useFormBuilder} from '@atmina/formbuilder';
 import {Participation, Study, Folder, StudyEmail, $Enums, ExternalImageMode} from '@prisma/client';
 import {trpc} from '~/utils/trpc';
-import {FC, useEffect, useMemo} from 'react';
+import { FC, useEffect, useMemo, use } from 'react';
 import Form from '../../../../../components/forms/Form';
 import InputField from '../../../../../components/forms/fields/InputField';
 import {SimpleTable, SimpleTableColumn} from '~/components/simple-table';
@@ -126,7 +126,13 @@ const ParticipationTable: FC<{studyId: string}> = ({studyId}) => {
   );
 };
 
-export default function PageUpsert({params: {id}}: {params: {id: string}}) {
+export default function PageUpsert(props: {params: Promise<{id: string}>}) {
+  const params = use(props.params);
+
+  const {
+    id
+  } = params;
+
   const {t} = useTranslation(undefined, {keyPrefix: 'admin.studies.edit'});
   const builder = useFormBuilder<Study & {folder: FormFolder[]; email: FormEmail[]}>({
     defaultValues: {
