@@ -138,9 +138,9 @@
         "consentHeader": "Consent",
         "consentRequired": "Consent required",
         "consentText": "Consent text",
+        "htmlIsAllowed": "HTML is allowed",
         "yes": "Yes, ask for consent before participation",
         "no": "No, do not ask for consent before participation",
-
         "participants": {
           "created": "Created",
           "code": "Code",
