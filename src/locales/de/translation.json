@@ -138,6 +138,7 @@
         "consentHeader": "Einwilligung",
         "consentRequired": "Einwilligung erforderlich",
         "consentText": "Einwilligungstext",
+        "htmlIsAllowed": "HTML ist erlaubt",
         "yes": "Ja, Einwilligung vor der Teilnahme abfragen",
         "no": "Nein, keine Einwilligung vor der Teilnahme abfragen",
 

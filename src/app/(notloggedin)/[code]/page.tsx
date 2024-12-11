@@ -28,6 +28,7 @@ import {
 } from '~/server/api/routers/participationEvents';
 import {useTranslation} from 'react-i18next';
 import {TimerMode} from '.prisma/client';
+import DOMPurify from 'isomorphic-dompurify';
 
 const NineDotsIcon = () => (
   <svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'>
@@ -225,7 +226,7 @@ const IsFinishedOverlay: FC<{onClick: () => void; endText?: string | null; link?
     <div className='z-60 fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-75'>
       <div className='w-1/2 rounded-lg bg-white p-4'>
         <div className='text-2xl font-bold'>{t('finishedTitle')}</div>
-        {endText && <div className='mb-2 mt-2 whitespace-pre-wrap'>{endText}</div>}
+        {endText && <div dangerouslySetInnerHTML={{__html: DOMPurify.sanitize(endText)}} className='mb-2 mt-2 whitespace-pre-wrap prose'/>}
         <div className='mt-4'>
           {link ? (
             <a
@@ -257,8 +258,8 @@ const ConsentOverlay: FC<{onClick: () => void; text: string | null}> = ({onClick
     <div className='z-60 fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-75'>
       <div className='w-1/2 rounded-lg bg-white p-4'>
         <div className='text-2xl font-bold'>{t('consent.title')}</div>
-        {text && <div className='mb-2 mt-2 whitespace-pre-wrap overflow-y-auto h-[80vh]'>
-          {text}
+        {text && <div className='mb-2 mt-2 overflow-y-auto h-[80vh]'>
+          <div dangerouslySetInnerHTML={{__html: DOMPurify.sanitize(text)}} className='whitespace-pre-wrap prose'/>
           <form className='mt-4 flex gap-4'>
             <label className='flex items-center'>
               <input
@@ -433,7 +434,7 @@ export default function Run({params: {code}}: {params: {code: string}}) {
 
               return (
                 <div className='p-4 whitespace-pre-line overflow-y-auto min-h-0 flex-[1_1_0px]'>
-                  {data.study.startText}
+                  <div dangerouslySetInnerHTML={{__html: DOMPurify.sanitize(data.study.startText)}} className='whitespace-pre-wrap prose'/>
                   <br />
                   <br />
                   {requiresStartLinkClick && !didClickStartLink ? (
