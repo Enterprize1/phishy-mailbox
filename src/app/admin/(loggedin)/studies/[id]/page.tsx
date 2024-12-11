@@ -164,6 +164,7 @@ export default function PageUpsert({params: {id}}: {params: {id: string}}) {
             ...data,
             startText: data.startText ?? undefined,
             endText: data.endText ?? undefined,
+            consentText: data.consentText ?? undefined,
           },
         });
       } else {

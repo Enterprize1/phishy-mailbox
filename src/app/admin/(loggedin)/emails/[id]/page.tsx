@@ -60,6 +60,10 @@ export default function Page({params: {id}}: {params: {id: string}}) {
       subject: '',
       body: '',
       headers: '',
+      senderMail: '',
+      senderName: '',
+      allowExternalImages: false,
+      backofficeIdentifier: '',
     },
   });
   const addMail = trpc.email.add.useMutation();
