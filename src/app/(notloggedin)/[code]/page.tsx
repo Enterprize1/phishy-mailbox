@@ -148,7 +148,8 @@ const RemainingTimer: FC<{
   timerMode: TimerMode;
   canFinish: boolean;
   finish: () => void;
-}> = ({startedAt, durationInMinutes, timerMode, canFinish, finish}) => {
+  isFinished: boolean;
+}> = ({startedAt, durationInMinutes, timerMode, canFinish, finish, isFinished}) => {
   const shouldFinishAt = useMemo(
     () => (startedAt && durationInMinutes ? addMinutes(startedAt, durationInMinutes) : new Date()),
     [durationInMinutes, startedAt],
@@ -189,7 +190,7 @@ const RemainingTimer: FC<{
     return () => clearInterval(timer);
   }, [shouldFinishAt]);
 
-  if (!remainingText || !startedAt) {
+  if (!remainingText || !startedAt || isFinished) {
     return null;
   }
 
@@ -198,7 +199,7 @@ const RemainingTimer: FC<{
       {canFinish && (
         <button
           type='button'
-          className='mr-2 flex justify-center rounded-md bg-indigo-600 px-3 py-1 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500'
+          className='mr-2 flex justify-center rounded-md bg-indigo-600 px-3 py-1 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 animate-highlight'
           onClick={finish}
         >
           {t('finish')}
@@ -510,6 +511,7 @@ export default function Run({params: {code}}: {params: {code: string}}) {
             timerMode={data.study.timerMode}
             canFinish={canFinish}
             finish={finish}
+            isFinished={isFinished}
           />
         </div>
         <div className='flex flex-grow'>
