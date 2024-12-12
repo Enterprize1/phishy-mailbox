@@ -53,6 +53,7 @@ model ParticipationEmail {
   folderId        String?                   @db.Uuid
   folder          Folder?                   @relation(fields: [folderId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "participation_email_folder_id_folder_id_fk")
   events          ParticipationEmailEvent[]
+  order           Int                       @default(0)
 }
 
 model ParticipationEmailEvent {
@@ -99,6 +100,9 @@ model StudyEmail {
   study   Study  @relation(fields: [studyId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "study_email_study_id_study_id_fk")
   emailId String @db.Uuid
   email   Email  @relation(fields: [emailId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "study_email_email_id_email_id_fk")
+  order   Int    @default(0)
+
+  @@unique([studyId, emailId])
 }
 
 model User {

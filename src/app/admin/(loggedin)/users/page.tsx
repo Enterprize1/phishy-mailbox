@@ -8,7 +8,7 @@ import {useTranslation} from 'react-i18next';
 import {toast} from 'react-toastify';
 import {useConfirm} from 'material-ui-confirm';
 import {Headline} from '~/components/headline';
-import { CheckCircleIcon, XCircleIcon } from '@heroicons/react/24/outline';
+import {CheckCircleIcon, XCircleIcon} from '@heroicons/react/24/outline';
 
 export default function Page() {
   const {data, refetch} = trpc.user.getAll.useQuery();
@@ -45,7 +45,12 @@ export default function Page() {
       },
       {
         header: t('common.canManageUsers'),
-        cell: (e) => e.canManageUsers ? <CheckCircleIcon className="h-5 w-5 text-green-600" /> : <XCircleIcon className="h-5 w-5 text-red-600" />,
+        cell: (e) =>
+          e.canManageUsers ? (
+            <CheckCircleIcon className='h-5 w-5 text-green-600' />
+          ) : (
+            <XCircleIcon className='h-5 w-5 text-red-600' />
+          ),
       },
       {
         header: '',

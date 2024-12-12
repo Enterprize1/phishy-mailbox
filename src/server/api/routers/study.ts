@@ -44,6 +44,7 @@ export const studyRouter = createTRPCRouter({
             email: z.array(
               z.object({
                 emailId: z.string().nullable(),
+                order: z.number().optional(),
               }),
             ),
           }),
@@ -66,7 +67,12 @@ export const studyRouter = createTRPCRouter({
           },
           email: {
             createMany: {
-              data: email.filter((e): e is {emailId: string} => !!e.emailId),
+              data: email
+                .filter((e): e is {emailId: string} => !!e.emailId)
+                .map((f, i) => ({
+                  emailId: f.emailId,
+                  order: i,
+                })),
             },
           },
         },
@@ -83,7 +89,11 @@ export const studyRouter = createTRPCRouter({
             order: 'asc',
           },
         },
-        email: true,
+        email: {
+          orderBy: {
+            order: 'asc',
+          },
+        },
       },
     });
   }),
@@ -104,6 +114,7 @@ export const studyRouter = createTRPCRouter({
               z.object({
                 id: z.string().uuid().optional(),
                 emailId: z.string().uuid(),
+                order: z.number(),
               }),
             ),
           }),
@@ -151,7 +162,7 @@ export const studyRouter = createTRPCRouter({
                   },
                   data: {
                     name: f.name,
-                    order: f.order,
+                    order: folder.findIndex((f2) => f2.id === f.id),
                   },
                 })),
               createMany: {
@@ -159,7 +170,7 @@ export const studyRouter = createTRPCRouter({
                   .filter((f) => !f.id)
                   .map((f) => ({
                     name: f.name,
-                    order: f.order,
+                    order: folder.findIndex((f2) => f2.id === f.id),
                   })),
               },
             },
@@ -177,6 +188,7 @@ export const studyRouter = createTRPCRouter({
                   },
                   data: {
                     emailId: f.emailId,
+                    order: email.findIndex((e) => e.id === f.id),
                   },
                 })),
               createMany: {
@@ -184,6 +196,7 @@ export const studyRouter = createTRPCRouter({
                   .filter((f) => !f.id)
                   .map((f) => ({
                     emailId: f.emailId,
+                    order: email.findIndex((e) => e.id === f.id),
                   })),
               },
             },
@@ -432,6 +445,7 @@ export const studyRouter = createTRPCRouter({
       }),
       email: study.email.map((e) => ({
         ...e.email,
+        order: e.order,
       })),
     };
   }),
@@ -457,6 +471,7 @@ export const studyRouter = createTRPCRouter({
               body: z.string(),
               allowExternalImages: z.boolean(),
               backofficeIdentifier: z.string(),
+              order: z.number().optional(),
             }),
           ),
         }),
@@ -486,6 +501,7 @@ export const studyRouter = createTRPCRouter({
             endLinkTemplate: input.endLinkTemplate,
           },
           select: {
+            id: true,
             folder: true,
             email: true,
           },
@@ -493,7 +509,7 @@ export const studyRouter = createTRPCRouter({
 
         await tx.folder.deleteMany({
           where: {
-            studyId: input.id,
+            studyId: study.id,
             id: {
               notIn: input.folder.map((f) => f.id),
             },
@@ -507,44 +523,53 @@ export const studyRouter = createTRPCRouter({
             },
             update: {
               ...folder,
-              studyId: input.id,
+              studyId: study.id,
             },
             create: {
               ...folder,
-              studyId: input.id,
+              studyId: study.id,
             },
           });
         }
 
         for (const email of input.email) {
+          const {order, ...withoutOrder} = email;
           await tx.email.upsert({
             where: {
               id: email.id,
             },
-            update: email,
-            create: email,
+            update: withoutOrder,
+            create: withoutOrder,
           });
         }
 
         await tx.studyEmail.deleteMany({
           where: {
-            studyId: input.id,
+            studyId: study.id,
             emailId: {
               notIn: input.email.map((e) => e.id),
             },
           },
         });
 
-        await tx.studyEmail.createMany({
-          data: input.email
-            .filter((email) => !study.email.some((e) => e.emailId == email.id))
-            .map((e) => {
-              return {
-                studyId: input.id,
-                emailId: e.id,
-              };
-            }),
-        });
+        for (const email of input.email) {
+          await tx.studyEmail.upsert({
+            where: {
+              studyId_emailId: {
+                studyId: study.id,
+                emailId: email.id,
+              },
+            },
+            update: {
+              order: email.order,
+            },
+            create: {
+              studyId: study.id,
+              emailId: email.id,
+              order: email.order,
+            },
+          });
+        }
       });
     }),
 });

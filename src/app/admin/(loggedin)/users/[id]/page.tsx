@@ -8,8 +8,8 @@ import {useRouter} from 'next/navigation';
 import {useTranslation} from 'react-i18next';
 import {Headline} from '~/components/headline';
 import {toast} from 'react-toastify';
-import { CheckboxField } from '~/components/forms/fields/CheckboxField';
-import { useSession } from 'next-auth/react';
+import {CheckboxField} from '~/components/forms/fields/CheckboxField';
+import {useSession} from 'next-auth/react';
 
 export default function Page({params: {id}}: {params: {id: string}}) {
   const builder = useFormBuilder<{email: string; password: string; canManageUsers: boolean}>({
@@ -66,13 +66,11 @@ export default function Page({params: {id}}: {params: {id: string}}) {
         {session.data?.user?.canManageUsers && (
           <div>
             <CheckboxField
-              label={t('common.canManageUsers')} 
+              label={t('common.canManageUsers')}
               on={builder.fields.canManageUsers}
               disabled={session.data.user.id === id}
             />
-            <div className="text-sm text-gray-500 ml-8">
-              {t('common.canManageUsersHelperText')}
-            </div>
+            <div className='text-sm text-gray-500 ml-8'>{t('common.canManageUsersHelperText')}</div>
           </div>
         )}
 
