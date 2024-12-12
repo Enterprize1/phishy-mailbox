@@ -115,6 +115,7 @@ export const participationRouter = createTRPCRouter({
             createMany: {
               data: participation.study.email.map((email) => ({
                 emailId: email.email.id,
+                order: email.order,
               })),
             },
           },
@@ -133,6 +134,9 @@ export const participationRouter = createTRPCRouter({
           },
         },
         emails: {
+          orderBy: {
+            order: 'asc',
+          },
           include: {
             email: true,
           },

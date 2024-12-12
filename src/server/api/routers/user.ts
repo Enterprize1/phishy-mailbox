@@ -6,7 +6,7 @@ import bcrypt from 'bcrypt';
 export const userRouter = createTRPCRouter({
   getAll: protectedProcedure.query(async ({ctx}) => {
     const currentUser = await ctx.prisma.user.findUnique({
-      where: { id: ctx.session.user.name! }
+      where: {id: ctx.session.user.name!},
     });
 
     if (!currentUser?.canManageUsers) {
@@ -27,7 +27,7 @@ export const userRouter = createTRPCRouter({
   }),
   get: protectedProcedure.input(z.string().uuid()).query(async ({ctx, input}) => {
     const currentUser = await ctx.prisma.user.findUnique({
-      where: { id: ctx.session.user.name! }
+      where: {id: ctx.session.user.name!},
     });
 
     // Allow viewing own user or require canManageUsers permission
@@ -37,7 +37,7 @@ export const userRouter = createTRPCRouter({
         message: 'You do not have permission to manage users',
       });
     }
-    
+
     const user = await ctx.prisma.user.findUnique({
       where: {
         id: input,
@@ -68,7 +68,7 @@ export const userRouter = createTRPCRouter({
     )
     .mutation(async ({ctx, input}) => {
       const currentUser = await ctx.prisma.user.findUnique({
-        where: { id: ctx.session.user.name! }
+        where: {id: ctx.session.user.name!},
       });
 
       if (!currentUser?.canManageUsers) {
@@ -98,7 +98,7 @@ export const userRouter = createTRPCRouter({
     )
     .mutation(async ({ctx, input}) => {
       const currentUser = await ctx.prisma.user.findUnique({
-        where: { id: ctx.session.user.name! }
+        where: {id: ctx.session.user.name!},
       });
 
       if (!currentUser?.canManageUsers) {
@@ -129,7 +129,7 @@ export const userRouter = createTRPCRouter({
     }),
   delete: protectedProcedure.input(z.string().uuid()).mutation(async ({ctx, input}) => {
     const currentUser = await ctx.prisma.user.findUnique({
-      where: { id: ctx.session.user.name! }
+      where: {id: ctx.session.user.name!},
     });
 
     if (!currentUser?.canManageUsers) {

@@ -9,10 +9,12 @@ const db = new PrismaClient();
 
 declare module 'next-auth' {
   interface Session {
-      user: ({
-        id: string;
-        canManageUsers: boolean;
-      } & DefaultSession['user']) | undefined;
+    user:
+      | ({
+          id: string;
+          canManageUsers: boolean;
+        } & DefaultSession['user'])
+      | undefined;
   }
 }
 

@@ -226,21 +226,13 @@ export default function PageUpsert({params: {id}}: {params: {id: string}}) {
           />
         </div>
         {builder.fields.consentRequired.$useWatch() && (
-          <TextArea
-            label={t('consentText')}
-            helperText={t('htmlIsAllowed')}
-            on={builder.fields.consentText}
-          />
+          <TextArea label={t('consentText')} helperText={t('htmlIsAllowed')} on={builder.fields.consentText} />
         )}
 
         <Headline size={2} className='mt-4'>
           {t('beforeStartHeader')}
         </Headline>
-        <TextArea
-          label={t('explanationText')}
-          on={builder.fields.startText}
-          helperText={t('htmlIsAllowed')}
-        />
+        <TextArea label={t('explanationText')} on={builder.fields.startText} helperText={t('htmlIsAllowed')} />
         <InputField
           label={t('linkBeforeStart')}
           on={builder.fields.startLinkTemplate}
@@ -327,7 +319,9 @@ export default function PageUpsert({params: {id}}: {params: {id: string}}) {
           detailLabel={(v) => emails.data?.find((e) => e.id === v.emailId)?.backofficeIdentifier ?? 'E-Mail'}
           defaultValue={{
             emailId: null as any, // eslint-disable-line @typescript-eslint/no-explicit-any
+            order: builder.fields.email.$useFieldArray().fields.length,
           }}
+          reorder
         >
           {(on) => (
             <div className='flex flex-col'>
@@ -346,11 +340,7 @@ export default function PageUpsert({params: {id}}: {params: {id: string}}) {
         <Headline size={2} className='mt-4'>
           {t('afterStudyHeader')}
         </Headline>
-        <TextArea
-          label={t('explanationText')}
-          on={builder.fields.endText}
-          helperText={t('htmlIsAllowed')}
-        />
+        <TextArea label={t('explanationText')} on={builder.fields.endText} helperText={t('htmlIsAllowed')} />
         <InputField
           label={t('linkAfterEnd')}
           on={builder.fields.endLinkTemplate}

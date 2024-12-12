@@ -226,7 +226,12 @@ const IsFinishedOverlay: FC<{onClick: () => void; endText?: string | null; link?
     <div className='z-60 fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-75'>
       <div className='w-1/2 rounded-lg bg-white p-4'>
         <div className='text-2xl font-bold'>{t('finishedTitle')}</div>
-        {endText && <div dangerouslySetInnerHTML={{__html: DOMPurify.sanitize(endText)}} className='mb-2 mt-2 whitespace-pre-wrap prose'/>}
+        {endText && (
+          <div
+            dangerouslySetInnerHTML={{__html: DOMPurify.sanitize(endText)}}
+            className='mb-2 mt-2 whitespace-pre-wrap prose'
+          />
+        )}
         <div className='mt-4'>
           {link ? (
             <a
@@ -253,38 +258,39 @@ const ConsentOverlay: FC<{onClick: () => void; text: string | null}> = ({onClick
   const {t} = useTranslation(undefined, {keyPrefix: 'participants'});
   const [consent, setConsent] = useState<'yes' | 'no' | null>(null);
 
-
   return (
     <div className='z-60 fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-75'>
       <div className='w-1/2 rounded-lg bg-white p-4'>
         <div className='text-2xl font-bold'>{t('consent.title')}</div>
-        {text && <div className='mb-2 mt-2 overflow-y-auto h-[80vh]'>
-          <div dangerouslySetInnerHTML={{__html: DOMPurify.sanitize(text)}} className='whitespace-pre-wrap prose'/>
-          <form className='mt-4 flex gap-4'>
-            <label className='flex items-center'>
-              <input
-                type="radio"
-                name="consent"
-                value="yes"
-                className='mr-2 h-4 w-4 text-blue-600'
-                checked={consent === 'yes'}
-                onChange={() => setConsent('yes')}
-              />
-              {t('consent.yes')}
-            </label>
-            <label className='flex items-center'>
-              <input
-                type='radio'
-                name='consent'
-                value='no'
-                className='mr-2 h-4 w-4 text-blue-600'
-                checked={consent === 'no'}
-                onChange={() => setConsent('no')}
-              />
-              {t('consent.no')}
-            </label>
-          </form>
-        </div>}
+        {text && (
+          <div className='mb-2 mt-2 overflow-y-auto h-[80vh]'>
+            <div dangerouslySetInnerHTML={{__html: DOMPurify.sanitize(text)}} className='whitespace-pre-wrap prose' />
+            <form className='mt-4 flex gap-4'>
+              <label className='flex items-center'>
+                <input
+                  type='radio'
+                  name='consent'
+                  value='yes'
+                  className='mr-2 h-4 w-4 text-blue-600'
+                  checked={consent === 'yes'}
+                  onChange={() => setConsent('yes')}
+                />
+                {t('consent.yes')}
+              </label>
+              <label className='flex items-center'>
+                <input
+                  type='radio'
+                  name='consent'
+                  value='no'
+                  className='mr-2 h-4 w-4 text-blue-600'
+                  checked={consent === 'no'}
+                  onChange={() => setConsent('no')}
+                />
+                {t('consent.no')}
+              </label>
+            </form>
+          </div>
+        )}
 
         <div className='mt-4 flex justify-between'>
           <button
@@ -403,7 +409,6 @@ export default function Run({params: {code}}: {params: {code: string}}) {
     };
   }, [data]);
 
-
   const consentNotGiven = !!data?.study.consentRequired && !data?.consentGivenAt;
 
   if (!data) {
@@ -434,7 +439,10 @@ export default function Run({params: {code}}: {params: {code: string}}) {
 
               return (
                 <div className='p-4 whitespace-pre-line overflow-y-auto min-h-0 flex-[1_1_0px]'>
-                  <div dangerouslySetInnerHTML={{__html: DOMPurify.sanitize(data.study.startText)}} className='whitespace-pre-wrap prose'/>
+                  <div
+                    dangerouslySetInnerHTML={{__html: DOMPurify.sanitize(data.study.startText)}}
+                    className='whitespace-pre-wrap prose'
+                  />
                   <br />
                   <br />
                   {requiresStartLinkClick && !didClickStartLink ? (
