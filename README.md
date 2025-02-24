@@ -15,6 +15,22 @@ Researcher's dashboard allowing the easy setup and management of phishing studie
 
 In depth documentation is available in both [english](documentation/documentation_english.pdf) and [german](documentation/dokumentation_deutsch.pdf).
 
+## Easy Installation 
+
+1. Install [Docker](https://www.docker.com/) on your machine. For Windows, Docker Desktop is recommended. Keep in mind you need admin privileges to execute Docker.
+2. Download the docker-compose.yml from this repository and place it into an empty folder.
+3. Download the docker image from [Dockerhub](https://hub.docker.com/r/thorstenthiel/phishy-mailbox) into the same folder.
+4. Start docker, if necessary.
+5. Start the command line interface and navigate to the folder containing image and yml file.
+6. type in: docker compose up -d
+7. Wait for the program to load
+
+The application should start and be reachable from localhost:3000 (user interface) or localhost:3000/admin. 
+
+## Citation
+
+If you use this software for your research, please don't forget to cite it in your papers! Link to the publication: [https://www.ndss-symposium.org/wp-content/uploads/usec25-37.pdf](https://www.ndss-symposium.org/wp-content/uploads/usec25-37.pdf)
+
 ## Origin
 
 The first version of this tool was created in the context of a bachelor's thesis at the [department for usable security and privacy](https://www.itsec.uni-hannover.de/de/usec) at Leibniz Universität Hannover.
