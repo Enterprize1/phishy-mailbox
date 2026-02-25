@@ -93,7 +93,12 @@ const EmailDisplayReply: FC<{
             <div className='my-2 flex flex-col gap-x-8 gap-y-2'>
               <InputField label={t('subject')} on={builder.fields.subject} />
             </div>
-            <CodeTextarea label={t('content')} on={builder.fields.message} />
+            <CodeTextarea
+              label={t('content')}
+              on={builder.fields.message}
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+            />
             <button
               type='submit'
               className='mt-4 flex-shrink justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600'
