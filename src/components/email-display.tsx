@@ -62,7 +62,7 @@ const EmailDisplayReply: FC<{
   onSendReply?: (message: string) => void;
   onAbortReply?: () => void;
 }> = ({subject, onOpenReply, onSendReply, onAbortReply}) => {
-  const [message, setMessage] = useState<string>("");
+  const [message, setMessage] = useState<string>('');
   const [open, setOpen] = useState<boolean>(false);
   const {t} = useTranslation(undefined, {keyPrefix: 'components.emailDisplay.reply'});
   const builder = useFormBuilder<{subject: string; message: string}>({

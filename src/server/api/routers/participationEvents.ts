@@ -57,7 +57,7 @@ export type EMailSendReplyEvent = z.infer<typeof eMailSendReplyEvent>;
 export const eMailAbortReplyEvent = z.object({
   type: z.literal('email-abort-reply'),
 });
-export type EMailSendReplyEvent = z.infer<typeof eMailAbortReplyEvent>;
+export type EMailAbortReplyEvent = z.infer<typeof eMailAbortReplyEvent>;
 
 export const participationEvents = z.union([
   eMailViewEvent,

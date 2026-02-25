@@ -676,8 +676,8 @@ export default function Run({params: {code}}: {params: {code: string}}) {
                       participationId: data.id,
                       participationEmailId: currentEmail.id,
                       event: {
-                        type: 'email-send-reply',
-                      } as EMailSendReplyEvent,
+                        type: 'email-abort-reply',
+                      } as EMailAbortReplyEvent,
                     });
                   }}
                   onViewExternalImages={() => {
