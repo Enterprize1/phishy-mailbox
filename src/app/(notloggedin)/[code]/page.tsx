@@ -25,8 +25,9 @@ import {
   EMailViewEvent,
   EMailViewExternalImagesEvent,
   EMailViewDetailsEvent,
-  EmailOpenReplyEvent,
-  EmailSendReplyEvent,
+  EMailOpenReplyEvent,
+  EMailSendReplyEvent,
+  EMailAbortReplyEvent,
 } from '~/server/api/routers/participationEvents';
 import {useTranslation} from 'react-i18next';
 import {TimerMode} from '.prisma/client';
