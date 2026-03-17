@@ -62,7 +62,6 @@ const EmailDisplayReply: FC<{
   onSendReply?: (message: string) => void;
   onAbortReply?: () => void;
 }> = ({subject, onOpenReply, onSendReply, onAbortReply}) => {
-  const [message, setMessage] = useState<string>('');
   const [open, setOpen] = useState<boolean>(false);
   const {t} = useTranslation(undefined, {keyPrefix: 'components.emailDisplay.reply'});
   const builder = useFormBuilder<{subject: string; message: string}>({
@@ -85,8 +84,9 @@ const EmailDisplayReply: FC<{
           <Dialog.Title className='m-0 font-bold'>{t('composeNewMessage')}</Dialog.Title>
           <Form
             builder={builder}
-            onSubmit={() => {
-              onSendReply?.(message);
+            onSubmit={(data) => {
+              onSendReply?.(data.message);
+              builder.fields.message.$setValue("");
               setOpen(false);
             }}
           >
@@ -96,8 +96,6 @@ const EmailDisplayReply: FC<{
             <CodeTextarea
               label={t('content')}
               on={builder.fields.message}
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
             />
             <button
               type='submit'
