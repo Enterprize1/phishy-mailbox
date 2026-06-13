@@ -189,7 +189,9 @@
     "masterDetailView": {
       "addNew": "Hinzufügen",
       "selectElement": "Wählen Sie ein Element aus der Liste zum Bearbeiten aus",
-      "remove": "Entfernen"
+      "remove": "Entfernen",
+      "moveUp": "Nach oben verschieben",
+      "moveDown": "Nach unten verschieben"
     },
     "emailDisplay": {
       "noTitle": "Kein Titel",

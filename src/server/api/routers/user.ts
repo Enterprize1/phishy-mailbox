@@ -108,13 +108,10 @@ export const userRouter = createTRPCRouter({
         });
       }
 
-      // Don't allow changing own manage users permission
-      if (input.id === ctx.session.user.name) {
-        throw new TRPCError({
-          code: 'FORBIDDEN',
-          message: 'You cannot modify your own user management permissions',
-        });
-      }
+      // Editing your own account (e.g. via "Change Password") is allowed, but you
+      // must not be able to change your own management permission. The frontend
+      // disables that checkbox for yourself; the backend simply ignores it here.
+      const isSelf = input.id === ctx.session.user.name;
 
       return ctx.prisma.user.update({
         where: {
@@ -122,7 +119,7 @@ export const userRouter = createTRPCRouter({
         },
         data: {
           email: input.email,
-          canManageUsers: input.canManageUsers,
+          ...(isSelf ? {} : {canManageUsers: input.canManageUsers}),
           ...(input.password ? {password: await bcrypt.hash(input.password, 10)} : {}), // Only update password if it's provided (otherwise it will be set to null
         },
       });

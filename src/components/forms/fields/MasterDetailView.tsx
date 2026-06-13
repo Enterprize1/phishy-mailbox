@@ -67,6 +67,7 @@ function MasterDetailView<T extends FieldValues>({
                 {reorder && (
                   <button
                     type='button'
+                    aria-label={t('moveUp')}
                     disabled={i === 0}
                     className='disabled:invisible'
                     onClick={() => {
@@ -81,6 +82,7 @@ function MasterDetailView<T extends FieldValues>({
                 {reorder && (
                   <button
                     type='button'
+                    aria-label={t('moveDown')}
                     disabled={i === value.length - 1}
                     className='disabled:invisible'
                     onClick={() => {

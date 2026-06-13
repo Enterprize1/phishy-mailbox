@@ -188,7 +188,9 @@
     "masterDetailView": {
       "addNew": "Add",
       "selectElement": "Select an element on the left to edit",
-      "remove": "Remove"
+      "remove": "Remove",
+      "moveUp": "Move up",
+      "moveDown": "Move down"
     },
     "emailDisplay": {
       "noTitle": "No Title",

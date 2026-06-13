@@ -16,6 +16,7 @@ import {execSync} from 'child_process';
 import {rmSync, writeFileSync, existsSync} from 'fs';
 import {join, dirname} from 'path';
 import {fileURLToPath} from 'url';
+import {writeCoverageBaseline} from './coverage-baseline.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const babelrcPath = join(root, '.babelrc');
@@ -55,6 +56,11 @@ try {
 } finally {
   rmSync(babelrcPath, {force: true});
 }
+
+// Fill in files that were never loaded at runtime so they report at 0% instead
+// of vanishing from the report entirely.
+const baselined = writeCoverageBaseline(root);
+console.log(`Seeded coverage baseline for ${baselined} untouched file(s).`);
 
 run('node_modules/.bin/nyc report');
 console.log('\nCoverage report written to coverage/e2e/index.html');
