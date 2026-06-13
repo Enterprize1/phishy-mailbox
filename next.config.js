@@ -6,7 +6,9 @@ const nextConfig = removeImports({
   experimental: {
     esmExternals: true,
   },
-  output: 'standalone',
+  // Standalone output is used for the Docker image. The e2e tests build + run via
+  // `next start`, which is incompatible with standalone, so they opt out via this flag.
+  output: process.env.NEXT_DISABLE_STANDALONE === '1' ? undefined : 'standalone',
 });
 
 module.exports = nextConfig;

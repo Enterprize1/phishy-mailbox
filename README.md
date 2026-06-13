@@ -62,10 +62,53 @@ During development a deployment using [Vercel](https://vercel.com/) and [supabas
 
 ## Testing
 
-Currently there is a single test that performs a smoke test of the particpants view by executing a small study.
-To run the test you need to have the application running locally, have seeded the database using the seed script.
-Then you can run the test using the following command: (If not done before it may be necessary to install a browser, the command will tell you if that is the case)
+The test suite is split into two layers, both running against a **dedicated test
+database** (PostgreSQL on port `5434`, separate from the dev DB on `5432`). Start it
+once with:
 
 ```bash
-yarn playwright test
+yarn test:db:up     # docker-compose.test.yml, Postgres on :5434
+# ... run tests ...
+yarn test:db:down   # stop and remove it
 ```
+
+### Integration tests (Vitest) — primary coverage
+
+These call the tRPC routers directly (`appRouter.createCaller`) against the test DB.
+Every test runs inside its **own transaction that is rolled back afterwards**, so
+nothing is ever committed — tests are completely isolated and parallel-safe (each
+Vitest worker uses its own connection). This is the reliable coverage metric to
+iterate on.
+
+```bash
+yarn test:unit          # run once
+yarn test:unit:watch    # watch mode
+yarn test:coverage      # with coverage -> coverage/unit/index.html
+```
+
+Tests live next to the code as `src/**/*.test.ts`; shared helpers/factories are in
+`test/integration/`.
+
+### End-to-end tests (Playwright)
+
+Browser tests of the real user flows. For complete isolation with parallelism, **each
+Playwright worker boots its own Next.js server on its own port and clones its own
+database** from a migrated template; before every test the worker DB is truncated and
+re-seeded (clean slate). The first run performs a `next build`.
+
+```bash
+yarn test:e2e                       # build + run (2 workers by default)
+PLAYWRIGHT_WORKERS=4 yarn test:e2e  # more parallelism (one server/DB per worker)
+SKIP_BUILD=1 yarn test:e2e          # reuse an existing .next build
+```
+
+Specs and fixtures live in `test/e2e/`.
+
+### A note on coverage
+
+Coverage is measured at the **integration layer** (`yarn test:coverage`), which maps
+cleanly and reliably to `src/server/**`. The way to raise coverage is to add more
+integration tests there. The e2e suite intentionally does **not** produce a coverage
+number: it runs against the compiled Next.js production server, whose V8 coverage does
+not map back to source without server source maps, so any figure would be misleading.
+E2E tests exist to verify the real user flows end to end, not to move a coverage gauge.

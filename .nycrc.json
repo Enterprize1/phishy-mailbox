@@ -1,0 +1,13 @@
+{
+  "all": false,
+  "report-dir": "./coverage/e2e",
+  "temp-dir": "./.nyc_output",
+  "reporter": ["text-summary", "html", "lcov"],
+  "include": ["src/**"],
+  "exclude": [
+    "src/**/*.test.ts",
+    "src/pages/api/__coverage__.ts",
+    "src/env.mjs",
+    "**/*.d.ts"
+  ]
+}

@@ -1,0 +1,17 @@
+# Dedicated PostgreSQL instance for the test suites (integration + e2e).
+# Runs on port 5434 so it never collides with the dev database (5432).
+# Schema is applied via `prisma db push` from the test setup, so no init volume here.
+services:
+  postgres-test:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: mailbox
+      POSTGRES_PASSWORD: mailbox
+      POSTGRES_DB: mailbox
+    ports:
+      - 5434:5432
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U mailbox']
+      interval: 2s
+      timeout: 5s
+      retries: 15
