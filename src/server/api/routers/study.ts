@@ -341,6 +341,7 @@ export const studyRouter = createTRPCRouter({
               eventData.type === 'email-link-click' || eventData.type === 'email-link-hover'
                 ? eventData.linkText
                 : null,
+            'Reply Message': eventData.type === 'email-send-reply' ? eventData.message : null,
           } as Record<string, unknown>;
         });
       });
@@ -354,6 +355,7 @@ export const studyRouter = createTRPCRouter({
         'Scrolled To': null,
         URL: null,
         'Link Text': null,
+        'Reply Message': null,
       };
 
       if (p.startedAt) {

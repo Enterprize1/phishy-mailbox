@@ -298,6 +298,7 @@ describe('study router', () => {
     await track({type: 'email-scrolled', scrollPosition: 420});
     await track({type: 'email-link-click', url: 'https://example.com/phish', linkText: 'Reset password'});
     await track({type: 'email-link-hover', url: 'https://example.com/hover', linkText: 'Hover me'});
+    await track({type: 'email-send-reply', message: 'No thanks, this looks like phishing.'});
 
     const rows = await getCaller(adminSession()).study.export(study.id);
     const byType = (t: string) => rows.find((r) => r.Type === t)!;
@@ -306,6 +307,7 @@ describe('study router', () => {
     expect(byType('email-scrolled')).toMatchObject({'Scrolled To': 420});
     expect(byType('email-link-click')).toMatchObject({URL: 'https://example.com/phish', 'Link Text': 'Reset password'});
     expect(byType('email-link-hover')).toMatchObject({URL: 'https://example.com/hover', 'Link Text': 'Hover me'});
+    expect(byType('email-send-reply')).toMatchObject({'Reply Message': 'No thanks, this looks like phishing.'});
 
     // Columns that do not belong to a given event type must stay null.
     expect(byType('email-scrolled')['From Folder']).toBeNull();
