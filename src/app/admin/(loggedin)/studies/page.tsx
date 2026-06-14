@@ -150,19 +150,16 @@ export default function Page() {
 
   const onDelete = useCallback(
     async (studyId: string) => {
-      try {
-        await confirm({
-          description: t('deleteConfirm'),
-        });
-      } catch (e) {
-        return;
-      }
+      const {confirmed} = await confirm({
+        description: t('deleteConfirm'),
+      });
+      if (!confirmed) return;
 
       try {
         await deleteStudy(studyId);
         toast.success(t('deleteSuccess'));
         refetch();
-      } catch (e) {
+      } catch {
         toast.error(t('deleteError'));
       }
     },

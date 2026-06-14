@@ -37,7 +37,7 @@ const UploadMultiple: FC<{refetch: () => void}> = ({refetch}) => {
           try {
             const parsedFile = await parseMail.mutateAsync({file: base64});
             await addMail.mutateAsync({email: parsedFile});
-          } catch (e) {
+          } catch {
             toast.error(t('uploadError'));
           }
         }
@@ -81,19 +81,16 @@ export default function Page() {
 
   const deleteClick = useCallback(
     async (id: string) => {
-      try {
-        await confirm({
-          description: t('deleteConfirm'),
-        });
-      } catch (e) {
-        return;
-      }
+      const {confirmed} = await confirm({
+        description: t('deleteConfirm'),
+      });
+      if (!confirmed) return;
 
       try {
         await deleteMail(id);
         toast.success(t('deletedSuccess'));
         refetch();
-      } catch (e) {
+      } catch {
         toast.error(t('deletedError'));
       }
     },

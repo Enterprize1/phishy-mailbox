@@ -1,6 +1,6 @@
 'use client';
 import clsx from 'clsx';
-import {FC, useCallback, useEffect, useMemo, useState} from 'react';
+import {FC, use, useCallback, useEffect, useMemo, useState} from 'react';
 import {addMinutes, differenceInSeconds} from 'date-fns';
 import {Email, ExternalImageMode, Folder, ParticipationEmail} from '@prisma/client';
 import {trpc} from '~/utils/trpc';
@@ -370,7 +370,8 @@ const ConsentOverlay: FC<{onClick: () => void; text: string | null}> = ({onClick
   );
 };
 
-export default function Run({params: {code}}: {params: {code: string}}) {
+export default function Run({params}: {params: Promise<{code: string}>}) {
+  const {code} = use(params);
   const {t} = useTranslation(undefined, {keyPrefix: 'participants'});
   const {data, refetch} = trpc.participation.get.useQuery(code);
   const startMutation = trpc.participation.start.useMutation();

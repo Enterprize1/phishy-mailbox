@@ -14,11 +14,12 @@
           nodePackages.prisma
         ];
         shellHook = with pkgs; ''
-          export PRISMA_MIGRATION_ENGINE_BINARY="${prisma-engines}/bin/migration-engine"
+          # Prisma 7 engines: migration-engine was renamed to schema-engine, and
+          # the introspection-engine / prisma-fmt binaries were removed (folded
+          # into the schema engine and the CLI).
+          export PRISMA_SCHEMA_ENGINE_BINARY="${prisma-engines}/bin/schema-engine"
           export PRISMA_QUERY_ENGINE_BINARY="${prisma-engines}/bin/query-engine"
           export PRISMA_QUERY_ENGINE_LIBRARY="${prisma-engines}/lib/libquery_engine.node"
-          export PRISMA_INTROSPECTION_ENGINE_BINARY="${prisma-engines}/bin/introspection-engine"
-          export PRISMA_FMT_BINARY="${prisma-engines}/bin/prisma-fmt"
         '';
       };
   });

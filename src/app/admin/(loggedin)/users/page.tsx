@@ -18,19 +18,16 @@ export default function Page() {
 
   const deleteClick = useCallback(
     async (id: string) => {
-      try {
-        await confirm({
-          description: t('list.deleteConfirm'),
-        });
-      } catch (e) {
-        return;
-      }
+      const {confirmed} = await confirm({
+        description: t('list.deleteConfirm'),
+      });
+      if (!confirmed) return;
 
       try {
         await deleteUser(id);
         toast.success(t('list.deletedSuccess'));
         refetch();
-      } catch (e) {
+      } catch {
         toast.error(t('list.deletedError'));
       }
     },

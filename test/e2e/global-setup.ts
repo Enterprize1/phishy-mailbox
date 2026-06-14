@@ -24,7 +24,7 @@ export default async function globalSetup() {
 
   // Fresh template DB + schema. Workers clone from this.
   await recreateTemplateDb();
-  execSync('node_modules/.bin/prisma db push --skip-generate --accept-data-loss', {
+  execSync('node_modules/.bin/prisma db push --accept-data-loss', {
     stdio: 'inherit',
     env: {...process.env, DATABASE_URL: dbUrl(TEMPLATE_DB)},
   });

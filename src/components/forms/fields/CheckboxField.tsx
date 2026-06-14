@@ -7,7 +7,7 @@ export const CheckboxField: FC<FieldProps<boolean>> = ({label, on, rules, disabl
     field: {ref, value, ...checkboxProps},
   } = on.$useController(rules ?? {});
 
-  const checkbox = <Checkbox checked={!!value} inputRef={ref} disabled={disabled} {...checkboxProps} />;
+  const checkbox = <Checkbox checked={!!value} slotProps={{input: {ref}}} disabled={disabled} {...checkboxProps} />;
 
   return <FormControlLabel label={label} control={checkbox} labelPlacement='end' {...rest} />;
 };

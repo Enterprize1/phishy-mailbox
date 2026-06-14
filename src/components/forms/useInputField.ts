@@ -18,9 +18,12 @@ interface UseInputFieldOptions<T> {
   monospace?: boolean;
   label?: string;
   disabled?: boolean;
-  inputProps?: TextFieldProps['inputProps'];
-  InputProps?: TextFieldProps['InputProps'];
 }
+
+// MUI v6 consolidated `inputProps`/`InputProps`/`InputLabelProps` into a single
+// `slotProps` object (`htmlInput` = native input attributes, `input` = the Input
+// component, `inputLabel` = the floating label).
+type TextFieldSlotProps = NonNullable<TextFieldProps['slotProps']>;
 
 const isFilled = (value: unknown) => {
   if (value === '') return false;
@@ -29,7 +32,7 @@ const isFilled = (value: unknown) => {
 };
 
 type UseInputFieldResult<T> = {
-  textFieldProps: Required<Pick<TextFieldProps, 'name' | 'inputProps' | 'variant'>> & {
+  textFieldProps: Pick<TextFieldProps, 'name' | 'variant' | 'slotProps'> & {
     error?: boolean;
     helperText?: TextFieldProps['helperText'];
     required?: boolean;
@@ -38,38 +41,51 @@ type UseInputFieldResult<T> = {
     onBlur?: FocusEventHandler<HTMLElement>;
     onChange: (event: {target: {name: string; value: unknown}}) => void;
     inputRef: RefCallback<HTMLInputElement>;
-    InputLabelProps?: TextFieldProps['InputLabelProps'];
+    label?: TextFieldProps['label'];
+    disabled?: boolean;
   };
   name: string;
   value: T;
 };
 
 function useCommonInputFieldProps<T>(options: UseInputFieldOptions<T>) {
-  const {on, readOnly, monospace, rules, label, disabled, inputProps, InputProps} = options;
+  const {on, readOnly, monospace, rules, label, disabled} = options;
   const name = String(on);
   const {errorText} = useFieldEnhancements({on});
 
-  const result: Required<Pick<TextFieldProps, 'inputProps' | 'InputProps' | 'name' | 'variant' | 'sx'>> &
-    Pick<TextFieldProps, 'label' | 'error' | 'helperText' | 'disabled'> = {
-    inputProps: {...inputProps},
-    InputProps: {...InputProps},
+  const htmlInput: Record<string, unknown> = {};
+  const input: Record<string, unknown> = {};
+
+  if (monospace) {
+    htmlInput['data-monospace'] = true;
+  }
+
+  if (readOnly) {
+    input.readOnly = true;
+  }
+
+  if (rules?.required) {
+    input.required = true;
+  }
+
+  if (typeof rules?.min === 'number') {
+    htmlInput.min = rules.min;
+  }
+
+  if (typeof rules?.max === 'number') {
+    htmlInput.max = rules.max;
+  }
+
+  const result: Pick<
+    TextFieldProps,
+    'name' | 'variant' | 'slotProps' | 'sx' | 'label' | 'error' | 'helperText' | 'disabled'
+  > = {
+    slotProps: {htmlInput, input} as TextFieldSlotProps,
     sx: {my: 1},
     name,
     variant: 'outlined',
     label,
   };
-
-  if (monospace) {
-    result.inputProps['data-monospace'] = true;
-  }
-
-  if (readOnly) {
-    result.InputProps.readOnly = true;
-  }
-
-  if (rules?.required) {
-    result.InputProps.required = true;
-  }
 
   if (errorText) {
     result.error = true;
@@ -78,14 +94,6 @@ function useCommonInputFieldProps<T>(options: UseInputFieldOptions<T>) {
 
   if (disabled) {
     result.disabled = true;
-  }
-
-  if (typeof rules?.min === 'number') {
-    result.inputProps.min = rules?.min;
-  }
-
-  if (typeof rules?.max === 'number') {
-    result.inputProps.max = rules?.max;
   }
 
   return result;
@@ -101,8 +109,8 @@ function useCommonInputFieldProps<T>(options: UseInputFieldOptions<T>) {
  * top of InputField would be a lot more cumbersome.
  */
 export function useInputField<T>(options: UseInputFieldOptions<T>): UseInputFieldResult<T> {
-  const {on, rules, readOnly, monospace, inputProps, InputProps, ...rest} = options;
-  const {inputProps: commonInputProps, ...otherCommonProps} = useCommonInputFieldProps(options);
+  const {on, rules, readOnly, monospace, ...rest} = options;
+  const {slotProps: commonSlotProps, ...otherCommonProps} = useCommonInputFieldProps(options);
   const name = String(on);
   const value = on.$useWatch();
   const inputRef = useRef<HTMLInputElement | null>(null);
@@ -125,20 +133,24 @@ export function useInputField<T>(options: UseInputFieldOptions<T>): UseInputFiel
   });
   const {ref: rhfRef, onChange, required, ...rhfProps} = on((rules ?? undefined) as never);
 
+  const common = (commonSlotProps ?? {}) as TextFieldSlotProps;
+  const slotProps: TextFieldSlotProps = {
+    ...common,
+    htmlInput: {...(common.htmlInput as object), ...rhfProps},
+  };
+
+  if ((!readOnly && hasFocusWithin) || isFilled(value) || badInputOnLastBlur) {
+    slotProps.inputLabel = {shrink: true};
+  }
+
   const textFieldProps: UseInputFieldResult<T>['textFieldProps'] = {
     onChange,
-    inputProps: {...commonInputProps, ...rhfProps},
     inputRef: mergeRefs(rhfRef, inputRef),
     ...otherCommonProps,
     ...focusHandlers,
     ...rest,
+    slotProps,
   };
-
-  if ((!readOnly && hasFocusWithin) || isFilled(value) || badInputOnLastBlur) {
-    textFieldProps.InputLabelProps = {
-      shrink: true,
-    };
-  }
 
   return {textFieldProps, name, value};
 }

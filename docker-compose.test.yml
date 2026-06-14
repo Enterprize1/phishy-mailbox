@@ -3,7 +3,7 @@
 # Schema is applied via `prisma db push` from the test setup, so no init volume here.
 services:
   postgres-test:
-    image: postgres:15-alpine
+    image: postgres:17-alpine
     environment:
       POSTGRES_USER: mailbox
       POSTGRES_PASSWORD: mailbox

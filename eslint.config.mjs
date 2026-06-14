@@ -19,6 +19,24 @@ const compat = new FlatCompat({
     allConfig: js.configs.all
 });
 
+// The airbnb / airbnb-typescript configs (eslint 8 era) reference a number of
+// `@typescript-eslint/*` formatting rules that typescript-eslint v8 removed
+// (they live in @stylistic now). ESLint 10 hard-errors on references to rules a
+// plugin no longer defines, so strip the now-missing ones. They are all purely
+// stylistic and already disabled by eslint-config-prettier, so this changes no
+// linting behavior.
+const knownTsRules = new Set(Object.keys(typescriptEslint.rules ?? {}));
+const stripRemovedTsRules = (configs) =>
+    configs.map((config) => {
+        if (!config.rules) return config;
+        const rules = Object.fromEntries(
+            Object.entries(config.rules).filter(([name]) =>
+                !name.startsWith("@typescript-eslint/") || knownTsRules.has(name.slice("@typescript-eslint/".length))
+            )
+        );
+        return { ...config, rules };
+    });
+
 export default [...compat.extends("airbnb/hooks", "prettier"), {
     plugins: {
         react: fixupPluginRules(react),
@@ -54,13 +72,13 @@ export default [...compat.extends("airbnb/hooks", "prettier"), {
     rules: {
         "prettier/prettier": "error",
     },
-}, ...fixupConfigRules(compat.extends(
+}, ...stripRemovedTsRules(fixupConfigRules(compat.extends(
     "plugin:@typescript-eslint/recommended",
     "plugin:react/recommended",
     "plugin:react/jsx-runtime",
     "airbnb-typescript",
     "prettier",
-)).map(config => ({
+))).map(config => ({
     ...config,
     files: ["**/*.ts", "**/*.tsx"],
 })), {
@@ -72,7 +90,7 @@ export default [...compat.extends("airbnb/hooks", "prettier"), {
 
         parserOptions: {
             project: "./tsconfig.json",
-            tsconfigRootDir: "./",
+            tsconfigRootDir: __dirname,
         },
     },
 

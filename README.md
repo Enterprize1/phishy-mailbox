@@ -60,6 +60,8 @@ yarn dev
 The same two components used for development are also required for deployment, general instructions to deploy a next.js application are available [here](https://nextjs.org/docs/pages/building-your-application/deploying).
 During development a deployment using [Vercel](https://vercel.com/) and [supabase](https://supabase.com/) was tested and can be recommended.
 
+When upgrading an existing deployment across a PostgreSQL major version (e.g. the move from 15 to 17), the bundled database needs a dump & restore — see [UPGRADING.md](UPGRADING.md).
+
 ## Testing
 
 The test suite is split into two layers, both running against a **dedicated test

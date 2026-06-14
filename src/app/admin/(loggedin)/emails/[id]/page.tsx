@@ -7,7 +7,7 @@ import InputField from '~/components/forms/fields/InputField';
 import {Email, ExternalImageMode} from '@prisma/client';
 import CodeTextarea from '~/components/forms/fields/CodeTextarea';
 import EmailDisplay from '~/components/email-display';
-import {useEffect} from 'react';
+import {use, useEffect} from 'react';
 import {useRouter} from 'next/navigation';
 import {useTranslation} from 'react-i18next';
 import {Headline} from '~/components/headline';
@@ -54,7 +54,8 @@ const EmlDropzone = ({onNewMessage}: {onNewMessage: (email: Partial<Email>) => v
   );
 };
 
-export default function Page({params: {id}}: {params: {id: string}}) {
+export default function Page({params}: {params: Promise<{id: string}>}) {
+  const {id} = use(params);
   const builder = useFormBuilder<Partial<Email>>({
     defaultValues: {
       subject: '',
@@ -90,7 +91,7 @@ export default function Page({params: {id}}: {params: {id: string}}) {
       }
 
       router.push('/admin/emails');
-    } catch (e) {
+    } catch {
       toast.error(t('errorDuringSave'));
     }
   };

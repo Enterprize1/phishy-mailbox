@@ -21,7 +21,7 @@ i18n
   .use(LanguageDetector)
   .use(initReactI18next)
   .init({
-    initImmediate: false,
+    initAsync: false,
     fallbackLng: 'en',
     load: 'languageOnly',
     resources: {
@@ -67,10 +67,10 @@ const TrpcProvider: FC<PropsWithChildren> = (p) => {
 
   const [trpcClient] = useState(() =>
     trpc.createClient({
-      transformer: superjson,
       links: [
         httpBatchLink({
           url: `${getBaseUrl()}/api/trpc`,
+          transformer: superjson,
         }),
       ],
     }),
@@ -82,13 +82,11 @@ const TrpcProvider: FC<PropsWithChildren> = (p) => {
   );
 };
 
-const ConfirmProviderFixedType = ConfirmProvider as any; // eslint-disable-line @typescript-eslint/no-explicit-any
-
 export default function AppLayout({children}: PropsWithChildren) {
   const {t} = useTranslation();
 
   return (
-    <ConfirmProviderFixedType
+    <ConfirmProvider
       defaultOptions={{
         title: t('admin.confirm.title'),
         confirmationText: t('admin.confirm.confirmation'),
@@ -106,6 +104,6 @@ export default function AppLayout({children}: PropsWithChildren) {
           </body>
         </html>
       </TrpcProvider>
-    </ConfirmProviderFixedType>
+    </ConfirmProvider>
   );
 }

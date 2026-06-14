@@ -1,5 +1,6 @@
 import {test as base, expect} from '@playwright/test';
 import {PrismaClient} from '@prisma/client';
+import {PrismaPg} from '@prisma/adapter-pg';
 import {ChildProcess, spawn} from 'child_process';
 import {createWorkerDb, dbUrl, dropWorkerDb, workerDbName} from './db';
 import {resetDb, seedAdmin, seedParticipantStudy} from './seed';
@@ -71,7 +72,7 @@ export const test = base.extend<{db: Db; collectClientCoverage: void}, {workerSe
       server.stderr?.on('data', (d) => process.stderr.write(`[next:${port}] ${d}`));
 
       await waitForServer(port);
-      const prisma = new PrismaClient({datasources: {db: {url}}});
+      const prisma = new PrismaClient({adapter: new PrismaPg({connectionString: url})});
 
       await use({port, prisma});
 

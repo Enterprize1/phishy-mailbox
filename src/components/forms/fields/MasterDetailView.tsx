@@ -2,7 +2,7 @@ import {FormBuilder} from '@atmina/formbuilder';
 import {ArrowDownIcon, ArrowUpIcon} from '@heroicons/react/24/solid';
 import {twMerge} from 'tailwind-merge';
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-import {useCallback, useState, KeyboardEvent} from 'react';
+import {useCallback, useState, KeyboardEvent, JSX} from 'react';
 import {PlusIcon} from '@heroicons/react/20/solid';
 import {FieldValues} from 'react-hook-form';
 import {useTranslation} from 'react-i18next';

@@ -9,7 +9,7 @@ export default function setup() {
     );
   }
 
-  execSync('npx prisma db push --skip-generate --accept-data-loss', {
+  execSync('npx prisma db push --accept-data-loss', {
     stdio: 'inherit',
     env: process.env,
   });

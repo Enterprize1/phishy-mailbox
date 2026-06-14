@@ -2,7 +2,7 @@
 import {useFormBuilder} from '@atmina/formbuilder';
 import {Participation, Study, Folder, StudyEmail, $Enums, ExternalImageMode} from '@prisma/client';
 import {trpc} from '~/utils/trpc';
-import {FC, useEffect, useMemo} from 'react';
+import {FC, use, useEffect, useMemo} from 'react';
 import Form from '../../../../../components/forms/Form';
 import InputField from '../../../../../components/forms/fields/InputField';
 import {SimpleTable, SimpleTableColumn} from '~/components/simple-table';
@@ -66,7 +66,7 @@ const ParticipationTable: FC<{studyId: string}> = ({studyId}) => {
     try {
       await navigator.clipboard.writeText(link);
       toast.success(t('copySuccess'));
-    } catch (e) {
+    } catch {
       toast.error(t('copyError'));
     }
   };
@@ -85,14 +85,16 @@ const ParticipationTable: FC<{studyId: string}> = ({studyId}) => {
           value={link}
           className='mb-4'
           disabled
-          InputProps={{
-            endAdornment: (
-              <InputAdornment position='end'>
-                <IconButton onClick={copyText}>
-                  <DocumentDuplicateIcon className='size-5' />
-                </IconButton>
-              </InputAdornment>
-            ),
+          slotProps={{
+            input: {
+              endAdornment: (
+                <InputAdornment position='end'>
+                  <IconButton onClick={copyText}>
+                    <DocumentDuplicateIcon className='size-5' />
+                  </IconButton>
+                </InputAdornment>
+              ),
+            },
           }}
         />
       )}
@@ -126,7 +128,8 @@ const ParticipationTable: FC<{studyId: string}> = ({studyId}) => {
   );
 };
 
-export default function PageUpsert({params: {id}}: {params: {id: string}}) {
+export default function PageUpsert({params}: {params: Promise<{id: string}>}) {
+  const {id} = use(params);
   const {t} = useTranslation(undefined, {keyPrefix: 'admin.studies.edit'});
   const builder = useFormBuilder<Study & {folder: FormFolder[]; email: FormEmail[]}>({
     defaultValues: {
@@ -176,7 +179,7 @@ export default function PageUpsert({params: {id}}: {params: {id: string}}) {
         await updateStudy.mutateAsync({id: id, study: data as any});
       }
       router.push('/admin/studies');
-    } catch (e) {
+    } catch {
       toast.error(t('errorDuringSave'));
     }
   };

@@ -1,10 +1,8 @@
 import {prisma} from '~/server/db';
 import {ExternalImageMode} from '@prisma/client';
 
-export async function GET(
-  request: Request,
-  {params: {studyId, emailId}}: {params: {studyId: string; emailId: string}},
-) {
+export async function GET(request: Request, {params}: {params: Promise<{studyId: string; emailId: string}>}) {
+  const {studyId, emailId} = await params;
   const url = new URL(request.url);
   const email = await prisma.email.findUnique({
     where: {

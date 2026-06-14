@@ -3,9 +3,7 @@ import {DefaultSession, getServerSession, type NextAuthOptions} from 'next-auth'
 import Credentials from 'next-auth/providers/credentials';
 import * as z from 'zod';
 import * as bcrypt from 'bcrypt';
-import {PrismaClient} from '@prisma/client';
-
-const db = new PrismaClient();
+import {prisma as db} from '~/server/db';
 
 declare module 'next-auth' {
   interface Session {

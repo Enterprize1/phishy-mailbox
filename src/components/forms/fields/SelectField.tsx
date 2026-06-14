@@ -32,14 +32,17 @@ function SelectField<T>({items, valueIdentifier, ...props}: SelectFieldProps<T>)
     <TextField
       select
       type='select'
-      SelectProps={{native: true}}
       onChange={handleChange}
       onBlur={onBlur}
       inputRef={ref}
-      value={currentItem ? currentItem.key ?? getCollectionItemKey(currentItem.value) : ''}
+      value={currentItem ? (currentItem.key ?? getCollectionItemKey(currentItem.value)) : ''}
       size='small'
       {...textFieldProps}
-      InputLabelProps={currentItem == null && value == null ? {shrink: false} : undefined}
+      slotProps={{
+        ...textFieldProps.slotProps,
+        select: {native: true},
+        inputLabel: currentItem == null && value == null ? {shrink: false} : undefined,
+      }}
     >
       {
         /* Hidden option prevents the next option in line from being selected by default when no other options match */
