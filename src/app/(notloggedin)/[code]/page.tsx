@@ -163,7 +163,7 @@ const SingleEmail: FC<{
       type='button'
       onClick={setAsCurrentEmail}
       className={twMerge(
-        'flex w-full flex-col border-l-4 px-2 py-2 text-left text-sm hover:!border-l-gray-400',
+        'flex w-full flex-col border-b border-b-gray-300 border-l-4 border-l-transparent px-2 py-2 text-left text-sm last:border-b-0 hover:border-l-gray-400',
         isCurrentEmail ? 'bg-blue-100' : 'bg-gray-50 hover:bg-gray-100',
         isDragging && 'opacity-0',
       )}
@@ -187,7 +187,7 @@ const Emails: FC<{
   return (
     <div className='flex w-52 flex-shrink-0 flex-col bg-gray-50 shadow'>
       <div className='px-3 leading-loose'>{currentFolder.folder.name}</div>
-      <div className='flex flex-grow flex-col divide-y divide-gray-300 overflow-y-auto overflow-x-hidden flex-[1_1_0px]'>
+      <div className='flex flex-grow flex-col overflow-y-auto overflow-x-hidden flex-[1_1_0px]'>
         {currentFolder.emails.map((e) => (
           <SingleEmail
             key={e.emailId}
@@ -668,7 +668,7 @@ export default function Run({params}: {params: Promise<{code: string}>}) {
       </main>
       <DragOverlay dropAnimation={null}>
         {draggingEmail && (
-          <div className='flex w-full flex-col border-l-4 px-2 py-2 text-left text-sm hover:!border-l-gray-400 opacity-70 bg-blue-100'>
+          <div className='flex w-full flex-col border-l-4 border-l-transparent px-2 py-2 text-left text-sm opacity-70 bg-blue-100'>
             <div className='w-full truncate'>{draggingEmail.senderName}</div>
             <div className='w-full truncate'>{draggingEmail.subject}</div>
           </div>
