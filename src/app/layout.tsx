@@ -1,109 +1,38 @@
-'use client';
 import '../styles/globals.css';
-import {getBaseUrl, trpc} from '~/utils/trpc';
-import i18n from 'i18next';
-import {initReactI18next, useTranslation} from 'react-i18next';
-import LanguageDetector from 'i18next-browser-languagedetector';
-import superjson from 'superjson';
-import {httpBatchLink, TRPCClientError} from '@trpc/client';
-import {FC, PropsWithChildren, useState} from 'react';
-import {QueryCache, QueryClient} from '@tanstack/query-core';
-import {QueryClientProvider} from '@tanstack/react-query';
-import de from '../locales/de/translation.json';
-import en from '../locales/en/translation.json';
-import {useRouter} from 'next/navigation';
-import {ToastContainer} from 'react-toastify';
+import {cookies, headers} from 'next/headers';
+import {PropsWithChildren} from 'react';
+import {Providers} from './providers';
 
-import './toastify.css';
-import {ConfirmProvider} from 'material-ui-confirm';
+const SUPPORTED_LANGUAGES = ['de', 'en'] as const;
+const FALLBACK_LANGUAGE = 'en';
 
-i18n
-  .use(LanguageDetector)
-  .use(initReactI18next)
-  .init({
-    initAsync: false,
-    fallbackLng: 'en',
-    load: 'languageOnly',
-    resources: {
-      de: {
-        translation: de,
-      },
-      en: {
-        translation: en,
-      },
-    },
-    detection: {
-      caches: ['cookie'],
-    },
-
-    interpolation: {
-      escapeValue: false,
-    },
-  });
-
-const TrpcProvider: FC<PropsWithChildren> = (p) => {
-  const router = useRouter();
-  const [queryClient] = useState(
-    () =>
-      new QueryClient({
-        defaultOptions: {
-          queries: {
-            retry: 1,
-            retryDelay: 100,
-          },
-        },
-        queryCache: new QueryCache({
-          onError: (error) => {
-            if (typeof window === 'undefined') return false;
-            if (!(error instanceof TRPCClientError)) return false;
-            if (error.data?.code !== 'UNAUTHORIZED') return false;
-            if (!window.location.pathname.startsWith('/admin')) return false;
-
-            router.push('/admin');
-          },
-        }),
-      }),
-  );
-
-  const [trpcClient] = useState(() =>
-    trpc.createClient({
-      links: [
-        httpBatchLink({
-          url: `${getBaseUrl()}/api/trpc`,
-          transformer: superjson,
-        }),
-      ],
-    }),
-  );
-  return (
-    <trpc.Provider client={trpcClient} queryClient={queryClient}>
-      <QueryClientProvider client={queryClient}>{p.children}</QueryClientProvider>
-    </trpc.Provider>
-  );
+// Resolve the language on the server so the initial HTML is already in the right
+// language. We honour the persisted `i18next` cookie first (set by the language
+// chooser / detector on the client), then fall back to the browser's
+// Accept-Language header, and finally to English.
+const resolveLanguage = (cookieValue: string | undefined, acceptLanguage: string): string => {
+  const candidates = [cookieValue, ...acceptLanguage.split(',').map((part) => part.split(';')[0])];
+  for (const candidate of candidates) {
+    const language = candidate?.trim().split('-')[0].toLowerCase();
+    if (language && (SUPPORTED_LANGUAGES as readonly string[]).includes(language)) {
+      return language;
+    }
+  }
+  return FALLBACK_LANGUAGE;
 };
 
-export default function AppLayout({children}: PropsWithChildren) {
-  const {t} = useTranslation();
+export default async function AppLayout({children}: PropsWithChildren) {
+  const [cookieStore, headerStore] = await Promise.all([cookies(), headers()]);
+  const language = resolveLanguage(cookieStore.get('i18next')?.value, headerStore.get('accept-language') ?? '');
 
   return (
-    <ConfirmProvider
-      defaultOptions={{
-        title: t('admin.confirm.title'),
-        confirmationText: t('admin.confirm.confirmation'),
-        cancellationText: t('admin.confirm.cancel'),
-      }}
-    >
-      <TrpcProvider>
-        <html className='h-full bg-white'>
-          <head>
-            <title>Mailbox</title>
-          </head>
-          <body className='h-full bg-gray-50'>
-            {children}
-            <ToastContainer limit={3} position='bottom-right' />
-          </body>
-        </html>
-      </TrpcProvider>
-    </ConfirmProvider>
+    <html lang={language} className='h-full bg-white'>
+      <head>
+        <title>Mailbox</title>
+      </head>
+      <body className='h-full bg-gray-50'>
+        <Providers initialLanguage={language}>{children}</Providers>
+      </body>
+    </html>
   );
 }
