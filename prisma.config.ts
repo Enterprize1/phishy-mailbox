@@ -1,4 +1,4 @@
-import {defineConfig} from 'prisma/config';
+import type {PrismaConfig} from 'prisma/config';
 
 // Prisma 7 no longer reads the connection URL from the schema's datasource block.
 // CLI commands (db push, migrate, studio) get it from here instead.
@@ -15,9 +15,11 @@ try {
   // dotenv unavailable — rely on the ambient environment.
 }
 
-export default defineConfig({
+const config: PrismaConfig = {
   schema: 'prisma/schema.prisma',
   datasource: {
     url: process.env.DATABASE_URL,
   },
-});
+};
+
+export default config;

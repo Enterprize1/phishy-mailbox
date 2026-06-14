@@ -51,7 +51,7 @@ Afterwards you can run the following commands to start the Next.js server that s
 yarn
 yarn prisma generate
 yarn prisma db push
-yarn node ./prisma/seed.js
+yarn node ./prisma/seed.mjs
 yarn dev
 ```
 
