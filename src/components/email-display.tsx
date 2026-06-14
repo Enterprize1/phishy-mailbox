@@ -5,6 +5,10 @@ import {FC, ReactNode, SyntheticEvent, useCallback, useMemo, useState} from 'rea
 import * as Dialog from '@radix-ui/react-dialog';
 import {useTranslation} from 'react-i18next';
 import {InformationCircleIcon} from '@heroicons/react/24/solid';
+import InputField from '~/components/forms/fields/InputField';
+import CodeTextarea from '~/components/forms/fields/CodeTextarea';
+import Form from '~/components/forms/Form';
+import {useFormBuilder} from '@atmina/formbuilder';
 
 export type EmailWithFunctionAsBody = Omit<Email, 'body'> & {body: (() => ReactNode) | Email['body'] | null};
 
@@ -52,6 +56,68 @@ const EmailDisplayDetails: FC<{headers?: string; onViewDetails?: () => void}> = 
   );
 };
 
+const EmailDisplayReply: FC<{
+  subject?: string;
+  onOpenReply?: () => void;
+  onSendReply?: (message: string) => void;
+  onAbortReply?: () => void;
+}> = ({subject, onOpenReply, onSendReply, onAbortReply}) => {
+  const [open, setOpen] = useState<boolean>(false);
+  const {t} = useTranslation(undefined, {keyPrefix: 'components.emailDisplay.reply'});
+  const builder = useFormBuilder<{subject: string; message: string}>({
+    defaultValues: {subject: 'Re: ' + subject, message: ''},
+  });
+
+  return (
+    <Dialog.Root open={open} onOpenChange={setOpen}>
+      <Dialog.Trigger asChild>
+        <button
+          className='self-center rounded-sm border bg-gray-100 px-2 py-1 hover:bg-gray-200'
+          onClick={() => onOpenReply?.()}
+        >
+          {t('reply')}
+        </button>
+      </Dialog.Trigger>
+      <Dialog.Portal>
+        <Dialog.Overlay className='fixed inset-0 z-50 bg-black/40' />
+        <Dialog.Content className='fixed left-1/2 top-1/2 z-50 flex max-h-[85vh] max-w-[85vw] -translate-x-1/2 -translate-y-1/2 flex-col bg-white p-6'>
+          <Dialog.Title className='m-0 font-bold'>{t('composeNewMessage')}</Dialog.Title>
+          <Form
+            builder={builder}
+            onSubmit={(data) => {
+              onSendReply?.(data.message);
+              builder.fields.message.$setValue("");
+              setOpen(false);
+            }}
+          >
+            <div className='my-2 flex flex-col gap-x-8 gap-y-2'>
+              <InputField label={t('subject')} on={builder.fields.subject} />
+            </div>
+            <CodeTextarea
+              label={t('content')}
+              on={builder.fields.message}
+            />
+            <button
+              type='submit'
+              className='mt-4 flex-shrink justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600'
+            >
+              {t('send')}
+            </button>
+            <Dialog.Close asChild>
+              <button
+                className='mt-4 flex-shrink justify-center self-end rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600'
+                onClick={() => onAbortReply?.()}
+              >
+                {t('close')}
+              </button>
+            </Dialog.Close>
+          </Form>
+        </Dialog.Content>
+      </Dialog.Portal>
+    </Dialog.Root>
+  );
+};
+
 export default function EmailDisplay({
   email,
   studyId,
@@ -61,6 +127,9 @@ export default function EmailDisplay({
   onClick,
   onHover,
   onViewDetails,
+  onOpenReply,
+  onSendReply,
+  onAbortReply,
   onViewExternalImages,
 }: {
   email: Partial<EmailWithFunctionAsBody>;
@@ -71,6 +140,9 @@ export default function EmailDisplay({
   onClick?: (href: string, text: string) => void;
   onHover?: (href: string, text: string) => void;
   onViewDetails?: () => void;
+  onOpenReply?: () => void;
+  onSendReply?: (message: string) => void;
+  onAbortReply?: () => void;
   onViewExternalImages?: () => void;
 }) {
   const {t} = useTranslation(undefined, {keyPrefix: 'components.emailDisplay'});
@@ -197,7 +269,15 @@ export default function EmailDisplay({
             </div>
             <div>{t('to')}</div>
           </div>
-          <EmailDisplayDetails headers={email.headers} onViewDetails={onViewDetails} />
+          <div>
+            <EmailDisplayReply
+              subject={email.subject}
+              onOpenReply={onOpenReply}
+              onSendReply={onSendReply}
+              onAbortReply={onAbortReply}
+            />
+            <EmailDisplayDetails headers={email.headers} onViewDetails={onViewDetails} />
+          </div>
         </div>
         {studyExternalImageMode === ExternalImageMode.ASK && !showExternalImages && (
           <div className='flex gap-4 bg-gray-50 px-4 py-2 items-center border-y'>

@@ -203,6 +203,14 @@
         "messageDetails": "Nachrichtendetails",
         "close": "Schließen"
       },
+      "reply": {
+        "reply": "Antworten",
+        "composeNewMessage": "Neue Nachricht verfassen",
+        "subject": "Betreff",
+        "message": "Nachricht",
+        "send": "Abschicken",
+        "close": "Schließen"
+      },
       "imagesBlocked": "Bilder in dieser E-Mail wurden blockiert.",
       "showImages": "Bilder anzeigen"
     }

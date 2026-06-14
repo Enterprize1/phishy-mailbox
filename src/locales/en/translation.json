@@ -202,6 +202,14 @@
         "messageDetails": "Message Details",
         "close": "Close"
       },
+      "reply": {
+        "reply": "Reply",
+        "composeNewMessage": "Compose new message",
+        "subject": "Subject",
+        "message": "Message",
+        "send": "Send",
+        "close": "Close"
+      },
       "imagesBlocked": "Images in this email have been blocked.",
       "showImages": "Show Images"
     }
