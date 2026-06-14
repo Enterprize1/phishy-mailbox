@@ -2,7 +2,13 @@ import {describe, expect, it} from 'vitest';
 import {randomUUID} from 'crypto';
 import {subMinutes} from 'date-fns';
 import {TRPCError} from '@trpc/server';
-import {getCaller, adminSession, createEmail, createStudyWithFolders, createParticipation} from '../../../../test/integration/helpers';
+import {
+  getCaller,
+  adminSession,
+  createEmail,
+  createStudyWithFolders,
+  createParticipation,
+} from '../../../../test/integration/helpers';
 import {prismaTest} from '../../../../test/integration/setup';
 
 describe('participation router', () => {
@@ -173,8 +179,16 @@ describe('participation router', () => {
       const participationEmailId = loaded!.emails[0]!.id;
       const folderId = study.folder[0]!.id;
 
-      await getCaller().participation.moveEmail({participationId: participation.id, emailId: participationEmailId, folderId});
-      await getCaller().participation.moveEmail({participationId: participation.id, emailId: participationEmailId, folderId});
+      await getCaller().participation.moveEmail({
+        participationId: participation.id,
+        emailId: participationEmailId,
+        folderId,
+      });
+      await getCaller().participation.moveEmail({
+        participationId: participation.id,
+        emailId: participationEmailId,
+        folderId,
+      });
 
       const events = await prismaTest.participationEmailEvent.findMany({where: {participationEmailId}});
       const moves = events.filter((e) => (e.data as {type: string}).type === 'email-moved');
@@ -213,9 +227,9 @@ describe('participation router', () => {
   describe('createMultiple', () => {
     it('requires authentication', async () => {
       const {study} = await seedStudy();
-      await expect(
-        getCaller().participation.createMultiple({studyId: study.id, count: 1}),
-      ).rejects.toBeInstanceOf(TRPCError);
+      await expect(getCaller().participation.createMultiple({studyId: study.id, count: 1})).rejects.toBeInstanceOf(
+        TRPCError,
+      );
     });
 
     it('creates the requested number of participations for an admin', async () => {

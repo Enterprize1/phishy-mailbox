@@ -331,7 +331,9 @@ describe('study router', () => {
     });
 
     it('throws when the study does not exist', async () => {
-      await expect(getCaller(adminSession()).study.exportStudyStructure(randomUUID())).rejects.toThrow('Study not found');
+      await expect(getCaller(adminSession()).study.exportStudyStructure(randomUUID())).rejects.toThrow(
+        'Study not found',
+      );
     });
   });
 
@@ -362,9 +364,7 @@ describe('study router', () => {
       );
 
       // Re-import the same study with one folder and one email dropped.
-      await caller.study.importStudy(
-        importableStudy({id, name: 'Renamed', folder: [keptFolder], email: [keptEmail]}),
-      );
+      await caller.study.importStudy(importableStudy({id, name: 'Renamed', folder: [keptFolder], email: [keptEmail]}));
 
       const structure = await caller.study.exportStudyStructure(id);
       expect(structure.name).toBe('Renamed');

@@ -2,7 +2,7 @@
 import {getBaseUrl, trpc} from '~/utils/trpc';
 import i18next, {type i18n as I18nInstance} from 'i18next';
 import {I18nextProvider, initReactI18next, useTranslation} from 'react-i18next';
-import LanguageDetector from 'i18next-browser-languagedetector';
+import I18nLanguageDetector from 'i18next-browser-languagedetector';
 import superjson from 'superjson';
 import {httpBatchLink, TRPCClientError} from '@trpc/client';
 import {FC, PropsWithChildren, useState} from 'react';
@@ -49,7 +49,7 @@ const getI18n = (language: string): I18nInstance => {
   if (!clientInstance) {
     const instance = i18next.createInstance();
     instance
-      .use(LanguageDetector)
+      .use(I18nLanguageDetector)
       .use(initReactI18next)
       .init({...baseOptions, lng: language, detection: {caches: ['cookie']}});
     clientInstance = instance;

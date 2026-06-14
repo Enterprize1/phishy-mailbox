@@ -1,6 +1,11 @@
 import {describe, expect, it} from 'vitest';
 import {randomUUID} from 'crypto';
-import {getCaller, createEmail, createStudyWithFolders, createParticipation} from '../../../../test/integration/helpers';
+import {
+  getCaller,
+  createEmail,
+  createStudyWithFolders,
+  createParticipation,
+} from '../../../../test/integration/helpers';
 import {prismaTest} from '../../../../test/integration/setup';
 
 describe('participationEvent router', () => {
@@ -38,7 +43,11 @@ describe('participationEvent router', () => {
     });
 
     const stored = await prismaTest.participationEmailEvent.findUnique({where: {id: event.id}});
-    expect(stored?.data).toMatchObject({type: 'email-link-click', url: 'https://example.com/phish', linkText: 'Click me'});
+    expect(stored?.data).toMatchObject({
+      type: 'email-link-click',
+      url: 'https://example.com/phish',
+      linkText: 'Click me',
+    });
   });
 
   it('rejects an event for an unknown participation', async () => {

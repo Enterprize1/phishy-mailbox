@@ -89,7 +89,7 @@ export default [...compat.extends("airbnb/hooks", "prettier"), {
         sourceType: "script",
 
         parserOptions: {
-            project: "./tsconfig.json",
+            project: "./tsconfig.eslint.json",
             tsconfigRootDir: __dirname,
         },
     },
@@ -113,7 +113,7 @@ export default [...compat.extends("airbnb/hooks", "prettier"), {
         "import/no-extraneous-dependencies": "off",
 
         "no-underscore-dangle": ["error", {
-            allow: ["__id", "__typename"],
+            allow: ["__id", "__typename", "__coverage__"],
         }],
 
         "import/extensions": "off",

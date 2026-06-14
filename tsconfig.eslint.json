@@ -1,0 +1,6 @@
+{
+  "//": "Project used only by ESLint's type-aware rules. It extends the build config but, unlike tsconfig.json, does NOT exclude test files so they can be linted too.",
+  "extends": "./tsconfig.json",
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
+  "exclude": ["node_modules"]
+}
