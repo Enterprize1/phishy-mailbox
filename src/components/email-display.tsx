@@ -1,7 +1,7 @@
 import {Email, ExternalImageMode} from '@prisma/client';
 import clsx from 'clsx';
 import debounce from 'lodash.debounce';
-import {FC, ReactNode, SyntheticEvent, useCallback, useMemo, useState} from 'react';
+import {FC, ReactNode, SyntheticEvent, useEffect, useCallback, useMemo, useState} from 'react';
 import * as Dialog from '@radix-ui/react-dialog';
 import {useTranslation} from 'react-i18next';
 import {InformationCircleIcon} from '@heroicons/react/24/solid';
@@ -67,6 +67,11 @@ const EmailDisplayReply: FC<{
   const builder = useFormBuilder<{subject: string; message: string}>({
     defaultValues: {subject: 'Re: ' + subject, message: ''},
   });
+
+  useEffect(() => {
+    builder.fields.subject.$setValue('Re: ' + subject);
+    }, [subject, builder.fields.subject]
+  );
 
   return (
     <Dialog.Root open={open} onOpenChange={setOpen}>
